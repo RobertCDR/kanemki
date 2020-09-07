@@ -1,0 +1,280 @@
+import discord
+from discord.ext import commands
+import random
+import praw
+import datetime
+import asyncio
+
+class Fun(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(aliases=['frick'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def fuck(self, ctx, partner : discord.Member):
+        if partner is ctx.message.author:
+            return await ctx.send(r'have fun fucking yourself I guess ¯\_(ツ)_/¯')
+        responses = ["{} and {} are making some wild sex", "{} are 2 night lovers {}", "{} and {} have a rough round"]
+        choice = random.choice(responses)
+        choice = choice.format(ctx.message.author.mention, partner.mention)
+        await ctx.send(choice)
+
+    #opens a file and selects a random thing from it
+    #same principle applies for the following commands
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def pun(self, ctx):
+        pun = random.choice(list(open('./text files/puns.txt', encoding='utf8')))   #opens the text file, converts the content into a list and picks a random line from it
+        await ctx.send(pun) #send the pun (yes, I manually selected them and actually laughed, help)
+
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def sex(self, ctx):
+        response = random.choice(list(open('./text files/sex.txt', encoding='utf8')))
+        await ctx.send(f'{ctx.message.author.mention} {response}')
+
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def roast(self, ctx):
+        roast = random.choice(list(open('./text files/roast.txt', encoding='utf8')))
+        await ctx.send(roast)
+
+    @commands.command(aliases=['fortunecookie', 'fortune'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def fookie(self, ctx):
+        fortune = random.choice(list(open('./text files/fookies.txt', encoding='utf8')))
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description=f':fortune_cookie: {fortune}', title=str(ctx.message.author))
+        await ctx.send(embed=embed)
+
+    #had some fun doing this command
+    @commands.command()
+    @commands.cooldown(1, 20, commands.BucketType.user)
+    async def hack(self, ctx, victim : discord.Member):
+        if victim is ctx.message.author:    #if you mention yourself
+            return await ctx.send('why would you hack yourself?')   #return this
+        search = random.choice(list(open('./text files/searches.txt'))) #select a random thing from a file with funny and weird google searches
+        percent = ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100% - Hacking complete']
+        #some random bullshit that passed through my head or seen it on Dank Memer
+        action = [
+            f'Injecting trojan into ID: {victim.id}',
+            f'Getting access key from discriminator: {str(victim)[-5:]}',
+            f'Tracing IP address: {random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}',
+            'Exploiting vulnerabilities...',
+            f"Latest incognito search: {search}",
+            'Passwords acquired. Accessing accounts...',
+            'Bypassing security: 2FA, security questions, reCAPTCHA...',
+            'Extracting data...',
+            'Selling data on Deep Web...',
+            'Hack traces erased.',
+        ]
+        #it was such a bummer to try different characters so I sticked to this
+        animation = ["███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯","███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ███"]
+        message = await ctx.send('**Loading...**') #send the first the message
+        for i in range(len(animation)): #create a for loop to go through the lists and edit the message
+            await asyncio.sleep(random.randint(1.0, 5.0))   #wait after every edit starting with the first message
+            await message.edit(content=f'```diff\n-{action[i]}\n``` ```fix\nStatus: {percent[i]}\n{animation[i]}\n```') #edit the message
+        await ctx.send(f'**Succesfully hacked** {victim.mention}')  #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
+
+    @commands.command(aliases=['pp', 'penis', 'ppsize'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def pula(self, ctx, member : discord.Member=None):
+        if not member:
+            member = ctx.message.author
+        nr = random.randint(0,30)
+        if nr == 0:
+            embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
+            embed.set_author(name='pspspspsps come here little pussy', icon_url='{}'.format(member.avatar_url))
+            await ctx.send(embed=embed)
+        elif nr >= 20:
+            if nr == 30:
+                embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
+                embed.set_author(name='Hail Johnny Sins v2.0', icon_url='{}'.format(member.avatar_url))
+                await ctx.send(embed=embed)
+                return
+            embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
+            embed.set_author(name='congrats for having a big pp, sir', icon_url='{}'.format(member.avatar_url))
+            await ctx.send(embed=embed)
+        elif nr < 20:
+            if nr < 15:
+                embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
+                embed.set_author(name='at least you can use it as a spare finger', icon_url='{}'.format(member.avatar_url))
+                await ctx.send(embed=embed)
+                return
+            embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
+            embed.set_author(name='not the best, not the worst', icon_url='{}'.format(member.avatar_url))
+            await ctx.send(embed=embed)
+                    
+    @commands.command(aliases=['8ball'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def ask(self, ctx, *, question : str):
+        response = random.choice(list(open('./text files/8ball.txt')))
+        await ctx.send(f'{ctx.message.author.mention} {response}')
+    
+    #embed sandbox
+    #maybe I will further develop it someday
+    @commands.command(aliases=['emb'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def embed(self, ctx, *, args: str=None):
+        if not args:    #if there are no parameters given, return
+            embed = discord.Embed(color=0xfccc51, description=':warning: Specify at least one parameter for the embed.')
+            return await ctx.send(embed=embed)
+        embed = discord.Embed(color=random.randint(0, 0xffffff))    #create the embed with only the color field
+        args = list(args.split(', '))   #create a list containing the parameters and the content of each one
+        for i in range(0, len(args)):   #create a for loop to iterate over the elements 
+            x = list(args[i].split('=', 1)) #create another another list from each element
+            if x[0] == 'title' or x[0] == 't':
+                embed.title = x[1]
+            if x[0] == 'description' or x[0] == 'descr' or x[0] == 'd':
+                embed.description = x[1]
+            if x[0] == 'author':
+                embed.set_author(name=x[1])
+            if x[0] == 'footer':
+                embed.set_footer(text=x[1])
+            if x[0] == 'thumbnail' or x[0] == 'tn' or x[0] == 'thumb':
+                embed.set_thumbnail(url=x[1])
+            if x[0] == 'image' or x[0] == 'img' or x[0] == 'i':
+                embed.set_image(url=x[1])
+            if x[0] == 'time':
+                embed.timestamp = datetime.datetime.utcnow()
+        await ctx.send(embed=embed) #send the embed
+
+    @commands.command(aliases=['howgay', 'gay', 'gayr8'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def gayrate(self, ctx, member : discord.Member=None):
+        if not member:
+            member = ctx.message.author
+        nr = random.randint(0,100)
+        if nr >= 50:
+            embed = discord.Embed(color=random.randint(0,0xffffff), title=f'{str(member)}', description='homo alert bois\n protect your buttholes')
+            embed.add_field(name=f':rainbow_flag:' , value=f'you are {nr}% gay')
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(color=random.randint(0,0xffffff), title=f'{str(member)}', description='you passed the nongay check :point_right::ok_hand:')
+            embed.add_field(name=f':rainbow_flag:', value=f'you are {nr}% gay')
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['love', 'compatibility', 'lovemeter'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def ship(self, ctx, pair : discord.Member):
+        if pair is ctx.message.author:
+            result = '❣ Love and be yourself with all your goods and bads ❣'
+            i = 100
+            string = '```'
+            while i > 2:
+                string += '​█'
+                i -= 2
+            string += '```'
+            embed = discord.Embed(color=random.randint(0,0xffffff), title=f'**{str(ctx.message.author)}** :heart_exclamation: **{str(pair)}**', description=f'You are perfect.\n{string}')
+            embed.set_author(icon_url=self.bot.user.avatar_url, name='Love Machine')
+            embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/738787852472549446/hearts.png')
+            embed.add_field(name='Result', value=f'{result}')
+            return await ctx.send(embed=embed)
+        nr = random.randint(0,100)
+        string = '```'
+        i = nr
+        x = 100 - nr
+        while i > 2:
+            string += '​█'
+            i -= 2
+        while x > -2:
+            string += ' '
+            x -= 1
+        string += '```'
+        if nr == 0:
+            result = 'Welp, this is so sad... :pensive:'
+        elif nr <= 44 and nr >= 1:
+            result = "Guess it's not meant to be... :cry:"
+        elif nr <= 64 and nr >=45:
+            shrug = r'¯\_(ツ)_/¯'
+            result = f"It's worth a shot I guess {shrug}"
+        elif nr <= 79 and nr >= 65:
+            result = 'These are some pretty good chances :smirk:'
+        elif nr <= 89 and nr >= 80:
+            result = "You'd make a pretty good pair :hushed:"
+        elif nr <= 99 and nr >= 90:
+            result = "It's like you were almost meant for each other :smiling_face_with_3_hearts:"
+        else:
+            result = ':heartpulse: You 2 are the perfect couple! :heartpulse:'
+        embed = discord.Embed(color=random.randint(0,0xffffff), title=f'**{str(ctx.message.author)}** :heart_exclamation: **{str(pair)}**', description=f'You are {nr}% compatible.\n{string}')
+        embed.set_author(icon_url=self.bot.user.avatar_url, name='Love Machine')
+        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/738787852472549446/hearts.png')
+        embed.add_field(name='Result', value=f'{result}')
+        await ctx.send(embed=embed)
+
+    #the classic say command
+    #utils.escape_mentions is broken
+    @commands.command(aliases=['parrot', 'mimic', 'repeat'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def say(self, ctx, *, mimic):
+        await ctx.message.delete()  #first, delete the message sent by the command author
+        mimic = discord.utils.escape_mentions(mimic)    #prevents mentions (noboby wants to be pinged by a stupid everyone)
+        await ctx.send(mimic)   #send the message
+
+    #a variation of the say command
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def clapify(self, ctx, *, text):
+        message = ''    #initiate a variable as an empty string
+        for x in text[-len(text):-1]:   #loop through the characters between the first and the last one
+            message += f'**{x}**'   #bold every character
+            message += " :clap: "   #add the clap emote between characters
+        message += f'**{text[-1]}**'    #add the last character to the string
+        await ctx.send(message) #send the message
+
+    #another variation of the say command, but this one adds spoiler tags for each character
+    #yes, I'm evil, but the decision to use this command is yours
+    #like the forbidden apple
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def spoilify(self, ctx, *, text):
+        await ctx.message.delete()
+        message = f'**{ctx.message.author}** - '
+        for x in text:
+            message += f'||{x}||'
+        await ctx.send(message)
+
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def emojify(self, ctx, *, text):
+        message = ''
+        numbers = {
+            '0': ':zero:', '1': ':one:', '2': ':two:', '3': ':three:', '4': ':four:', '5': ':five:', '6': ':six:', '7': ':seven:', '8': ':eight:', '9': ':nine:'
+        }
+        for x in text:
+            if x.isalpha():
+                message += f':regional_indicator_{x.lower()}:'
+            elif x.isdigit():
+                message += numbers[x]
+            elif x == ' ':
+                message += '     '
+            else:
+                message += x
+        await ctx.send(message)
+
+    @commands.command(aliases=['age', 'howmanydays'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def agedays(self, ctx, *, birthday):
+        date = birthday.split('/')  #the date should come in format dd/mm/yyyy so it can be split and formatted
+        if int(date[0]) > 31:   #there's no month with 50 days
+            return await ctx.send('Invalid date')
+        elif int(date[1]) > 12: #and here on Earth the year has 12 months
+            return await ctx.send('Invalid date')
+        #if february has more than 28 days and the year is not divisible by 4 then it's not a bisect year and it's not a valid date
+        #damn primary school was useful
+        elif int(date[1]) == 2 and int(date[0]) > 28 and int(date[2])%4 != 0:   
+            return await ctx.send('Invalid date')
+        #these are the conditions for every month with 30 days
+        #damn kindergarten was useful with it's knuckle rule for months
+        elif (int(date[1]) == 4 or int(date[1]) == 6 or int(date[1]) == 9 or int(date[1]) == 11) and int(date[0]) > 30:
+            return await ctx.send('Invalid date')
+        date = datetime.datetime.strptime(birthday, '%d/%m/%Y') #format the date
+        #calculate the days
+        now = datetime.datetime.utcnow()
+        age = now - date
+        age = str(age)
+        days = list(age.split(',', 1))
+        embed = discord.Embed(title=str(ctx.message.author), description=days[0], color=random.randint(0, 0xffffff))   #create the embed
+        await ctx.send(embed=embed) #send the embed
+
+def setup(bot):
+    bot.add_cog(Fun(bot))
