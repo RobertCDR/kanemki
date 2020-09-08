@@ -36,18 +36,24 @@ class Moderation(commands.Cog):
     #and this is exactly the problem, not fatal, but needs to be fixed because it raises an error if the guild does not have the roles set
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        if member.bot:  #if a bot joins the guild
-            with open('./guild data/botroles.json', 'r') as f:  #open the json file containing bot roles
-                botrole = json.load(f)  #load it
-            role = botrole[str(member.guild.id)]    #get the id of the bot role set in the guild
-            role = discord.utils.get(member.guild.roles, id=role)   #get the role
-            await member.add_roles(role)    #add it to the bot
-        else:   #if a non-bot account joins the guild
-            with open('./guild data/joinroles.json', 'r') as f: #open the json file containing member roles
-                joinrole = json.load(f) #load it
-            role = joinrole[str(member.guild.id)]   #get the id of the role set in the guild
-            role = discord.utils.get(member.guild.roles, id=role)   #get the role
-            await member.add_roles(role)    #add it to the user
+        try:
+            if member.bot:  #if a bot joins the guild
+                with open('./guild data/botroles.json', 'r') as f:  #open the json file containing bot roles
+                    botrole = json.load(f)  #load it
+                role = botrole[str(member.guild.id)]    #get the id of the bot role set in the guild
+                role = discord.utils.get(member.guild.roles, id=role)   #get the role
+                await member.add_roles(role)    #add it to the bot
+            else:   #if a non-bot account joins the guild
+                with open('./guild data/joinroles.json', 'r') as f: #open the json file containing member roles
+                    joinrole = json.load(f) #load it
+                role = joinrole[str(member.guild.id)]   #get the id of the role set in the guild
+                role = discord.utils.get(member.guild.roles, id=role)   #get the role
+                await member.add_roles(role)    #add it to the user
+        #if the guild did not set any role to be assigned to new members, a KeyError will be raised trying to load the role id for that guild
+        except Exception as error:  #soo the bot will ignore it
+            if isinstance(error, KeyError):
+                pass
+        #it wasn't a fatal error, but why see it raised in your terminal tho
 
     #a command group for server configuration commands
     @commands.group(case_insensitive=True)
