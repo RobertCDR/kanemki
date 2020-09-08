@@ -2,12 +2,13 @@ import discord
 from discord.ext import commands
 import random
 import asyncio
+import typing
 
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command(aliases=['hman'])
+    @commands.command(aliases=['hman', 'hang'])
     async def hangman(self, ctx, members : commands.Greedy[discord.Member]):
         def check(x):
             return x.author in members and x.channel == ctx.message.channel
@@ -15,46 +16,90 @@ class Games(commands.Cog):
             if member.bot or member == ctx.message.author:
                 members.remove(member)
         members.append(ctx.message.author)
+        stages = [
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936429356580975/hman10.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936398927036436/hman9.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936372519567410/hman8.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936348561703042/hman7.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936324914217041/hman6.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936300364955659/hman5.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936278407905341/hman4.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936254810619935/hman3.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936237240680628/hman2.png",
+            "https://cdn.discordapp.com/attachments/725102631185547427/752936227010904114/hman1.png"
+        ]
+        chances = 9
+        used_letters = []
+        _letters = '** **'
+        aux_embed = discord.Embed(color=random.randint(0, 0xffffff))
         word = random.choice(list(open('./text files/hangman.txt', encoding='utf8')))
         embed = discord.Embed(title='Hangman', color=random.randint(0, 0xffffff))
-        embed.add_field(name='Chances', value=10)
-        embed.insert_field_at(index=2, name='Used Letters', value='None')
+        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/752936429356580975/hman10.png')
+        embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/752938893036486776/hman0.png')
+        embed.set_footer(icon_url=self.bot.user.avatar_url, text='Respond with letters or words. Type "end" or "leave" to leave the game.')
         hidden_word = []
         for x in word:
             hidden_word.append(x)
         for x in range(1, len(hidden_word)-1):
             hidden_word[x] = ' ▢ '
         embed.description = ''.join(hidden_word)
+        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
         await ctx.send(embed=embed)
-        chances = 10
-        used_letters = []
-        while chances > 0:
+        while chances >= 0:
             if len(members) > 0:
-                if embed.description == word:
-                    return await ctx.send('you won')
-                chances -= 1
                 try:
-                    guess = await self.bot.wait_for('message', check=check, timeout=30)
+                    guess = await self.bot.wait_for('message', check=check, timeout=20)
                     _guess = guess.content.upper()
                 except asyncio.TimeoutError:
-                    return await ctx.send('timed out')
-                if _guess == 'END':
-                    members.remove(guess.author)
-                    await ctx.send(f'{guess.author} left the game')
+                    embed.set_author(icon_url=self.bot.user.avatar_url, name="Time's out. You're dead :(")
+                    embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
+                    embed.set_image(url=stages[0])
+                    return await ctx.send(embed=embed)
+                if _guess == 'END' or _guess == 'LEAVE':
+                    if len(members) > 1:
+                        members.remove(guess.author)
+                        aux_embed.set_author(icon_url=guess.author.avatar_url, name='Member Left')
+                        aux_embed.description = guess.author.mention
+                        aux_embed.set_thumbnail(url=stages[0])
+                        await ctx.send(embed=aux_embed)
+                    else:
+                        aux_embed.set_author(icon_url=self.bot.user.avatar_url, name='Game Ended')
+                        aux_embed.set_thumbnail(url=stages[0])
+                        aux_embed.description = '**No players left to be hanged.**\n**See you around next time.**'
+                        aux_embed.set_image(url=stages[0])
+                        return await ctx.send(embed=aux_embed)
                 if len(_guess) == 1:
                     used_letters.append(_guess)
+                    _letters = ' '.join(used_letters)
                     if _guess not in word:
-                        await ctx.send(f'{embed.description}\n{used_letters}\n{chances}')
+                        chances -= 1
+                        if chances == -1:
+                            embed.set_author(icon_url=self.bot.user.avatar_url, name="You're dead :(")
+                            embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
+                        embed.description = ''.join(hidden_word)
+                        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
+                        embed.set_image(url=stages[chances+1])
+                        await ctx.send(embed=embed)
                     else:
-                        if _guess == word:
-                            return await ctx.send('you won')
                         for x in range(0, len(word)):
                             if _guess == word[x]:
                                 hidden_word[x] = _guess
                         embed.description = ''.join(hidden_word)
-                        await ctx.send(f'{embed.description}\n{used_letters}\n{chances}')
-            else:
-                return await ctx.send('game ended')
+                        if embed.description == word:
+                            embed.set_author(icon_url=self.bot.user.avatar_url, name='You Won!')
+                            embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
+                            embed.footer.text = 'Congrats!'
+                            embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
+                            return await ctx.send(embed=embed)
+                        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
+                        embed.set_image(url=stages[chances])
+                        await ctx.send(embed=embed)
+                elif _guess == word:
+                    embed.set_author(icon_url=self.bot.user.avatar_url, name='You Won!')
+                    embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
+                    embed.footer.text = 'Congrats!'
+                    embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
+                    return await ctx.send(embed=embed)
 
     #guess the number game
     #I should make a hint system
