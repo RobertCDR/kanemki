@@ -6,47 +6,55 @@ import asyncio
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        
     @commands.command(aliases=['hman'])
     async def hangman(self, ctx, members : commands.Greedy[discord.Member]):
+        def check(x):
+            return x.author in members and x.channel == ctx.message.channel
         for member in members:
             if member.bot or member == ctx.message.author:
                 members.remove(member)
         members.append(ctx.message.author)
         word = random.choice(list(open('./text files/hangman.txt', encoding='utf8')))
         embed = discord.Embed(title='Hangman', color=random.randint(0, 0xffffff))
-        copy_word = word.split(' ')
-        
-        def check(x):
-            return x.author in members and x.channel == ctx.message.channel
-        
-    @commands.command(aliases=['tod'])
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def truthordare(self, ctx):
-        def check(x):   #checks if the response is sent by the command author in the same channel where the command was invoked
-            return x.author == ctx.message.author and x.channel == ctx.message.channel
-        color = random.randint(0, 0xffffff)
-        embed = discord.Embed(color=color, title='Truth or Dare?')
-        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
-        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740536681437855824/truthordare.png')
-        embed.set_footer(icon_url=self.bot.user.avatar_url, text='Respond with "truth", "t", "dare", "d".')
+        embed.add_field(name='Chances', value=10)
+        embed.insert_field_at(index=2, name='Used Letters', value='None')
+        hidden_word = []
+        for x in word:
+            hidden_word.append(x)
+        for x in range(1, len(hidden_word)-1):
+            hidden_word[x] = ' ▢ '
+        embed.description = ''.join(hidden_word)
         await ctx.send(embed=embed)
-        try:
-            choice = await self.bot.wait_for('message', check=check, timeout=20)    #wait for the response
-            if str(choice.content).lower() != 'truth' and str(choice.content).lower() != 'dare' and str(choice.content).lower() != 't' and str(choice.content).lower() != 'd':
-                await ctx.send('Not a valid choice.')
-        except asyncio.TimeoutError:    #if the wait_for times out return and notify the user
-            return await ctx.send(f'{ctx.message.author.mention} you took to long to respond.')
-        if str(choice.content).lower() == 'truth' or str(choice.content).lower() == 't':
-            response = random.choice(list(open('./text files/truth.txt')))
-            thumbnail = 'https://cdn.discordapp.com/attachments/725102631185547427/740536728699404359/truth.png'
-        elif str(choice.content).lower() == 'dare' or str(choice.content).lower() == 'd':
-            response = random.choice(list(open('./text files/dare.txt')))
-            thumbnail = 'https://cdn.discordapp.com/attachments/725102631185547427/740536746990633001/dare.png'
-        embed = discord.Embed(color=color, title=response)
-        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
-        embed.set_thumbnail(url=thumbnail)
-        await ctx.send(embed=embed)
+        chances = 10
+        used_letters = []
+        while chances > 0:
+            if len(members) > 0:
+                if embed.description == word:
+                    return await ctx.send('you won')
+                chances -= 1
+                try:
+                    guess = await self.bot.wait_for('message', check=check, timeout=30)
+                    _guess = guess.content.upper()
+                except asyncio.TimeoutError:
+                    return await ctx.send('timed out')
+                if _guess == 'END':
+                    members.remove(guess.author)
+                    await ctx.send(f'{guess.author} left the game')
+                if len(_guess) == 1:
+                    used_letters.append(_guess)
+                    if _guess not in word:
+                        await ctx.send(f'{embed.description}\n{used_letters}\n{chances}')
+                    else:
+                        if _guess == word:
+                            return await ctx.send('you won')
+                        for x in range(0, len(word)):
+                            if _guess == word[x]:
+                                hidden_word[x] = _guess
+                        embed.description = ''.join(hidden_word)
+                        await ctx.send(f'{embed.description}\n{used_letters}\n{chances}')
+            else:
+                return await ctx.send('game ended')
 
     #guess the number game
     #I should make a hint system
@@ -192,6 +200,34 @@ class Games(commands.Cog):
             embed.set_footer(icon_url=self.bot.user.avatar_url, text='Better luck next time.')
             return await ctx.send(embed=embed)
         await ctx.send(embed=embed)  #send the embed
+    
+    @commands.command(aliases=['tod'])
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def truthordare(self, ctx):
+        def check(x):   #checks if the response is sent by the command author in the same channel where the command was invoked
+            return x.author == ctx.message.author and x.channel == ctx.message.channel
+        color = random.randint(0, 0xffffff)
+        embed = discord.Embed(color=color, title='Truth or Dare?')
+        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
+        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740536681437855824/truthordare.png')
+        embed.set_footer(icon_url=self.bot.user.avatar_url, text='Respond with "truth", "t", "dare", "d".')
+        await ctx.send(embed=embed)
+        try:
+            choice = await self.bot.wait_for('message', check=check, timeout=20)    #wait for the response
+            if str(choice.content).lower() != 'truth' and str(choice.content).lower() != 'dare' and str(choice.content).lower() != 't' and str(choice.content).lower() != 'd':
+                await ctx.send('Not a valid choice.')
+        except asyncio.TimeoutError:    #if the wait_for times out return and notify the user
+            return await ctx.send(f'{ctx.message.author.mention} you took to long to respond.')
+        if str(choice.content).lower() == 'truth' or str(choice.content).lower() == 't':
+            response = random.choice(list(open('./text files/truth.txt')))
+            thumbnail = 'https://cdn.discordapp.com/attachments/725102631185547427/740536728699404359/truth.png'
+        elif str(choice.content).lower() == 'dare' or str(choice.content).lower() == 'd':
+            response = random.choice(list(open('./text files/dare.txt')))
+            thumbnail = 'https://cdn.discordapp.com/attachments/725102631185547427/740536746990633001/dare.png'
+        embed = discord.Embed(color=color, title=response)
+        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
+        embed.set_thumbnail(url=thumbnail)
+        await ctx.send(embed=embed)
 
     #flip a coin
     @commands.command()
