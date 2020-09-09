@@ -29,21 +29,22 @@ class Games(commands.Cog):
             "https://cdn.discordapp.com/attachments/725102631185547427/752936227010904114/hman1.png"
         ]
         chances = 9
-        used_letters = []
-        _letters = '** **'
+        tried_cases = []
+        _cases = '** **'
         aux_embed = discord.Embed(color=random.randint(0, 0xffffff))
-        word = random.choice(list(open('./text files/hangman.txt', encoding='utf8')))
+        word = random.choice(list(open('./text files/hang.txt', encoding='utf8')))
         embed = discord.Embed(title='Hangman', color=random.randint(0, 0xffffff))
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/752936429356580975/hman10.png')
         embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/752938893036486776/hman0.png')
         embed.set_footer(icon_url=self.bot.user.avatar_url, text='Respond with letters or words. Type "end" or "leave" to leave the game.')
         hidden_word = []
+        word = word.replace('\n', '')
         for x in word:
             hidden_word.append(x)
         for x in range(1, len(hidden_word)-1):
             hidden_word[x] = ' ▢ '
         embed.description = ''.join(hidden_word)
-        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
+        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
         await ctx.send(embed=embed)
         while chances >= 0:
             if len(members) > 0:
@@ -52,6 +53,7 @@ class Games(commands.Cog):
                     _guess = guess.content.upper()
                 except asyncio.TimeoutError:
                     embed.set_author(icon_url=self.bot.user.avatar_url, name="Time's out. You're dead :(")
+                    embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
                     embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
                     embed.set_image(url=stages[0])
                     return await ctx.send(embed=embed)
@@ -65,41 +67,43 @@ class Games(commands.Cog):
                     else:
                         aux_embed.set_author(icon_url=self.bot.user.avatar_url, name='Game Ended')
                         aux_embed.set_thumbnail(url=stages[0])
-                        aux_embed.description = '**No players left to be hanged.**\n**See you around next time.**'
+                        aux_embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
                         aux_embed.set_image(url=stages[0])
+                        aux_embed.set_footer(icon_url=self.bot.user.avatar_url, text="Hope you had fun hanging around.")
                         return await ctx.send(embed=aux_embed)
-                if len(_guess) == 1:
-                    used_letters.append(_guess)
-                    _letters = ' '.join(used_letters)
-                    if _guess not in word:
-                        chances -= 1
-                        if chances == -1:
-                            embed.set_author(icon_url=self.bot.user.avatar_url, name="You're dead :(")
-                            embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
-                        embed.description = ''.join(hidden_word)
-                        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
-                        embed.set_image(url=stages[chances+1])
-                        await ctx.send(embed=embed)
-                    else:
-                        for x in range(0, len(word)):
-                            if _guess == word[x]:
-                                hidden_word[x] = _guess
-                        embed.description = ''.join(hidden_word)
-                        if embed.description == word:
-                            embed.set_author(icon_url=self.bot.user.avatar_url, name='You Won!')
-                            embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
-                            embed.footer.text = 'Congrats!'
-                            embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
-                            return await ctx.send(embed=embed)
-                        embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
-                        embed.set_image(url=stages[chances])
-                        await ctx.send(embed=embed)
                 elif _guess == word:
                     embed.set_author(icon_url=self.bot.user.avatar_url, name='You Won!')
-                    embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Used Letters**: {_letters}'
-                    embed.footer.text = 'Congrats!'
+                    embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
+                    embed.set_footer(text='Congrats!', icon_url=self.bot.user.avatar_url)
                     embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
                     return await ctx.send(embed=embed)
+                if _guess != 'END' or _guess != 'LEAVE':
+                    tried_cases.append(_guess)
+                    _cases = ', '.join(tried_cases)
+                if _guess not in word:
+                    chances -= 1
+                    if chances == -1:
+                        embed.set_author(icon_url=self.bot.user.avatar_url, name="You're dead :(")
+                        embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
+                        embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
+                    embed.description = ''.join(hidden_word)
+                    embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
+                    embed.set_image(url=stages[chances+1])
+                    await ctx.send(embed=embed)
+                else:
+                    for x in range(0, len(word)):
+                        if _guess == word[x]:
+                            hidden_word[x] = _guess
+                    embed.description = ''.join(hidden_word)
+                    if embed.description == word:
+                        embed.set_author(icon_url=self.bot.user.avatar_url, name='You Won!')
+                        embed.description = f'**{word}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
+                        embed.set_footer(text='Congrats!', icon_url=self.bot.user.avatar_url)
+                        embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
+                        return await ctx.send(embed=embed)
+                    embed.description = f'**{embed.description}**\n\n**Chances**: {chances+1}\n\n**Already tried**: {_cases}'
+                    embed.set_image(url=stages[chances])
+                    await ctx.send(embed=embed)
 
     #guess the number game
     #I should make a hint system
