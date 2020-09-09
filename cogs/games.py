@@ -9,6 +9,7 @@ class Games(commands.Cog):
         self.bot = bot
         
     @commands.command(aliases=['hman', 'hang'])
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def hangman(self, ctx, members : commands.Greedy[discord.Member]):
         def check(x):
             return x.author in members and x.channel == ctx.message.channel
