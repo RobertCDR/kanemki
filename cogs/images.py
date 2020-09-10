@@ -27,6 +27,32 @@ class Images(commands.Cog):
     
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
+    async def spotify(self, ctx, member: discord.Member=None):
+        if not member:
+            member = ctx.message.author
+        embed = discord.Embed(timestamp=datetime.datetime.utcnow())
+        embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
+        if not member.activity:
+            embed.color = 0xde2f43
+            embed.description = ':x: No activity detected.'
+            return await ctx.send(embed=embed)
+        else:
+            for activity in member.activities:
+                if isinstance(activity, discord.Spotify):
+                    embed.color = 0x1DB954
+                    embed.title = activity.title
+                    embed.set_author(name='Spotify', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
+                    embed.description = ', '.join(activity.artists)
+                    embed.description = f'**by**: {embed.description}\n**on**: {activity.album}'
+                    embed.set_image(url=activity.album_cover_url)
+                    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
+                else:
+                    embed.color = 0xde2f43
+                    embed.description = ':x: No Spotify activity detected.'
+        return await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def award(self, ctx, awarded : discord.User, *, awreas : str):
         embed = discord.Embed(color=0xffec00, title='Award', description=f'Congrats {awarded.mention}! You`ve been awarded by {ctx.message.author.mention}: ***{awreas}***', timestamp=datetime.datetime.utcnow())
         embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
