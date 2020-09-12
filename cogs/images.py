@@ -25,20 +25,23 @@ class Images(commands.Cog):
         pfp.set_author(name=f'{member}', icon_url=member.avatar_url)
         await ctx.send(embed=pfp)   #send the embed
     
+    #I made this command just because sometimes I want to get the cover art of a spotify track
+    #I read in the docs that there is actually a way to get it and said "why not?"
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spotify(self, ctx, member: discord.Member=None):
-        if not member:
+        if not member:  #if you want to get cover art from a track that you are listening
             member = ctx.message.author
-        embed = discord.Embed(timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(timestamp=datetime.datetime.utcnow()) #create the embed
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
-        if not member.activity:
+        if not member.activity: #if no activity is detected, return
             embed.color = 0xde2f43
             embed.description = ':x: No activity detected.'
             return await ctx.send(embed=embed)
-        else:
-            for activity in member.activities:
-                if isinstance(activity, discord.Spotify):
+        else:   #if the user has an activity
+            for activity in member.activities:  #iterate through all the activities of a user
+                if isinstance(activity, discord.Spotify):   #check if the activity is discord.Spotify
+                    #assign the embed assets
                     embed.color = 0x1DB954
                     embed.title = activity.title
                     embed.set_author(name='Spotify', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
@@ -46,10 +49,10 @@ class Images(commands.Cog):
                     embed.description = f'**by**: {embed.description}\n**on**: {activity.album}'
                     embed.set_image(url=activity.album_cover_url)
                     embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
-                else:
+                else:   #if no discord.Spotify activity is detected
                     embed.color = 0xde2f43
                     embed.description = ':x: No Spotify activity detected.'
-        return await ctx.send(embed=embed)
+        return await ctx.send(embed=embed)  #send the embed
 
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
