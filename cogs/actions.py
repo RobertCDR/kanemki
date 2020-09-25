@@ -23,7 +23,7 @@ class Actions(commands.Cog):
         data = json.loads(await response.text()) #json parse the data and make it available for use
         gif = random.randint(0, 9)
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -43,7 +43,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -63,7 +63,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -83,7 +83,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -103,7 +103,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -123,7 +123,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -144,7 +144,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -164,7 +164,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -184,7 +184,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -204,7 +204,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -224,7 +224,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -244,7 +244,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -264,7 +264,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -284,7 +284,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -304,7 +304,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -324,7 +324,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -344,7 +344,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -365,7 +365,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -385,7 +385,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -406,7 +406,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
@@ -426,7 +426,7 @@ class Actions(commands.Cog):
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
