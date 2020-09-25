@@ -18,12 +18,16 @@ class Actions(commands.Cog):
         search = search.replace(' ', '+')   #replace the spaces with plus signs otherwise the request link will be broken
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=10'
         session = aiohttp.ClientSession()   #create a session using aiohttp
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())  #create the embed
+        embed = discord.Embed(color=random.randint(0, 0xffffff))  #create the embed
         response = await session.get(url=url)  #request the data
         data = json.loads(await response.text()) #json parse the data and make it available for use
         gif = random.randint(0, 9)
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
         embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()   #close the session
         await ctx.send(embed=embed) #send the embed
 
@@ -33,12 +37,17 @@ class Actions(commands.Cog):
         search = 'facepalm'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -48,12 +57,17 @@ class Actions(commands.Cog):
         search = 'shrug'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
     
@@ -63,12 +77,17 @@ class Actions(commands.Cog):
         search = 'cry'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -78,12 +97,17 @@ class Actions(commands.Cog):
         search = 'pout'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -93,12 +117,17 @@ class Actions(commands.Cog):
         search = 'run'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -109,12 +138,17 @@ class Actions(commands.Cog):
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -124,12 +158,17 @@ class Actions(commands.Cog):
         search = 'hug'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} hugged you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} hugged you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -139,12 +178,17 @@ class Actions(commands.Cog):
         search = 'kiss'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} kissed you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} kissed you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
     
@@ -154,12 +198,17 @@ class Actions(commands.Cog):
         search = 'slap'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} slapped you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} slapped you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -169,12 +218,17 @@ class Actions(commands.Cog):
         search = 'wink'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} winked at you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} winked at you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -184,12 +238,17 @@ class Actions(commands.Cog):
         search = 'stare'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is staring at you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is staring at you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -199,12 +258,17 @@ class Actions(commands.Cog):
         search = 'lick'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} licked you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} licked you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -214,12 +278,17 @@ class Actions(commands.Cog):
         search = 'bite'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} bit you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} bit you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -229,12 +298,17 @@ class Actions(commands.Cog):
         search = 'cuddle'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is cuddling with you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is cuddling with you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -244,12 +318,17 @@ class Actions(commands.Cog):
         search = 'pat'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} patted you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} patted you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -259,12 +338,17 @@ class Actions(commands.Cog):
         search = 'smile'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is smiling at you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is smiling at you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -275,12 +359,17 @@ class Actions(commands.Cog):
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} poked you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} poked you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -290,12 +379,17 @@ class Actions(commands.Cog):
         search = 'tickle'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is tickling you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is tickling you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -306,12 +400,17 @@ class Actions(commands.Cog):
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is pointing (at) you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} is pointing (at) you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
@@ -321,12 +420,17 @@ class Actions(commands.Cog):
         search = 'punch'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=50'
         session = aiohttp.ClientSession()
-        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} punched you', color=random.randint(0, 0xffffff), timestamp = datetime.datetime.utcnow())
+        embed = discord.Embed(description=f'{member.mention}, {ctx.message.author.mention} punched you', color=random.randint(0, 0xffffff))
         response = await session.get(url=url)
         data = json.loads(await response.text())
         gif = random.randint(0, 49)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text='Powered by GIPHY')
+        if data['data'][gif]['username']:
+            text = f"Powered by GIPHY • {data['data'][gif]['username']}"
+        else:
+            text = "Powered by GIPHY"
+        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
 
