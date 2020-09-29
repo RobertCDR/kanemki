@@ -11,13 +11,15 @@ from contextlib import redirect_stdout
 import json
 import config
 
+intents = discord.Intents.all()
+
 #a function that loads the json file containing every guild's prefix and returns it
 def get_prefix(bot, message):
     with open('./guild data/prefixes.json', 'r') as f:  #open the json file containing prefixes
         prefixes = json.load(f) #load it
     return prefixes[str(message.guild.id)]  #return the prefix associated with the guild id
 
-bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True)
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
 
 TOKEN = config.discord
 giphy_api_key = config.giphy
