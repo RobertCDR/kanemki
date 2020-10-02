@@ -251,6 +251,17 @@ class Fun(commands.Cog):
                 message += x
         await ctx.send(message)
 
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def lewdify(self, ctx, *, text):
+        text = text.split(' ')
+        message = ''
+        emojis = [':weary:', ':pleading_face:', ':flushed:', ':hot_face:', ':drooling_face:', ':point_right: :ok_hand:', ':sweat_drops:', ':eggplant:', ':peach:']
+        for x in range (0, len(text)):
+            message += text[x]
+            message += f" {random.choice(emojis)} "
+        await ctx.send(message)
+
     @commands.command(aliases=['age', 'howmanydays'])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def agedays(self, ctx, *, birthday):
