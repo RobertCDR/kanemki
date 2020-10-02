@@ -12,7 +12,7 @@ class Help(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def help(self, ctx):  #the main help command
         if ctx.invoked_subcommand is None:  #if help about a specific command is not requested ('{ctx.prefix}help', not '{ctx.prefix}help some_command')
-            embed = discord.Embed(title='Click for penis growth', url='https://www.youtube.com/watch?v=dQw4w9WgXcQ', description=f'Use `{ctx.prefix}help [command]` for details', color=0xff0000, timestamp=datetime.datetime.utcnow())
+            embed = discord.Embed(title='Totally not a Rickroll', url='https://www.youtube.com/watch?v=dQw4w9WgXcQ', description=f'Use `{ctx.prefix}help [command]` for details', color=0xff0000, timestamp=datetime.datetime.utcnow())
             embed.set_author(name='Kanemki Command List', icon_url=self.bot.user.avatar_url)
             embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/726569752906170408/kanemki.png')        
             embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/726098955456479293/The_Watcher_New.png', text='Developed by RobertCDR#2573')
