@@ -43,10 +43,10 @@ async def on_ready():
 #creates a default value for the prefix when the bot joins a guild
 @bot.event
 async def on_guild_join(guild):
-    with open ('./json files/prefixes.json', 'r') as f: #open the json file containing prefixes
+    with open ('./guild data/prefixes.json', 'r') as f: #open the json file containing prefixes
         prefixes = json.load(f) #load it
     prefixes[str(guild.id)] = '>'   #set the prefix to that guild to the default bot prefix
-    with open('./json files/prefixes.json', 'w') as f:  #open the json file in write mode
+    with open('./guild data/prefixes.json', 'w') as f:  #open the json file in write mode
         json.dump(prefixes, f, indent=4)    #dump the new prefix
 
 #remote leave a guild by it's id
