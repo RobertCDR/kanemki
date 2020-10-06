@@ -262,6 +262,50 @@ class Fun(commands.Cog):
             message += f" {random.choice(emojis)} "
         await ctx.send(message)
 
+    #this will transform text into Morse code according to the International Morse Code
+    @commands.command(aliases=['tomorse'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def texttomorse(self, ctx, *, text):
+        #this is the dictionary with letters and their Morse code equivalent
+        text_to_morse = {
+            "A":".-", "B":"-...", "C":"-.-.", "D":"-..", "E":".", "F":"..-.", "G":"--.", "H":"....", "I":"..", "J":".---", "K":"-.-", "L":".-..", "M":"--",
+            "N":"-.", "O":"---", "P":".--.", "Q":"--.-", "R":".-.", "S":"...", "T":"-", "U":"..-", "V":"...-", "W":".--", "X":"-..-", "Y":"-.--", "Z":"--..",
+            "1":".----", "2":"..---", "3":"...--", "4":"....-", "5":".....", "6":"-....", "7":"--...", "8":"---..", "9":"----.", "0":"-----"
+        }
+        #this is the reversed dictionary
+        text = text.upper() #uppercase the string
+        message = ''    #and then create another string that will contain the translated message
+        for x in text:  #iterate through the string and add the converted value to the new message
+            if x.isdigit():
+                message += f'{text_to_morse[x]} '
+            elif x.isalpha():
+                message += f'{text_to_morse[x]} '
+            elif x == ' ':
+                message += ' / '
+            else:   #except symbols and other things that cannot be converted
+                message += f'{x} '
+        await ctx.send(message)
+
+    #this is the viceversa of the previous command
+    @commands.command(aliases=['totext'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def morsetotext(self, ctx, *, text):
+        morse_to_text = {
+            '.-':'A', '-...':'B', '-.-.':'C', '-..':'D', '.':'E', '..-.':'F', '--.':'G', '....':'H', '..':'I', '.---':'J', '-.-':'K', '.-..':'L', '--':'M',
+            '-.':'N', '---':'O', '.--.':'P', '--.-':'Q', '.-.':'R', '...':'S', '-':'T', '..-':'U', '...-':'V', '.--':'W', '-..-':'X', '-.--':'Y', '--..':'Z',
+            '.----':'1', '..---':'2', '...--':'3', '....-':'4', '.....':'5', '-....':'6', '--...':'7', '---..':'8', '----.':'9', '-----':'0'
+        }
+        text = text.split(' ')
+        message = ''
+        for x in text:
+            if x in morse_to_text.keys():
+                message += morse_to_text[x]
+            elif x == '/':
+                message += ' '
+            else:
+                message += x
+        await ctx.send(message)
+
     @commands.command(aliases=['age', 'howmanydays'])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def agedays(self, ctx, *, birthday):
