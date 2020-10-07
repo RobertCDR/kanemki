@@ -7,6 +7,8 @@ import aiohttp
 import json
 from dpymenus import PaginatedMenu
 import asyncio
+import string
+import typing
 from bot import rapid_api
 
 class Info(commands.Cog):
@@ -280,6 +282,18 @@ class Info(commands.Cog):
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/751834441667706990/lmgtfy.png')
         embed.description = "[LMGTFY](https://lmgtfy.com/)\nFor all those people who find it more convenient to bother you with their question rather than search it for themselves."
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=['passgen', 'password'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def passwordgen(self, ctx, length: typing.Optional[int]=10, *, use: typing.Optional[str]=None):
+        gen = random.SystemRandom()
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = str().join(gen.choice(characters) for char in range(length))
+        dm = await ctx.message.author.create_dm()
+        embed = discord.Embed(color=0xff0000, title=use, description=password, timestamp=datetime.datetime.utcnow())
+        embed.set_author(icon_url=self.bot.user.avatar_url, name='Random Password Request')
+        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/763464041112272896/password.jpg')
+        await dm.send(embed=embed)
 
     #a command group in which you can create a shopping list, add different tasks, you know the deal
     @commands.group()
