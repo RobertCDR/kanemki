@@ -302,12 +302,12 @@ class Info(commands.Cog):
     async def add(self, ctx, *, task: str):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it
             user_list = json.load(f)
-        task += '#new_item#'    #this is an item separator cuz I'm dumb
         try:    #try to add the item to the list
-            user_list[str(ctx.message.author.id)] += task
+            user_list[str(ctx.message.author.id)].append(task)
         except Exception as error:  #if the user did not create a list before, initialize one in the json file
             if isinstance(error, KeyError):
-                user_list[str(ctx.message.author.id)] = task
+                user_list[str(ctx.message.author.id)] = []
+                user_list[str(ctx.message.author.id)].append(task)
         with open('./user data/todo.json', 'w') as f:   #open the json file and dump the list
             json.dump(user_list, f, indent=4)
         embed = embed = discord.Embed(description=':memo: Succesfully added in the list.', color=random.randint(0, 0xffffff))
@@ -329,12 +329,11 @@ class Info(commands.Cog):
                 description += '**No items added.**'
                 embed.description = description
                 return await ctx.send(embed=embed)
-        if tasks == "": #if the list is empty
+        if tasks == []: #if the list is empty
             description += 'No items added.'
             embed.description = description
             return await ctx.send(embed=embed)
-        tasks = tasks.split('#new_item#')   #split the items
-        for i in range(0, len(tasks)-1):
+        for i in range(0, len(tasks)):
             description += f'**{i+1}.** __{tasks[i]}__\n'
         embed.description = description
         await ctx.send(embed=embed) #send the embed
@@ -355,18 +354,15 @@ class Info(commands.Cog):
             if isinstance(error, KeyError):
                 embed.description = ':x: Your list is empty.'
                 return await ctx.send(embed=embed)
-        if tasks == "": #if the users' list is empty
+        if tasks == []: #if the users' list is empty
             embed.description = ':x: Your list is empty.'
             return await ctx.send(embed=embed)
-        tasks = tasks.split('#new_item#')[:-1]  #split all the tasks except the last element which is ""
         try:
             tasks.remove(tasks[item-1]) #remove the item
         except Exception as error:  #if the number of the item is not on the list
             if isinstance(error, IndexError):
                 embed.description = ':x: List index out of range.'
                 return await ctx.send(embed=embed)
-        tasks = '#new_item#'.join(tasks)    #recreate the string using the separator
-        tasks += '#new_item#'   #add the last separator
         user_list[str(ctx.message.author.id)] = tasks   #assign the new list to the user
         with open('./user data/todo.json', 'w') as f:   #open the file and dump the new list
             json.dump(user_list, f, indent=4)
@@ -390,18 +386,15 @@ class Info(commands.Cog):
             if isinstance(error, KeyError):
                 embed.description = ':x: Your list is empty.'
                 return await ctx.send(embed=embed)
-        if tasks == "":
+        if tasks == []:
             embed.description = ':x: Your list is empty.'
             return await ctx.send(embed=embed)
-        tasks = tasks.split('#new_item#')[:-1]  #split all the tasks except the last element which is ""
         try:
             tasks[item-1] = task
         except Exception as error:
             if isinstance(error, IndexError):
                 embed.description = ':x: List index out of range.'
                 return await ctx.send(embed=embed)
-        tasks = '#new_item#'.join(tasks)
-        tasks += '#new_item#'
         user_list[str(ctx.message.author.id)] = tasks
         with open('./user data/todo.json', 'w') as f:
             json.dump(user_list, f, indent=4)
@@ -414,7 +407,7 @@ class Info(commands.Cog):
     async def clear(self, ctx):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it
             user_list = json.load(f)
-        user_list[str(ctx.message.author.id)] = ""  #empty the list
+        user_list[str(ctx.message.author.id)] = []  #empty the list
         with open('./user data/todo.json', 'w') as f:   #open the json file and dump the empty list
             json.dump(user_list, f, indent=4)
         embed = discord.Embed(description=':notepad_spiral: Succesfully cleared list.', color=random.randint(0, 0xffffff))
