@@ -9,6 +9,7 @@ from dpymenus import PaginatedMenu
 import asyncio
 import string
 import typing
+from discord import Profile
 from bot import rapid_api
 
 class Info(commands.Cog):
@@ -40,13 +41,20 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     #get info about yourself or someone else on a discord server
-    @commands.command(aliases=['info', 'about', 'whois'])
+    @commands.command(aliases=['uinfo', 'about', 'whois'])
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def userinfo(self, ctx, member : discord.Member=None):
         if not member:  #if nobody is mentioned
             member = ctx.message.author #the member is set to the command author
         embed = discord.Embed(color=0xff0000, timestamp=datetime.datetime.utcnow(), description=member.mention) #create the embed
-        embed.set_author(name=f'{member}', icon_url=member.avatar_url)
+        if member.public_flags.hypesquad_balance:
+            embed.set_author(name=f'{member}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/769659063759667280/balance.png')
+        elif member.public_flags.hypesquad_bravery:
+            embed.set_author(name=f'{member}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/769659066246365184/bravery.png')
+        elif member.public_flags.hypesquad_brilliance:
+            embed.set_author(name=f'{member}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/769659069224189962/brilliance.png')
+        else:
+            embed.set_author(name=f'{member}', icon_url=member.avatar_url)
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_footer(text=f'Requested by {ctx.message.author}', icon_url=ctx.message.author.avatar_url)
         #create an embed field containing the current status of the user
@@ -221,15 +229,13 @@ class Info(commands.Cog):
         p1.add_field(name=':thumbsdown:', value=tdown1), p2.add_field(name=':thumbsdown:', value=tdown2), p3.add_field(name=':thumbsdown:', value=tdown3), p4.add_field(name=':thumbsdown:', value=tdown4), p5.add_field(name=':thumbsdown:', value=tdown5)
         p1.set_author(icon_url=self.bot.user.avatar_url, name='Urban Dictionary'), p2.set_author(icon_url=self.bot.user.avatar_url, name='Urban Dictionary'), p3.set_author(icon_url=self.bot.user.avatar_url, name='Urban Dictionary'), p4.set_author(icon_url=self.bot.user.avatar_url, name='Urban Dictionary'), p5.set_author(icon_url=self.bot.user.avatar_url, name='Urban Dictionary')
         p1.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}'), p2.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}'), p3.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}'), p4.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}'), p5.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
-        #create the menu
-        menu = PaginatedMenu(ctx, page_numbers=True, timeout=60, on_cancel=p1, on_timeout=p1)
-        await menu.add_pages([p1, p2, p3, p4, p5])  #add the pages to the menu
+        menu = PaginatedMenu(ctx) #create the menu
+        menu.add_pages([p1, p2, p3, p4, p5])  #add the pages to the menu
+        menu.set_timeout(60)
+        menu.set_cancel_page(p1)
+        menu.set_timeout_page(p1)   
+        menu.allow_multisession()   #this will let the user invoke another menu while the another one is still active
         await menu.open()   #open the menu
-        #these last 2 lines are an lucky experiment wich somehow worked
-        #I don't know exactly what they are doing, but as long as they work it's fine I guess
-        #even tho I consider reworking a bit this command in the future
-        await asyncio.sleep(5)
-        await menu.close_session()
 
     #get the daily covid19 statistics for a given country
     @commands.command(aliases=['covid19', 'sarscov2'])
