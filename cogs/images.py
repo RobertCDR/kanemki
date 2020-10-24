@@ -49,9 +49,9 @@ class Images(commands.Cog):
                     embed.description = f'**by**: {embed.description}\n**on**: {activity.album}'
                     embed.set_image(url=activity.album_cover_url)
                     embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
-                else:   #if no discord.Spotify activity is detected
-                    embed.color = 0xde2f43
-                    embed.description = ':x: No Spotify activity detected.'
+            if not embed.description:   #if no discord.Spotify activity is detected
+                embed.color = 0xde2f43
+                embed.description = ':x: No Spotify activity detected.'
         return await ctx.send(embed=embed)  #send the embed
 
     @commands.command()
