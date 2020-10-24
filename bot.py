@@ -17,7 +17,7 @@ intents = discord.Intents.all()
 def get_prefix(bot, message):
     with open('./guild data/prefixes.json', 'r') as f:  #open the json file containing prefixes
         prefixes = json.load(f) #load it
-    return prefixes[str(message.guild.id)]  #return the prefix associated with the guild id
+    return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)  #return the prefix associated with the guild id
 
 bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
 
