@@ -91,7 +91,7 @@ class Moderation(commands.Cog):
             prefixes[str(ctx.guild.id)] = prefix    #put into the json file as the value associated with the guild's id
         with open('./guild data/prefixes.json', 'w') as f:  #open the json file in write mode
             json.dump(prefixes, f, indent=4)    #dump the new prefix
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully changed guild prefix to **{prefixes[str(ctx.guild.id)]}**.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed guild prefix to **{prefixes[str(ctx.guild.id)]}**.')
         await ctx.send(embed=embed)
 
     #I'm only leaving comments on the next three things
@@ -105,7 +105,7 @@ class Moderation(commands.Cog):
         mutedrole[str(ctx.guild.id)] = role.id  #put the id into the json file as the value associated with the guild's id
         with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
             json.dump(mutedrole, f, indent=4)   #dump the guild's id along with it's value, the role id
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully changed muted role to {role.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed muted role to {role.mention}.')
         await ctx.send(embed=embed)
 
     #this subcommand removes the custom muted role of a guild
@@ -117,7 +117,7 @@ class Moderation(commands.Cog):
         joinrole.pop(str(ctx.guild.id)) #pop the guild id and it's value, the role id
         with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
             json.dump(joinrole, f, indent=4)    #dump the modifications
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed muted role.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed muted role.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-set'])
@@ -128,7 +128,7 @@ class Moderation(commands.Cog):
         joinrole[str(ctx.guild.id)] = role.id
         with open('./guild data/joinroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully changed member role to {role.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed member role to {role.mention}.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-remove'])
@@ -139,7 +139,7 @@ class Moderation(commands.Cog):
         joinrole.pop(str(ctx.guild.id))
         with open('./guild data/joinroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed member join role.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed member join role.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-set'])
@@ -150,7 +150,7 @@ class Moderation(commands.Cog):
         joinrole[str(ctx.guild.id)] = role.id
         with open('./guild data/botroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully changed bot join role to {role.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed bot join role to {role.mention}.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-remove'])
@@ -161,7 +161,7 @@ class Moderation(commands.Cog):
         joinrole.pop(str(ctx.guild.id))
         with open('./guild data/botroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed bot join role.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed bot join role.')
         await ctx.send(embed=embed)
 
     #this command displays a list of the guild roles
@@ -236,7 +236,7 @@ class Moderation(commands.Cog):
                 muted_members.append(victim)    #add the user to a list of muted users
         if len(muted_members) > 0:  #if at least one member was muted
             _list = ', '.join(victim.mention for victim in muted_members)
-            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Succesfully muted** {_list}**.**')
+            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully muted** {_list}**.**')
             await ctx.send(embed=embed)
             for victim in muted_members:    #iterate through the muted users list
                 dm = await victim.create_dm()   #create a conversation with the members
@@ -275,7 +275,7 @@ class Moderation(commands.Cog):
                 await ctx.send(embed=embed)
         if len(unmuted_list) > 0:   #if at least one user was unmuted
             _list = ', '.join(victim.mention for victim in unmuted_list)
-            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Succesfully unmuted** {_list}**.**')
+            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully unmuted** {_list}**.**')
             await ctx.send(embed=embed)
 
     #kick a user / mass kick users
@@ -298,7 +298,7 @@ class Moderation(commands.Cog):
                 kicked_list.append(victim)
         if len(kicked_list) > 0:
             _list = ', '.join(victim.mention for victim in kicked_list)
-            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Succesfully kicked** {_list}**.**')
+            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully kicked** {_list}**.**')
             await ctx.send(embed=embed)
             for victim in kicked_list:
                 dm = await victim.create_dm()
@@ -328,7 +328,7 @@ class Moderation(commands.Cog):
                 banned_list.append(victim)
         if len(banned_list) > 0:
             _list = ', '.join(victim.mention for victim in banned_list)
-            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Succesfully banned** {_list}**.**')
+            embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {_list}**.**')
             await ctx.send(embed=embed)
             for victim in banned_list:
                 dm = await victim.create_dm()
@@ -349,7 +349,7 @@ class Moderation(commands.Cog):
             banned_user = str(victim).split("=", 1)
             users.append(f'<@{banned_user[1][:-1]}>')
         _list = ', '.join(users)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Succesfully unbanned** {_list}**.**')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully unbanned** {_list}**.**')
         await ctx.send(embed=embed)
     
     #not so sure about this command
@@ -394,7 +394,7 @@ class Moderation(commands.Cog):
         for ban_entry in banned_users:  #unban them one by one
             user = ban_entry.user
             await ctx.guild.unban(user)
-        embed = discord.Embed(color=0x75b254, description=':white_check_mark: **Succesfully unbanned all guild bans.**')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: **Successfully unbanned all guild bans.**')
         await ctx.send(embed=embed)
 
 def setup(bot):

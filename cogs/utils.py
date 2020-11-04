@@ -308,7 +308,7 @@ class Info(commands.Cog):
                 user_list[str(ctx.message.author.id)].append(task)
         with open('./user data/todo.json', 'w') as f:   #open the json file and dump the list
             json.dump(user_list, f, indent=4)
-        embed = embed = discord.Embed(description=':memo: Succesfully added in the list.', color=random.randint(0, 0xffffff))
+        embed = embed = discord.Embed(description=':memo: Successfully added in the list.', color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed)
 
     #see your todo list
@@ -364,7 +364,7 @@ class Info(commands.Cog):
         user_list[str(ctx.message.author.id)] = tasks   #assign the new list to the user
         with open('./user data/todo.json', 'w') as f:   #open the file and dump the new list
             json.dump(user_list, f, indent=4)
-        embed = discord.Embed(description=':outbox_tray: Succesfully removed from the list.', color=random.randint(0, 0xffffff))
+        embed = discord.Embed(description=':outbox_tray: Successfully removed from the list.', color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed)
 
     #edit an item from the list
@@ -396,7 +396,7 @@ class Info(commands.Cog):
         user_list[str(ctx.message.author.id)] = tasks
         with open('./user data/todo.json', 'w') as f:
             json.dump(user_list, f, indent=4)
-        embed = discord.Embed(description=':memo: Succesfully edited the list.', color=random.randint(0, 0xffffff))
+        embed = discord.Embed(description=':memo: Successfully edited the list.', color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed)
 
     #clear the list
@@ -408,7 +408,7 @@ class Info(commands.Cog):
         user_list[str(ctx.message.author.id)] = []  #empty the list
         with open('./user data/todo.json', 'w') as f:   #open the json file and dump the empty list
             json.dump(user_list, f, indent=4)
-        embed = discord.Embed(description=':notepad_spiral: Succesfully cleared list.', color=random.randint(0, 0xffffff))
+        embed = discord.Embed(description=':notepad_spiral: Successfully cleared list.', color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed)
 
 def setup(bot):

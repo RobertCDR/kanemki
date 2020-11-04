@@ -1,7 +1,6 @@
 import discord
-import sys
 from discord.ext import commands
-from discord.ext.commands import CheckFailure, CommandOnCooldown, CommandInvokeError
+from discord.ext.commands import CheckFailure, CommandOnCooldown
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -64,7 +63,7 @@ class ErrorHandler(commands.Cog):
                 embed = discord.Embed(color=0xfccc51, description=':warning: Select a country.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'pair':
-                embed = discord.Embed(color=0xde2f43, description=':heart: Select your possible soulmate.')
+                embed = discord.Embed(color=0xde2f43, description=':heart: Select someone to ship.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'banned_user':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the ID of the user.')

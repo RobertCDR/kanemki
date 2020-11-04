@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
-import random
 import os
 import discord.utils
-import ast
 import io
 import textwrap
 import traceback
@@ -147,7 +145,7 @@ async def _eval(ctx, *, body):
     try:
         with redirect_stdout(stdout):
             ret = await func()
-    except Exception as e:
+    except:
         value = stdout.getvalue()
         await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
     else:
