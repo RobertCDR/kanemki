@@ -135,6 +135,14 @@ class Misc(commands.Cog):
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/763464041112272896/password.jpg')
         await dm.send(embed=embed)
 
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def pick(self, ctx, *args):
+        if args:
+            await ctx.send(random.choice(args))
+        else:
+            await ctx.send('gimme some choices')    
+
     @commands.command(aliases=["calculate"])
     @commands.is_owner()
     async def math(self, ctx, *, query: str):
