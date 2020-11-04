@@ -1,9 +1,8 @@
 import discord
 from discord.ext import commands
 import random
-import praw
-import datetime
 import asyncio
+import typing
 
 class Fun(commands.Cog):
     def __init__(self, bot):
@@ -65,15 +64,24 @@ class Fun(commands.Cog):
             'Bypassing security: 2FA, security questions, reCAPTCHA...',
             'Extracting data...',
             'Selling data on Deep Web...',
-            'Hack traces erased.',
+            'Hack traces erased :)',
         ]
+        counters = ['stop', 'counter', 'counterhack', 'report']
         #it was such a bummer to try different characters so I sticked to this
         animation = ["███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯","███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ███"]
         message = await ctx.send('**Loading...**') #send the first the message
+        def check(x):
+            return x.author is victim and x.channel is ctx.message.channel
         for i in range(len(animation)): #create a for loop to go through the lists and edit the message
-            await asyncio.sleep(random.randint(1.0, 5.0))   #wait after every edit starting with the first message
-            await message.edit(content=f'```diff\n-{action[i]}\n``` ```fix\nStatus: {percent[i]}\n{animation[i]}\n```') #edit the message
-        await ctx.send(f'**Succesfully hacked** {victim.mention}')  #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
+            try:
+                counter = await self.bot.wait_for('message', check=check, timeout=3)
+                if counter.content.lower() in counters:
+                    await ctx.send(f"**Counter Hack Successfull. Bounty placed on** {ctx.message.author.mention}**'s head on Deep Web.**")
+                    return
+            except asyncio.TimeoutError:
+                await asyncio.sleep(random.randint(1.0, 3.0))   #wait after every edit starting with the first message
+                await message.edit(content=f'```diff\n-{action[i]}\n``` ```fix\nStatus: {percent[i]}\n{animation[i]}\n```') #edit the message
+        await ctx.send(f'**Successfully hacked** {victim.mention}**.**')  #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
 
     @commands.command(aliases=['pula', 'penis', 'ppsize'])
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -115,20 +123,38 @@ class Fun(commands.Cog):
     async def gayrate(self, ctx, member : discord.Member=None):
         if not member:
             member = ctx.message.author
-        nr = random.randint(0,100)
+        nr = random.randint(0, 100)
         if nr >= 50:
-            embed = discord.Embed(color=random.randint(0,0xffffff), title=f'{str(member)}', description='homo alert bois\n protect your buttholes')
-            embed.add_field(name=f':rainbow_flag:' , value=f'you are {nr}% gay')
+            embed = discord.Embed(color=random.randint(0,0xffffff), title=str(member), description='homo alert bois\n protect your buttholes')
+            embed.add_field(name=':rainbow_flag:', value=f'you are {nr}% gay')
             await ctx.send(embed=embed)
         else:
-            embed = discord.Embed(color=random.randint(0,0xffffff), title=f'{str(member)}', description='you passed the nongay check :point_right::ok_hand:')
-            embed.add_field(name=f':rainbow_flag:', value=f'you are {nr}% gay')
+            embed = discord.Embed(color=random.randint(0,0xffffff), title=str(member), description='you passed the nongay check :point_right::ok_hand:')
+            embed.add_field(name=':rainbow_flag:', value=f'you are {nr}% gay')
             await ctx.send(embed=embed)
+
+    @commands.command(aliases=['howhot', 'hotr8'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def hotrate(self, ctx, member: discord.Member=None):
+        if not member:
+            member = ctx.message.author
+        nr = random.randint(-100, 100)
+        embed = discord.Embed(color=random.randint(0, 0xffffff), title=str(member))
+        if nr >= 50:
+            embed.description = "someone's looking good"
+            embed.add_field(name=':smirk:', value=f"you're {nr}% hot")
+        elif nr > 0 and nr < 50:
+            embed.description = "a kinda good amount of hot"
+            embed.add_field(name=':wink:', value=f"you're {nr}% hot")
+        else:
+            embed.description = "well, at least you can qualify as a human being"
+            embed.add_field(name=':grimacing:', value=f"you're {nr}% hot")
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['love', 'compatibility', 'lovemeter'])
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ship(self, ctx, pair : discord.Member):
-        if pair is ctx.message.author:
+    async def ship(self, ctx, pair: discord.Member, pair2: typing.Optional[discord.Member]=None):
+        if (pair is ctx.message.author and pair2 is None) or (pair is ctx.message.author and pair2 is ctx.message.author):
             result = '❣ Love and be yourself with all your goods and bads ❣'
             i = 100
             string = '```'
@@ -141,7 +167,9 @@ class Fun(commands.Cog):
             embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/738787852472549446/hearts.png')
             embed.add_field(name='Result', value=f'{result}')
             return await ctx.send(embed=embed)
-        nr = random.randint(0,100)
+        if pair2 is None:
+            pair2 = ctx.message.author
+        nr = random.randint(0, 100)
         string = '```'
         i = nr
         x = 100 - nr
@@ -167,7 +195,7 @@ class Fun(commands.Cog):
             result = "It's like you were almost meant for each other :smiling_face_with_3_hearts:"
         else:
             result = ':heartpulse: You 2 are the perfect couple! :heartpulse:'
-        embed = discord.Embed(color=random.randint(0,0xffffff), title=f'**{str(ctx.message.author)}** :heart_exclamation: **{str(pair)}**', description=f'You are {nr}% compatible.\n{string}')
+        embed = discord.Embed(color=random.randint(0,0xffffff), title=f'**{str(pair)}** :heart_exclamation: **{str(pair2)}**', description=f'You are {nr}% compatible.\n{string}')
         embed.set_author(icon_url=self.bot.user.avatar_url, name='Love Machine')
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/738787852472549446/hearts.png')
         embed.add_field(name='Result', value=f'{result}')
