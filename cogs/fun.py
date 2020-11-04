@@ -76,6 +76,7 @@ class Fun(commands.Cog):
             try:
                 counter = await self.bot.wait_for('message', check=check, timeout=3)
                 if counter.content.lower() in counters:
+                    await message.delete()
                     await ctx.send(f"**Counter Hack Successfull. Bounty placed on** {ctx.message.author.mention}**'s head on Deep Web.**")
                     return
             except asyncio.TimeoutError:
