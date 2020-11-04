@@ -278,28 +278,6 @@ class Info(commands.Cog):
         embed.add_field(name='New deaths', value=f'```{deathsn}```')
         embed.add_field(name='Total deaths', value=f'```{deathst}```')
         await ctx.send(embed=embed) #send the embed
-    
-    @commands.command(aliases=['lmgtfy'])
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def search(self, ctx, *, search):
-        copy_search = search.replace(' ', '+')
-        embed = discord.Embed(title=f"Here's your Google search for: {search}.", url=f'http://lmgtfy.com/?q={copy_search}', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
-        embed.set_author(icon_url=self.bot.user.avatar_url, name='LMGTFY', url='https://lmgtfy.com/')
-        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/751834441667706990/lmgtfy.png')
-        embed.description = "[LMGTFY](https://lmgtfy.com/)\nFor all those people who find it more convenient to bother you with their question rather than search it for themselves."
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=['passgen', 'password'])
-    @commands.cooldown(1, 1, commands.BucketType.user)
-    async def passwordgen(self, ctx, length: typing.Optional[int]=10, *, use: typing.Optional[str]=None):
-        gen = random.SystemRandom()
-        characters = string.ascii_letters + string.digits + string.punctuation
-        password = str().join(gen.choice(characters) for char in range(length))
-        dm = await ctx.message.author.create_dm()
-        embed = discord.Embed(color=0xff0000, title=use, description=password, timestamp=datetime.datetime.utcnow())
-        embed.set_author(icon_url=self.bot.user.avatar_url, name='Random Password Request')
-        embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/763464041112272896/password.jpg')
-        await dm.send(embed=embed)
 
     #a command group in which you can create a shopping list, add different tasks, you know the deal
     @commands.group()
