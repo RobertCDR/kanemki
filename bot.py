@@ -13,6 +13,13 @@ import config
 
 intents = discord.Intents.all()
 
+TOKEN = config.discord
+giphy_api_key = config.giphy
+reddit_client_id = config.client_id
+reddit_client_secret = config.client_secret
+rapid_api = config.rapid_api
+wolfram_key = config.wolfram_key
+
 #a function that loads the json file containing every guild's prefix and returns it
 def get_prefix(bot, message):
     with open('./guild data/prefixes.json', 'r') as f:  #open the json file containing prefixes
@@ -20,12 +27,6 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)  #return the prefix associated with the guild id
 
 bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
-
-TOKEN = config.discord
-giphy_api_key = config.giphy
-reddit_client_id = config.client_id
-reddit_client_secret = config.client_secret
-rapid_api = config.rapid_api
 
 #the for loop below loads every cog when starting the bot
 for filename in os.listdir('./cogs'):
