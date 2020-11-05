@@ -10,6 +10,7 @@ import json
 import config
 
 intents = discord.Intents.all()
+mentions = discord.AllowedMentions(everyone=False)
 
 TOKEN = config.discord
 giphy_api_key = config.giphy
@@ -24,7 +25,7 @@ def get_prefix(bot, message):
         prefixes = json.load(f) #load it
     return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)  #return the prefix associated with the guild id
 
-bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, allowed_mentions=mentions, intents=intents)
 
 #the for loop below loads every cog when starting the bot
 for filename in os.listdir('./cogs'):

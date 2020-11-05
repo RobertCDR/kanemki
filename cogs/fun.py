@@ -208,7 +208,6 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def say(self, ctx, *, mimic):
         await ctx.message.delete()  #first, delete the message sent by the command author
-        mimic = discord.utils.escape_mentions(mimic)    #prevents mentions (noboby wants to be pinged by a stupid everyone)
         await ctx.send(mimic)   #send the message
 
     #a variation of the say command
