@@ -5,55 +5,12 @@ import asyncio
 import json
 import datetime
 import typing
+from dpymenus import PaginatedMenu
 
 #the moderation commands need some reworking because I can't catch the errors properly and they still need some fixes
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    #a listener for when the bot is removed from a guild
-    #it removes the data stored in the guild data such as custom prefixes, roles
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        with open ('./guild data/mutedroles.json', 'r') as f:
-            mutedrole = json.load(f)
-        mutedrole.pop(str(guild.id))
-        with open('./guild data/mutedroles.json', 'w') as f:
-            json.dump(mutedrole, f, indent=4)
-        with open ('./guild data/joinroles.json', 'r') as f:
-            joinrole = json.load(f)
-        joinrole.pop(str(guild.id))
-        with open('./guild data/joinroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
-        with open ('./guild data/prefixes.json', 'r') as f:
-            prefixes = json.load(f)
-        prefixes.pop(str(guild.id))
-        with open('./guild data/prefixes.json', 'w') as f:
-            json.dump(prefixes, f, indent=4)
-
-    #a listener which adds roles to bots/members when they join
-    #the roles must be manually set using the config command
-    #and this is exactly the problem, not fatal, but needs to be fixed because it raises an error if the guild does not have the roles set
-    @commands.Cog.listener()
-    async def on_member_join(self, member: discord.Member):
-        try:
-            if member.bot:  #if a bot joins the guild
-                with open('./guild data/botroles.json', 'r') as f:  #open the json file containing bot roles
-                    botrole = json.load(f)  #load it
-                role = botrole[str(member.guild.id)]    #get the id of the bot role set in the guild
-                role = discord.utils.get(member.guild.roles, id=role)   #get the role
-                await member.add_roles(role)    #add it to the bot
-            else:   #if a non-bot account joins the guild
-                with open('./guild data/joinroles.json', 'r') as f: #open the json file containing member roles
-                    joinrole = json.load(f) #load it
-                role = joinrole[str(member.guild.id)]   #get the id of the role set in the guild
-                role = discord.utils.get(member.guild.roles, id=role)   #get the role
-                await member.add_roles(role)    #add it to the user
-        #if the guild did not set any role to be assigned to new members, a KeyError will be raised trying to load the role id for that guild
-        except Exception as error:  #soo the bot will ignore it
-            if isinstance(error, KeyError):
-                pass
-        #it wasn't a fatal error, but why see it raised in your terminal tho
 
     #a command group for server configuration commands
     @commands.group(case_insensitive=True)
@@ -61,14 +18,16 @@ class Moderation(commands.Cog):
         if ctx.invoked_subcommand is None: #if a subcommand is not invoked, display a list with server configuration commands
             embed = discord.Embed(title=':tools: Server Configuration Commands', color=0xff0000, timestamp=datetime.datetime.utcnow())
             embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
-            description = '**Customize your experience with Kanemki using these server configuration commands (acknowledge that these are server admin only commands).**\n'
+            description = '**Customize your server using these configuration commands (acknowledge that you need administrator permissions).**\n'
             description += f'{ctx.prefix}config prefix `prefix`: Change the server prefix. (type `default` or `clear` for the default prefix)\n'
             description += f'{ctx.prefix}config muted-set `@role`: Assign the role given to muted members.\n'
             description += f'{ctx.prefix}config muted-remove: Remove the custom muted role of the guild.\n'
             description += f'{ctx.prefix}config joinrole-set `@role`: Assign the role given to new guild members.\n'
             description += f'{ctx.prefix}config joinrole-remove: Remove the role given to new guild members.\n'
             description += f'{ctx.prefix}config botrole-set `@role`: Assign the role given to bots that join the guild.\n'
-            description += f'{ctx.prefix}config botrole-remove: Remove the role given to bots when they join the guild.'
+            description += f'{ctx.prefix}config botrole-remove: Remove the role given to bots when they join the guild.\n'
+            description += f'{ctx.prefix}config welcomech-set `#channel`: Set a welcome channel to greet new members.\n'
+            description += f'{ctx.prefix}config welcomech-remove: Remove the welcome channel for new members.\n'
             embed.description = description
             await ctx.send(embed=embed)
 
@@ -114,7 +73,14 @@ class Moderation(commands.Cog):
     async def muted_remove(self, ctx):
         with open ('./guild data/mutedroles.json', 'r') as f:   #open the json file containing mute role ids for guilds
             joinrole = json.load(f) #load it
-        joinrole.pop(str(ctx.guild.id)) #pop the guild id and it's value, the role id
+        try:
+            joinrole.pop(str(ctx.guild.id)) #pop the guild id and it's value, the role id
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No muted role was set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
         with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
             json.dump(joinrole, f, indent=4)    #dump the modifications
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed muted role.')
@@ -136,7 +102,14 @@ class Moderation(commands.Cog):
     async def joinrole_remove(self, ctx):
         with open ('./guild data/joinroles.json', 'r') as f:
             joinrole = json.load(f)
-        joinrole.pop(str(ctx.guild.id))
+        try:
+            joinrole.pop(str(ctx.guild.id))
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No join role was set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
         with open('./guild data/joinroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed member join role.')
@@ -158,10 +131,82 @@ class Moderation(commands.Cog):
     async def botrole_remove(self, ctx):
         with open ('./guild data/botroles.json', 'r') as f:
             joinrole = json.load(f)
-        joinrole.pop(str(ctx.guild.id))
+        try:
+            joinrole.pop(str(ctx.guild.id))
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No bot role was set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
         with open('./guild data/botroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed bot join role.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['welcomech-set'])
+    @commands.has_permissions(administrator=True)
+    async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
+        with open('./guild data/welcome.json', 'r') as f:
+            welcomech = json.load(f)
+        welcomech[str(ctx.guild.id)] = [None] * 2
+        welcomech[str(ctx.guild.id)][0] = channel.id
+        with open('./guild data/welcome.json', 'w') as f:
+            json.dump(welcomech, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set welcome channel to {channel.mention}.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['welcomech-remove'])
+    @commands.has_permissions(administrator=True)
+    async def welcomech_remove(self, ctx):
+        with open('./guild data/welcome.json', 'r') as f:
+            welcomech = json.load(f)
+        try:
+            welcomech.pop(str(ctx.guild.id))
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No welcome channel was set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
+        with open('./guild data/welcome.json', 'w') as f:
+            json.dump(welcomech, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome channel.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['welcomemsg-set'])
+    @commands.has_permissions(administrator=True)
+    async def welcomemsg_set(self, ctx, *, args):
+        with open('./guild data/welcome.json', 'r') as f:
+            welcomemsg = json.load(f)
+        try:    
+            welcomemsg[str(ctx.guild.id)][1] = args
+        except Exception as error:
+            if isinstance(error, KeyError):
+                return await ctx.send("first set a welcome channel")
+            else:
+                raise
+        with open('./guild data/welcome.json', 'w') as f:
+            json.dump(welcomemsg, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome message.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['welcomemsg-remove'])
+    @commands.has_permissions(administrator=True)
+    async def welcomemsg_remove(self, ctx):
+        with open('./guild data/welcome.json', 'r') as f:
+            welcomemsg = json.load(f)
+        try:
+            welcomemsg[str(ctx.guild.id)][1] = None
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No welcome message was set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
+        with open('./guild data/welcome.json', 'w') as f:
+            json.dump(welcomemsg, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
 
     #this command displays a list of the guild roles
@@ -240,7 +285,7 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
             for victim in muted_members:    #iterate through the muted users list
                 dm = await victim.create_dm()   #create a conversation with the members
-                message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
+                message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}", timestamp=datetime.datetime.utcnow())
                 message.set_thumbnail(url=ctx.guild.icon_url)
                 await dm.send(embed=message)   #message that he/she was muted in that guild
             await asyncio.sleep(convert_time_to_seconds(time))  #wait for the time to pass
@@ -396,6 +441,41 @@ class Moderation(commands.Cog):
             await ctx.guild.unban(user)
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: **Successfully unbanned all guild bans.**')
         await ctx.send(embed=embed)
+
+    @commands.group(case_insensitive=True, aliases=['audit'])
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def auditlog(self, ctx):
+        if ctx.invoked_subcommand is None:
+            embed = discord.Embed(title=":books: Audit Log Commands", color=0xff0000, timestamp=datetime.datetime.utcnow())
+            embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f"Requested by {ctx.message.author}")
+            embed.description = '**Access the Audit Log of the server with ease using these commands (acknowledge that you need administrator permissions)**\n'
+            embed.description += f"{ctx.prefix}audit recent: Get the most recent events."
+            await ctx.send(embed=embed)
+
+    @auditlog.command()
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def recent(self, ctx):
+        menu = PaginatedMenu(ctx)
+        menu.set_timeout(60)
+        menu.allow_multisession()
+        embed_list = list()
+        for x in range(0, 9):
+            async for event in ctx.guild.audit_logs():
+                embed = discord.Embed(title=':watch: Most Recent Events', color=0xff0000, timestamp=datetime.datetime.utcnow())
+                embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
+                embed.description = ''
+                user = event.user.mention
+                action = event.action
+                time = event.created_at.utcnow()
+                if event.target is None or event.target is discord.Emoji:
+                    embed.description += f"{user}: {action} at {time}\n"
+                else:
+                    target = event.target.mention
+                    embed.description += f"{user}: {action} - {target} at {time}\n"
+            embed_list.append(embed)
+        menu.add_pages(embed_list)    
+        await menu.open()
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
