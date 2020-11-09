@@ -66,7 +66,8 @@ class Listeners(commands.Cog):
                 welcome = json.load(f)
             channel = self.bot.get_channel(welcome[str(member.guild.id)][0])
             message = welcome[str(member.guild.id)][1]
-            await channel.send(f"{member.mention} {message}")
+            if message is not None:
+                await channel.send(f"{member.mention} {message}")
         except Exception as error:
             if isinstance(error, KeyError):
                 pass

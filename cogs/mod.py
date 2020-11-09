@@ -158,8 +158,12 @@ class Moderation(commands.Cog):
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
         with open('./guild data/welcome.json', 'r') as f:
             welcomech = json.load(f)
-        welcomech[str(ctx.guild.id)] = [None] * 2
-        welcomech[str(ctx.guild.id)][0] = channel.id
+        try:
+            welcomech[str(ctx.guild.id)][0] = channel.id
+        except Exception as error:
+            if isinstance(error, KeyError):
+                welcomech[str(ctx.guild.id)] = [None] * 2
+                welcomech[str(ctx.guild.id)][0] = channel.id
         with open('./guild data/welcome.json', 'w') as f:
             json.dump(welcomech, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set welcome channel to {channel.mention}.')
