@@ -6,10 +6,6 @@ import datetime
 import aiohttp
 import json
 from dpymenus import PaginatedMenu
-import asyncio
-import string
-import typing
-from discord import Profile
 from bot import rapid_api
 
 class Info(commands.Cog):
@@ -79,10 +75,12 @@ class Info(commands.Cog):
         then = member.created_at
         now = datetime.datetime.utcnow()
         age = now - then
-        age = str(age)
-        days = list(age.split(',', 1))
+        days = str(age).split(',', 1)
         embed.add_field(name='**Registered**', value=f'```ini\n[{reg} ({days[0]})]\n```', inline=True)
-        embed.add_field(name='**Joined**', value=f'```ini\n[{join}]\n```', inline=False)
+        then = member.joined_at
+        age = now - then
+        days = str(age).split(',', 1)
+        embed.add_field(name='**Joined**', value=f'```ini\n[{join} ({days[0]})]\n```', inline=False)
         #get a list of all the guild roles the user has from top to bottom
         allroles = list(map(lambda x: x.mention, member.roles[::-1]))
         allroles = allroles[:-1]    #except the default role @everyone
@@ -91,6 +89,39 @@ class Info(commands.Cog):
             embed.add_field(name=f'**Roles** ({len(member.roles)-1})', value=allroles, inline=False)
         else:
             embed.add_field(name='**Roles** (0)', value='```css\n[None]\n```', inline=False)
+        if member.premium_since:
+            premium = ':white_check_mark:'
+        else:
+            premium = ':x:'
+        if member.public_flags.staff:
+            staff = ':white_check_mark:'
+        else:
+            staff = ':x:'
+        if member.public_flags.partner:
+            partner = ':white_check_mark:'
+        else:
+            partner = ':x:'
+        if member.public_flags.bug_hunter or member.public_flags.bug_hunter_level_2:
+            bug_hunter = ':white_check_mark:'
+        else:
+            bug_hunter = ':x:'
+        if member.public_flags.early_supporter:
+            early_supporter = ':white_check_mark:'
+        else:
+            early_supporter = ':x:'
+        if member.public_flags.verified_bot_developer:
+            verified_bot_dev = ':white_check_mark:'
+        else:
+            verified_bot_dev = ':x:'
+        if member.public_flags.verified_bot:
+            verified_bot = ':white_check_mark:'
+        else:
+            verified_bot = ':x:'
+        if member.public_flags.hypesquad:
+            hypesquad = ':white_check_mark:'
+        else:
+            hypesquad = ':x:'
+        embed.add_field(name='Others', value=f"**Nitro:**{premium}  **Early Supporter:**{early_supporter}  **Discord Partner:**{partner}\n**Discord Staff:**{staff}  **Bug Hunter:**{bug_hunter}  **HypeSquad Events:**{hypesquad}\n**Verified Bot Dev:**{verified_bot_dev}  **Verified Bot:**{verified_bot}")
         await ctx.send(embed=embed)
 
     #a command for getting info about the guild
@@ -166,8 +197,8 @@ class Info(commands.Cog):
         #replace the underscores with spaces in the string
         perms = perms.replace('_', ' ')
         #create the embed
-        embed = discord.Embed(title='Guild Permissions', description=f'```ini\n[{perms}]\n```', color=0xff0000, timestamp=datetime.datetime.utcnow())
-        embed.set_author(icon_url=member.avatar_url, name=f'{member}')
+        embed = discord.Embed(description=f'{member.mention}\n```ini\n[{perms}]\n```', color=0xff0000, timestamp=datetime.datetime.utcnow())
+        embed.set_author(icon_url=member.avatar_url, name=f'Guild Permissions {member}')
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
         await ctx.send(embed=embed) #send the embed
@@ -180,8 +211,8 @@ class Info(commands.Cog):
         perms = ', '.join(perm.capitalize() for perm, value in role.permissions if value)
         perms = perms.replace('_', ' ') #replace the underscores with spaces
         #create the embed
-        embed = discord.Embed(title='Permissions', description=f'```css\n[{perms}]\n```', color=0xff0000, timestamp=datetime.datetime.utcnow())
-        embed.set_author(icon_url=ctx.guild.icon_url, name=role)
+        embed = discord.Embed(description=f'{role.mention}\n```css\n[{perms}]\n```', color=0xff0000, timestamp=datetime.datetime.utcnow())
+        embed.set_author(icon_url=ctx.guild.icon_url, name=f"Role Permissions {role}")
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
         await ctx.send(embed=embed) #send the embed
