@@ -19,6 +19,9 @@ class ErrorHandler(commands.Cog):
             await ctx.send('the command could not be executed due to lack of permissions, dummy')
         elif isinstance(error, CommandOnCooldown):  #self explanatory
             await ctx.send('wait for the cooldown, speedy')
+        elif isinstance(error, commands.BadInviteArgument):
+            embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.CommandInvokeError):    #if an error occurs while invoking the command
             if ctx.command.qualified_name == 'agedays':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify your birthday in format `dd`/`mm`/`yyyy`.')
@@ -52,6 +55,9 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):   #if the command is missing a parameter
             if error.param.name == 'victim':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
+                await ctx.send(embed=embed)
+            elif error.param.name == 'delinv':
+                embed = discord.Embed(color=0xde2f43, description=':x: No invite given.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'role':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify a role.')
