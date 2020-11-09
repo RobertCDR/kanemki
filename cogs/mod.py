@@ -14,6 +14,7 @@ class Moderation(commands.Cog):
 
     #a command group for server configuration commands
     @commands.group(case_insensitive=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def config(self, ctx):
         if ctx.invoked_subcommand is None: #if a subcommand is not invoked, display a list with server configuration commands
             embed = discord.Embed(title=':tools: Server Configuration Commands', color=0xff0000, timestamp=datetime.datetime.utcnow())
@@ -34,6 +35,7 @@ class Moderation(commands.Cog):
     #a command which sets a custom prefix for the guild
     @config.command()
     @commands.has_permissions(administrator=True)   #check if the command author is a server admin
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def prefix(self, ctx, prefix : str=None):
         if not prefix:  #if a prefix is not specified return and notify the user
             embed = discord.Embed(color=0xfccc51, description=':warning: Specify a prefix.')
@@ -58,6 +60,7 @@ class Moderation(commands.Cog):
     #a subcommand which sets a custom mute role for the mute command
     @config.command(aliases=['muted-set'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_set(self, ctx, role: discord.Role):
         with open('./guild data/mutedroles.json', 'r') as f:    #open the json file contaning mute roles
             mutedrole = json.load(f)    #load it
@@ -70,6 +73,7 @@ class Moderation(commands.Cog):
     #this subcommand removes the custom muted role of a guild
     @config.command(aliases=['muted-remove'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_remove(self, ctx):
         with open ('./guild data/mutedroles.json', 'r') as f:   #open the json file containing mute role ids for guilds
             joinrole = json.load(f) #load it
@@ -88,6 +92,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['joinrole-set'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_set(self, ctx, role: discord.Role):
         with open('./guild data/joinroles.json', 'r') as f:
             joinrole = json.load(f)
@@ -99,6 +104,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['joinrole-remove'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_remove(self, ctx):
         with open ('./guild data/joinroles.json', 'r') as f:
             joinrole = json.load(f)
@@ -117,6 +123,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['botrole-set'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_set(self, ctx, role: discord.Role):
         with open('./guild data/botroles.json', 'r') as f:
             joinrole = json.load(f)
@@ -128,6 +135,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['botrole-remove'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_remove(self, ctx):
         with open ('./guild data/botroles.json', 'r') as f:
             joinrole = json.load(f)
@@ -146,6 +154,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['welcomech-set'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
         with open('./guild data/welcome.json', 'r') as f:
             welcomech = json.load(f)
@@ -158,6 +167,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['welcomech-remove'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_remove(self, ctx):
         with open('./guild data/welcome.json', 'r') as f:
             welcomech = json.load(f)
@@ -176,6 +186,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['welcomemsg-set'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_set(self, ctx, *, args):
         with open('./guild data/welcome.json', 'r') as f:
             welcomemsg = json.load(f)
@@ -193,6 +204,7 @@ class Moderation(commands.Cog):
 
     @config.command(aliases=['welcomemsg-remove'])
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_remove(self, ctx):
         with open('./guild data/welcome.json', 'r') as f:
             welcomemsg = json.load(f)
@@ -212,6 +224,7 @@ class Moderation(commands.Cog):
     #this command displays a list of the guild roles
     @commands.command()
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def roles(self, ctx):
         #create a string with mentioned roles in top to bottom order
         roles = '\n'.join(role.mention for role in ctx.guild.roles[::-1])
@@ -221,10 +234,19 @@ class Moderation(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon_url)
         await ctx.send(embed=embed) #send the embed
 
+    @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
+    @commands.has_permissions(manage_channels=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def delinv(self, ctx, invite: discord.invite.Invite):
+        await self.bot.delete_invite(invite)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully revoked invite.')
+        await ctx.send(embed=embed)
+
     #a purge command
     #this will need further development too
     @commands.command(aliases=['purge', 'clean'])
     @commands.has_permissions(manage_messages=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def clear(self, ctx, amount: int=0):
         if not amount:  #if no amount is specified
             embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of messages to clear.')
@@ -239,6 +261,7 @@ class Moderation(commands.Cog):
     #mute a user / mass mute users
     @commands.command()
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def mute(self, ctx, victims : commands.Greedy[discord.Member]=None, time=None, *, reason=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
@@ -295,6 +318,7 @@ class Moderation(commands.Cog):
     #unmute a user / mass unmute users
     @commands.command()
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def unmute(self, ctx, victims : commands.Greedy[discord.Member]=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
@@ -326,6 +350,7 @@ class Moderation(commands.Cog):
     #kick a user / mass kick users
     @commands.command()
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def kick(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
@@ -356,6 +381,7 @@ class Moderation(commands.Cog):
     #it will need some further inspection because it does not work with the user id if the user is not in the guild
     @commands.command()
     @commands.has_permissions(ban_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def ban(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
@@ -384,6 +410,7 @@ class Moderation(commands.Cog):
     #unban a user / mass unban users
     @commands.command()
     @commands.has_permissions(ban_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def unban(self, ctx, victims : commands.Greedy[discord.Object]=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
@@ -401,6 +428,7 @@ class Moderation(commands.Cog):
     #it will need some reworking in the future
     @commands.command(aliases=['tempban'])
     @commands.has_permissions(ban_members=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def softban(self, ctx, victim : discord.Member, time=None, *, reason=None):
         if victim.bot:
             embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
@@ -434,6 +462,7 @@ class Moderation(commands.Cog):
     #unban all the users that have been banned in the guild
     @commands.command()
     @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def unbanall(self, ctx):
         banned_users = await ctx.guild.bans()   #get all the banned users
         for ban_entry in banned_users:  #unban them one by one
@@ -443,7 +472,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.group(case_insensitive=True, aliases=['audit'])
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def auditlog(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title=":books: Audit Log Commands", color=0xff0000, timestamp=datetime.datetime.utcnow())
@@ -454,7 +483,7 @@ class Moderation(commands.Cog):
 
     @auditlog.command()
     @commands.has_permissions(administrator=True)
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def recent(self, ctx):
         menu = PaginatedMenu(ctx)
         menu.set_timeout(60)
