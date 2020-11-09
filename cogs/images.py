@@ -20,7 +20,8 @@ class Images(commands.Cog):
         if not member:  #if no one is mentioned then the bot will show the avatar of the command author
             member = ctx.message.author
         pfp = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
-        pfp.set_image(url="{}".format(member.avatar_url))   #set the embed's image to the avatar
+        pfp.set_image(url=member.avatar_url)   #set the embed's image to the avatar
+        pfp.set_thumbnail(url=member.default_avatar_url)
         pfp.set_footer(text=f'Requested by {str(ctx.author)}', icon_url=ctx.message.author.avatar_url)
         pfp.set_author(name=f'{member}', icon_url=member.avatar_url)
         await ctx.send(embed=pfp)   #send the embed
