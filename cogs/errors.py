@@ -22,6 +22,12 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadInviteArgument):
             embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
             await ctx.send(embed=embed)
+        elif isinstance(error, commands.RoleNotFound):
+            embed = discord.Embed(color=0xde2f43, description=':x: Role not found.')
+            await ctx.send(embed=embed)
+        elif isinstance(error, commands.ChannelNotFound):
+            embed = discord.Embed(color=0xde2f43, description=':x: Channel not found.')
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.CommandInvokeError):    #if an error occurs while invoking the command
             if ctx.command.qualified_name == 'agedays':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify your birthday in format `dd`/`mm`/`yyyy`.')
