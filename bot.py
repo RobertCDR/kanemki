@@ -112,8 +112,6 @@ async def reloadall(ctx):
             bot.reload_extension(f'cogs.{filename[:-3]}')
             await ctx.message.add_reaction('\u2705')
 
-
-
 #helper function for the eval
 def cleanup_code(content):
         if content.startswith('```') and content.endswith('```'):
