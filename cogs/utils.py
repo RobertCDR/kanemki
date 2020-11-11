@@ -171,7 +171,7 @@ class Info(commands.Cog):
         embed.add_field(name='**ID**', value=f'```diff\n-{role.id}\n```')
         created = role.created_at.__format__('%A, %d %B %Y %H:%M')  #when the role was created
         embed.add_field(name='**Color**', value=f'```fix\n{role.color}\n```')
-        embed.add_field(name='**Position**', value=f'```diff\n-{role.position}\n```')
+        embed.add_field(name='**Mentionable**', value=f'```diff\n-{role.mentionable}\n```')
         #calculate the age of the role in days
         then = role.created_at
         now = datetime.datetime.utcnow()
