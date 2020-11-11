@@ -1,6 +1,7 @@
 import discord
 import json
 from discord.ext import commands
+import datetime
 
 class Listeners(commands.Cog):
     def __init__(self, bot):
@@ -10,37 +11,48 @@ class Listeners(commands.Cog):
     #it removes the data stored in the guild data such as custom prefixes, roles
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        with open ('./guild data/mutedroles.json', 'r') as f:
-            mutedrole = json.load(f)
-        mutedrole.pop(str(guild.id))
-        with open('./guild data/mutedroles.json', 'w') as f:
-            json.dump(mutedrole, f, indent=4)
-        with open ('./guild data/joinroles.json', 'r') as f:
-            joinrole = json.load(f)
-        joinrole.pop(str(guild.id))
-        with open('./guild data/joinroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
-        with open('./guild data/botroles.json', 'r') as f:
-            botrole = json.load(f)
-        botrole.pop(str(guild.id))
-        with open('./guild data/botroles.json', 'w') as f:
-            json.dump(botrole, f, indent=4)
-        with open('./guild data/welcome.json', 'r') as f:
-            welcome = json.load(f)
-        welcome.pop(str(guild.id))
-        with open ('./guild data/welcome.json', 'w') as f:
-            json.dump(welcome, f, indent=4)
-        with open ('./guild data/prefixes.json', 'r') as f:
-            prefixes = json.load(f)
-        prefixes.pop(str(guild.id))
-        with open('./guild data/prefixes.json', 'w') as f:
-            json.dump(prefixes, f, indent=4)
+        try:
+            with open ('./guild data/mutedroles.json', 'r') as f:
+                mutedrole = json.load(f)
+            mutedrole.pop(str(guild.id))
+            with open('./guild data/mutedroles.json', 'w') as f:
+                json.dump(mutedrole, f, indent=4)
+            with open ('./guild data/joinroles.json', 'r') as f:
+                joinrole = json.load(f)
+            joinrole.pop(str(guild.id))
+            with open('./guild data/joinroles.json', 'w') as f:
+                json.dump(joinrole, f, indent=4)
+            with open('./guild data/botroles.json', 'r') as f:
+                botrole = json.load(f)
+            botrole.pop(str(guild.id))
+            with open('./guild data/botroles.json', 'w') as f:
+                json.dump(botrole, f, indent=4)
+            with open('./guild data/welcome.json', 'r') as f:
+                welcome = json.load(f)
+            welcome.pop(str(guild.id))
+            with open ('./guild data/welcome.json', 'w') as f:
+                json.dump(welcome, f, indent=4)
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logsch.pop(str(guild.id))
+            with open('./guild data/logsch.json', 'w') as f:
+                json.dump(logsch, f, indent=4)
+            with open ('./guild data/prefixes.json', 'r') as f:
+                prefixes = json.load(f)
+            prefixes.pop(str(guild.id))
+            with open('./guild data/prefixes.json', 'w') as f:
+                json.dump(prefixes, f, indent=4)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
 
     #a listener which adds roles to bots/members when they join
     #the roles must be manually set using the config command
     #and this is exactly the problem, not fatal, but needs to be fixed because it raises an error if the guild does not have the roles set
     @commands.Cog.listener()
-    async def on_member_join(self, member: discord.Member):
+    async def on_member_join(self, member):
         try:
             if member.bot:  #if a bot joins the guild
                 with open('./guild data/botroles.json', 'r') as f:  #open the json file containing bot roles
@@ -68,6 +80,176 @@ class Listeners(commands.Cog):
             message = welcome[str(member.guild.id)][1]
             if message is not None:
                 await channel.send(f"{member.mention} {message}")
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(member.guild.id)])
+            reg = member.created_at.__format__('%a, %d %b %Y %H:%M')
+            embed = discord.Embed(
+                color=0x2cff00, title='Member Joined', timestamp=datetime.datetime.utcnow(),
+                description=f"{member.mention}\n**Account Created:** {reg}\n**ID:** {member.id}"
+            )
+            embed.set_author(name=member, icon_url=member.avatar_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(member.guild.id)])
+            embed = discord.Embed(
+                color=0xff0000, title='Member Left', timestamp=datetime.datetime.utcnow(),
+                description=f"{member.mention}\n**ID:** {member.id}"
+            )
+            embed.set_author(name=member, icon_url=member.avatar_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(before.guild.id)])
+            if before.nick != after.nick:
+                embed = discord.Embed(
+                    color=0x0019ff, title='Nickname Changed', timestamp=datetime.datetime.utcnow(),
+                    description=f"{after.mention}\n**Before:** {before.nick}\n**After:** {after.nick}\n**ID:** {after.id}"
+                )
+                embed.set_author(name=after, icon_url=after.avatar_url)
+                await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(message.guild.id)])
+            embed = discord.Embed(
+                color=0xff0000, title='Message Deleted', timestamp=datetime.datetime.utcnow(),
+                description=f"{message.author.mention}\n{message.content}\n**Channel:** {message.channel.mention}\n**Author ID:** {message.author.id}\n**Message ID:** {message.id}"
+            )
+            embed.set_author(icon_url=message.author.avatar_url, name=message.author)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_bulk_message_delete(self, messages):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(messages[0].guild.id)])
+            embed = discord.Embed(
+                color=0xff0000, title='Bulk Message Delete', timestamp=datetime.datetime.utcnow(),
+                description=f"**{len(messages)} messages**\n**Channel:** {messages[0].channel.mention}"
+            )
+            embed.set_thumbnail(url=messages[0].guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(before.guild.id)])
+            embed = discord.Embed(
+                color=0x0019ff, title=f'Message Edit', timestamp=datetime.datetime.utcnow(),
+                description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}"
+            )
+            embed.set_author(icon_url=before.author.avatar_url, name=before.author)
+            embed.add_field(name='Before', value=f'{before.content}')
+            embed.add_field(name='After', value=f'{after.content}')
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            elif isinstance(error, discord.HTTPException):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(channel.guild.id)])
+            embed = discord.Embed(
+                color=0x2cff00, title=f'Channel Created', timestamp=datetime.datetime.utcnow(),
+                description=f"**{channel.name}**\n**Category:** {channel.category}\n**Position:** {channel.position}\n**Channel ID:** {channel.id}"
+            )
+            embed.set_thumbnail(url=channel.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(channel.guild.id)])
+            embed = discord.Embed(
+                color=0xff0000, title=f'Channel Deleted', timestamp=datetime.datetime.utcnow(),
+                description=f"**{channel.name}**\n**Category:** {channel.category}\n**Position:** {channel.position}\n**Channel ID:** {channel.id}"
+            )
+            embed.set_thumbnail(url=channel.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_guild_channel_update(self, before, after):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(before.guild.id)])
+            if (before.name is after.name) and (before.category is after.category) and (before.position is after.position):
+                changes = 'No'
+            else:
+                changes = 'Yes'
+            embed = discord.Embed(
+                color=0x0019ff, title=f'Channel Edited', timestamp=datetime.datetime.utcnow(),
+                description=f"**Before: {before.name}**\n**Category:** {before.category}\n**Position:** {before.position}\n \n"
+            )
+            embed.description += f"**After: {after.name}**\n**Category:** {after.category}\n**Position:** {after.position}\n**Permissions Changed:** {changes}\n\n**Channel ID:** {after.id}"
+            embed.set_thumbnail(url=after.guild.icon_url)
+            await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
