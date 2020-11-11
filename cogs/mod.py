@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
 import asyncio
 import json
 import datetime
@@ -29,6 +28,10 @@ class Moderation(commands.Cog):
             description += f'{ctx.prefix}config botrole-remove: Remove the role given to bots when they join the guild.\n'
             description += f'{ctx.prefix}config welcomech-set `#channel`: Set a welcome channel to greet new members.\n'
             description += f'{ctx.prefix}config welcomech-remove: Remove the welcome channel for new members.\n'
+            description += f'{ctx.prefix}config welcomemsg-set: Set a welcome message for new members.\n'
+            description += f'{ctx.prefix}config welcomemesg-remove: Remove the welcome message.\n'
+            description += f'{ctx.prefix}config logsch-set: Set a logs channel\n'
+            description += f'{ctx.prefix}config logsch-remove: Remove the logs channel.\n'
             embed.description = description
             await ctx.send(embed=embed)
 
@@ -152,6 +155,37 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed bot join role.')
         await ctx.send(embed=embed)
 
+    @config.command(aliases=['logsch-set'])
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
+        with open('./guild data/logsch.json', 'r') as f:
+            logsch = json.load(f)
+        logsch[str(ctx.guild.id)] = channel.id
+        with open('./guild data/logsch.json', 'w') as f:
+            json.dump(logsch, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set logs channel to {channel.mention}.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['logsch-remove'])
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def logsch_remove(self, ctx):
+        with open('./guild data/logsch.json', 'r') as f:
+            logsch = json.load(f)
+        try:
+            logsch.pop(str(ctx.guild.id))
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No logs was channel set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
+        with open('./guild data/logsch.json', 'w') as f:
+            json.dump(logsch, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed logs channel.')
+        await ctx.send(embed=embed)
+
     @config.command(aliases=['welcomech-set'])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -227,8 +261,8 @@ class Moderation(commands.Cog):
 
     #this command displays a list of the guild roles
     @commands.command()
-    @commands.has_permissions(kick_members=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.has_permissions(manage_roles=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def roles(self, ctx):
         #create a string with mentioned roles in top to bottom order
         roles = '\n'.join(role.mention for role in ctx.guild.roles[::-1])
@@ -238,8 +272,102 @@ class Moderation(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon_url)
         await ctx.send(embed=embed) #send the embed
 
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
+        if name is None:
+            return await ctx.send("name the role first")
+        role = await ctx.guild.create_role(name=name)
+        if color:
+            await role.edit(color=color)
+        if hoist:
+            await role.edit(hoist=hoist)
+        if mentionable:
+            await role.edit(mentionable=mentionable)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully created role {role.mention}.')
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def delrole(self, ctx, role: discord.Role):
+        await role.delete()
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Role deleted.')
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def addrole(self, ctx, member: discord.Member, role: discord.Role):
+        await member.add_roles(role)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully added role {role.mention} to {member.mention}.')
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def remrole(self, ctx, member: discord.Member, role: discord.Role):
+        await member.remove_roles(role)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed role {role.mention} from {member.mention}.')
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def lock(self, ctx, channel: discord.TextChannel=None):
+        if channel is None:
+            channel = ctx.channel
+        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        embed = discord.Embed(color=0xfccc51, description=':warning: Channel has been locked.')
+        await channel.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def unlock(self, ctx, channel: discord.TextChannel=None):
+        if channel is None:
+            channel =  ctx.channel
+        await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Channel has been unlocked.')
+        await channel.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def lockdown(self, ctx):
+        for channel in ctx.guild.text_channels:
+            if channel.overwrites_for(ctx.guild.default_role).read_messages is False:
+                pass
+            else:
+                await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+                embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
+                await channel.send(embed=embed)
+        for channel in ctx.guild.voice_channels:
+            if channel.overwrites_for(ctx.guild.default_role).view_channel is False:
+                pass
+            else:
+                await channel.set_permissions(ctx.guild.default_role, connect=False)
+
+    @commands.command(aliases=['lockdown-end'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def lockdown_end(self, ctx):
+        for channel in ctx.guild.text_channels:
+            if channel.overwrites_for(ctx.guild.default_role).read_messages is False:
+                pass
+            else:
+                await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+                embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
+                await channel.send(embed=embed)
+        for channel in ctx.guild.voice_channels:
+            if channel.overwrites_for(ctx.guild.default_role).view_channel is False:
+                pass
+            else:
+                await channel.set_permissions(ctx.guild.default_role, connect=True)
+
     @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
-    @commands.has_permissions(manage_channels=True)
+    @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def delinv(self, ctx, invite: discord.invite.Invite):
         await self.bot.delete_invite(invite)
@@ -466,7 +594,7 @@ class Moderation(commands.Cog):
     #unban all the users that have been banned in the guild
     @commands.command()
     @commands.has_permissions(administrator=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def unbanall(self, ctx):
         banned_users = await ctx.guild.bans()   #get all the banned users
         for ban_entry in banned_users:  #unban them one by one
