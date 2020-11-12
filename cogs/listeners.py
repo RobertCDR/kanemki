@@ -182,7 +182,7 @@ class Listeners(commands.Cog):
                 logsch = json.load(f)
             logs = self.bot.get_channel(logsch[str(before.guild.id)])
             embed = discord.Embed(
-                color=0x0019ff, title=f'Message Edit', timestamp=datetime.datetime.utcnow(),
+                color=0x0019ff, title=f'Message Edited', timestamp=datetime.datetime.utcnow(),
                 description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}"
             )
             embed.set_author(icon_url=before.author.avatar_url, name=before.author)
@@ -248,6 +248,65 @@ class Listeners(commands.Cog):
                 description=f"**Before: {before.name}**\n**Category:** {before.category}\n**Position:** {before.position}\n \n"
             )
             embed.description += f"**After: {after.name}**\n**Category:** {after.category}\n**Position:** {after.position}\n**Permissions Changed:** {changes}\n\n**Channel ID:** {after.id}"
+            embed.set_thumbnail(url=after.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_guild_role_create(self, role):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(role.guild.id)])
+            embed = discord.Embed(
+                color=0x2cff00, title='Role Created', timestamp=datetime.datetime.utcnow(),
+                description=f"**{role.name}**\n**Color:** {role.color}\n**Position:** {role.position}\n**Hoisted:** {role.hoist}\n**Mentionable:** {role.mentionable}\n**Role ID:** {role.id}"
+            )
+            embed.set_thumbnail(url=role.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_guild_role_delete(self, role):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(role.guild.id)])
+            embed = discord.Embed(
+                color=0xff0000, title='Role Deleted', timestamp=datetime.datetime.utcnow(),
+                description=f"**{role.name}**\n**Color:** {role.color}\n**Position:** {role.position}\n**Hoisted:** {role.hoist}\n**Mentionable:** {role.mentionable}\n**Role ID:** {role.id}"
+            )
+            embed.set_thumbnail(url=role.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+    
+    @commands.Cog.listener()
+    async def on_guild_role_update(self, before, after):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(after.guild.id)])
+            if before.permissions.value != after.permissions.value:
+                changes = 'Yes'
+            else:
+                changes = 'No'
+            embed = discord.Embed(
+                color=0x0019ff, title='Role Edited', timestamp=datetime.datetime.utcnow(),
+                description=f"**Before: {before.name}**\n**Color:** {before.color}\n**Position:** {before.position}\n**Hoisted:** {before.hoist}\n**Mentionable:** {before.mentionable}\n\n"
+            )
+            embed.description += f"**After: {after.name}**\n**Color:** {after.color}\n**Position:** {after.position}\n**Hoisted:** {after.hoist}\n**Mentionable:** {after.mentionable}\n**Permissions Changed:** {changes}\n\n**Role ID:** {after.id}"
             embed.set_thumbnail(url=after.guild.icon_url)
             await logs.send(embed=embed)
         except Exception as error:
