@@ -278,13 +278,10 @@ class Moderation(commands.Cog):
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
         if name is None:
             return await ctx.send("name the role first")
-        role = await ctx.guild.create_role(name=name)
         if color:
-            await role.edit(color=color)
-        if hoist:
-            await role.edit(hoist=hoist)
-        if mentionable:
-            await role.edit(mentionable=mentionable)
+            role = await ctx.guild.create_role(name=name, color=color, hoist=hoist, mentionable=mentionable)
+        else:
+            role = await ctx.guild.create_role(name=name, hoist=hoist, mentionable=mentionable)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully created role {role.mention}.')
         await ctx.send(embed=embed)
 
