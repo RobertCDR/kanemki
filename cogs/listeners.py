@@ -89,12 +89,12 @@ class Listeners(commands.Cog):
             with open('./guild data/logsch.json', 'r') as f:
                 logsch = json.load(f)
             logs = self.bot.get_channel(logsch[str(member.guild.id)])
-            reg = member.created_at.__format__('%a, %d %b %Y %H:%M')
             embed = discord.Embed(
                 color=0x2cff00, title='Member Joined', timestamp=datetime.datetime.utcnow(),
-                description=f"{member.mention}\n**Account Created:** {reg}\n**ID:** {member.id}"
+                description=f"{member.mention}\n**Account Created:** {member.created_at.__format__('%a, %d %b %Y %H:%M')}\n**ID:** {member.id}"
             )
             embed.set_author(name=member, icon_url=member.avatar_url)
+            embed.set_thumbnail(url=member.guild.icon_url)
             await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
@@ -108,11 +108,14 @@ class Listeners(commands.Cog):
             with open('./guild data/logsch.json', 'r') as f:
                 logsch = json.load(f)
             logs = self.bot.get_channel(logsch[str(member.guild.id)])
+            roles = list(map(lambda x: x.mention, member.roles[::-1]))
+            roles = roles[:-1]
             embed = discord.Embed(
                 color=0xff0000, title='Member Left', timestamp=datetime.datetime.utcnow(),
-                description=f"{member.mention}\n**ID:** {member.id}"
+                description=f"{member.mention}\n**Joined:** {member.joined_at.__format__('%a, %d %b %Y %H:%M')}\n**Roles:** {' '.join(roles)}\n**ID:** {member.id}"
             )
             embed.set_author(name=member, icon_url=member.avatar_url)
+            embed.set_thumbnail(url=member.guild.icon_url)
             await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
@@ -120,6 +123,8 @@ class Listeners(commands.Cog):
             else:
                 raise
 
+
+    #todo continue this and fix problems
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         try:
@@ -140,6 +145,54 @@ class Listeners(commands.Cog):
                 raise
 
     @commands.Cog.listener()
+    async def on_member_ban(self, guild, user):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(guild.id)])
+            if user in guild.members:
+                roles = list(map(lambda x: x.mention, user.roles[::-1]))
+                roles = roles[:-1]
+                embed = discord.Embed(
+                    color=0xff0000, title='Member Banned', timestamp=datetime.datetime.utcnow(),
+                    description=f"{user.mention}\n**Joined at:** {user.joined_at.__format__('%a, %d %b %Y %H:%M')}\n**Roles:** {' '.join(roles)}\n**ID:** {user.id}"
+                )
+                embed.set_author(name=user, icon_url=user.avatar_url)
+                embed.set_thumbnail(url=guild.icon_url)
+            else:
+                embed = discord.Embed(
+                    color=0xff0000, title='User Banned', timestamp=datetime.datetime.utcnow(),
+                    description=f"{user.mention}\n**ID:** {user.id}"
+                )
+                embed.set_author(name=user, icon_url=user.avatar_url)
+                embed.set_thumbnail(url=user.avatar_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, guild, user):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(guild.id)])
+            embed = discord.Embed(
+                    color=0x2cff00, title='User Unbanned', timestamp=datetime.datetime.utcnow(),
+                    description=f"{user.mention}\n**ID:** {user.id}"
+                )
+            embed.set_author(name=user, icon_url=user.avatar_url)
+            embed.set_thumbnail(url=user.avatar_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
     async def on_message_delete(self, message):
         try:
             with open('./guild data/logsch.json', 'r') as f:
@@ -147,7 +200,7 @@ class Listeners(commands.Cog):
             logs = self.bot.get_channel(logsch[str(message.guild.id)])
             embed = discord.Embed(
                 color=0xff0000, title='Message Deleted', timestamp=datetime.datetime.utcnow(),
-                description=f"{message.author.mention}\n{message.content}\n**Channel:** {message.channel.mention}\n**Author ID:** {message.author.id}\n**Message ID:** {message.id}"
+                description=f"{message.author.mention}\n{message.content}\n**Channel: {message.channel.name}**\n**Author ID:** {message.author.id}\n**Message ID:** {message.id}\n**Channel ID:** {message.channel.id}"
             )
             embed.set_author(icon_url=message.author.avatar_url, name=message.author)
             await logs.send(embed=embed)
@@ -175,6 +228,10 @@ class Listeners(commands.Cog):
             else:
                 raise
 
+
+    #! links are took as edited messages which is pretty weird
+    #! probable cause: links turn into embeds after being sent
+    #todo fix needed
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         try:
@@ -309,6 +366,87 @@ class Listeners(commands.Cog):
             embed.description += f"**After: {after.name}**\n**Color:** {after.color}\n**Position:** {after.position}\n**Hoisted:** {after.hoist}\n**Mentionable:** {after.mentionable}\n**Permissions Changed:** {changes}\n\n**Role ID:** {after.id}"
             embed.set_thumbnail(url=after.guild.icon_url)
             await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.command()
+    async def j(self, ctx):
+        channel = self.bot.get_channel(592064545057538051)
+        await channel.connect()
+
+    @commands.command()
+    async def l(self, ctx):
+        voice_state = ctx.message.guild.voice_client
+        await voice_state.disconnect()
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        try:
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(member.guild.id)])
+            if before.channel is None and after.channel is not None:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Joined Voice Channel', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Member ID:** {member.id}\n**Channel ID:** {after.channel.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.channel is not None and after.channel is None:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Left Voice Channel', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {before.channel.name}**\n**Category:** {before.channel.category}\n**Member ID:** {member.id}\n**Channel ID:** {before.channel.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.channel is not after.channel:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Switched Voice Channels', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Before:**\n**Channel: {before.channel.name}**\n**Category:** {before.channel.category}\n**Channel ID:** {before.channel.id}\n\n"
+                )
+                embed.description += f"**After:**\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n\n**Member ID:** {member.id}"
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.deaf is False and after.deaf is True:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Server Deafen', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.deaf is True and after.deaf is False:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Server Undeafen', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.mute is False and after.mute is True:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Server Mute', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.mute is True and after.mute is False:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Server Unmute', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            else:
+                pass
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
