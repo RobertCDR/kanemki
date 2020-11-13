@@ -138,7 +138,7 @@ class Games(commands.Cog):
 
 
     #guess the number game
-    #I should make a hint system
+    #todo I should make a hint system
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def guess(self, ctx, number: int = 10):
@@ -325,7 +325,8 @@ class Games(commands.Cog):
             pajura.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/725102825109061712/pajura.png')
             await ctx.send(embed=pajura)
 
-    #roll the dices (maybe I'll further develop this command too)
+    #roll the dices
+    #todo maybe I'll further develop this command too
     @commands.command(aliases=['dice'])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roll(self, ctx):

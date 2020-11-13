@@ -19,13 +19,13 @@ class ErrorHandler(commands.Cog):
             await ctx.send('the command could not be executed due to lack of permissions, dummy')
         elif isinstance(error, CommandOnCooldown):  #self explanatory
             await ctx.send('wait for the cooldown, speedy')
-        elif isinstance(error, commands.BadInviteArgument):
+        elif isinstance(error, commands.BadInviteArgument): #if it's bad invite url
             embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
             await ctx.send(embed=embed)
-        elif isinstance(error, commands.RoleNotFound):
+        elif isinstance(error, commands.RoleNotFound):  #self explanatory
             embed = discord.Embed(color=0xde2f43, description=':x: Role not found.')
             await ctx.send(embed=embed)
-        elif isinstance(error, commands.ChannelNotFound):
+        elif isinstance(error, commands.ChannelNotFound):   #self explanatory
             embed = discord.Embed(color=0xde2f43, description=':x: Channel not found.')
             await ctx.send(embed=embed)
         elif isinstance(error, commands.CommandInvokeError):    #if an error occurs while invoking the command

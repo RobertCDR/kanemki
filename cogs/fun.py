@@ -70,9 +70,10 @@ class Fun(commands.Cog):
         #it was such a bummer to try different characters so I sticked to this
         animation = ["███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯","███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ▯ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ▯ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ▯ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ▯ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ▯", "███ ███ ███ ███ ███ ███ ███ ███ ███ ███"]
         message = await ctx.send('**Loading...**') #send the first the message
-        def check(x):
+        def check(x):   #check if the author of a message is the victim and the message was sent in the same channel as the command
             return x.author is victim and x.channel is ctx.message.channel
         for i in range(len(animation)): #create a for loop to go through the lists and edit the message
+            #for every step wait for a response from the victim and stop the command if the counter is timed well
             try:
                 counter = await self.bot.wait_for('message', check=check, timeout=3)
                 if counter.content.lower() in counters:
@@ -233,24 +234,28 @@ class Fun(commands.Cog):
             message += f'||{x}||'
         await ctx.send(message)
 
+    #convert string characters into emojis
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def emojify(self, ctx, *, text):
-        message = ''
+        message = ''    #initiate an empty string
+        #a dictionary that has emoji values for each digit
         numbers = {
             '0': ':zero:', '1': ':one:', '2': ':two:', '3': ':three:', '4': ':four:', '5': ':five:', '6': ':six:', '7': ':seven:', '8': ':eight:', '9': ':nine:'
         }
+        #loop through the characters
         for x in text:
-            if x.isalpha():
+            if x.isalpha(): #if it's an alphabet letter, lower it and add the associated emoji into the string
                 message += f':regional_indicator_{x.lower()}:'
-            elif x.isdigit():
+            elif x.isdigit():   #if it's a digit, use the values from the dictionary and them into the string
                 message += numbers[x]
-            elif x == ' ':
+            elif x == ' ':  #spaces are multiplied 
                 message += '     '
-            else:
+            else:   #if it's another character, simply add it into the string
                 message += x
         await ctx.send(message)
 
+    #why did I make this?
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lewdify(self, ctx, *, text):
