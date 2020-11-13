@@ -1229,7 +1229,7 @@ class Help(commands.Cog):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunban someone', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='unban command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
-        embed.add_field(name='**Usage**', value=f'{ctx.prefix}unban `user id`\n*This command can be used for mass unbanning.*')
+        embed.add_field(name='**Usage**', value=f'{ctx.prefix}unban `user id` or {ctx.prefix}unban "user#discriminator"\n*This command can be used for mass unbanning.*')
         embed.add_field(name='**Aliases**', value='`None`', inline=False)
         embed.add_field(name='**Cooldown**', value='3s/user')
         embed.add_field(name='**NSFW**', value='No')
