@@ -21,7 +21,7 @@ class Images(commands.Cog):
             member = ctx.message.author
         pfp = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
         pfp.set_image(url=member.avatar_url)   #set the embed's image to the avatar
-        pfp.set_thumbnail(url=member.default_avatar_url)
+        pfp.set_thumbnail(url=member.default_avatar_url)    #and the thumbnail to the default avatar of the user as a nice addition
         pfp.set_footer(text=f'Requested by {str(ctx.author)}', icon_url=ctx.message.author.avatar_url)
         pfp.set_author(name=f'{member}', icon_url=member.avatar_url)
         await ctx.send(embed=pfp)   #send the embed
@@ -58,7 +58,7 @@ class Images(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def award(self, ctx, awarded : discord.User, *, awreas : str):
-        embed = discord.Embed(color=0xffec00, title='Award', description=f'Congrats {awarded.mention}! You`ve been awarded by {ctx.message.author.mention}: ***{awreas}***', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=0xffec00, title='Award', description=f"Congrats {awarded.mention}! You've been awarded by {ctx.message.author.mention}: ***{awreas}***", timestamp=datetime.datetime.utcnow())
         embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
         embed.set_author(name=awarded, icon_url=awarded.avatar_url)
         embed.set_footer(text=f'*Certified and approved by {str(ctx.message.author)}', icon_url=ctx.message.author.avatar_url)

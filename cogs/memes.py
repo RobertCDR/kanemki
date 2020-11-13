@@ -6,7 +6,7 @@ import aiohttp
 import json
 from bot import reddit_client_id, reddit_client_secret
 
-#this is the access point containing data for requests
+#variable containing data for requests
 #yes, I use praw and I hate it but don't know what else to do
 #tried with aiohttp but it has the same delay of 2-3 seconds
 reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v2.0 (by /u/RobertCDR)')
@@ -17,7 +17,7 @@ class Reddit(commands.Cog):
 
     #aiohttp tryout to get things from Reddit
     @commands.command()
-    @commands.cooldown(1, 3, commands.BucketType.user)  #cooldown: 1 use one every 3 seconds / user
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def meme(self, ctx):
         nr = random.randint(0, 99)  #position of a meme
         #the subreddits from where th bot cand get memes

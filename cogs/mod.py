@@ -272,11 +272,12 @@ class Moderation(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon_url)
         await ctx.send(embed=embed) #send the embed
 
+    #create a new role with optional color, hoist and mention parameters
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
-        if name is None:
+        if name is None:    #the role needs at least a name
             return await ctx.send("name the role first")
         if color:
             role = await ctx.guild.create_role(name=name, color=color, hoist=hoist, mentionable=mentionable)
@@ -285,6 +286,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully created role {role.mention}.')
         await ctx.send(embed=embed)
 
+    #delete a role
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -293,6 +295,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Role deleted.')
         await ctx.send(embed=embed)
 
+    #add a role to a member
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -301,6 +304,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully added role {role.mention} to {member.mention}.')
         await ctx.send(embed=embed)
 
+    #remove a role from a member
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -309,6 +313,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed role {role.mention} from {member.mention}.')
         await ctx.send(embed=embed)
 
+    #lock a text channel
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -319,6 +324,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0xfccc51, description=':warning: Channel has been locked.')
         await channel.send(embed=embed)
 
+    #unlock a text channel
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -329,6 +335,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Channel has been unlocked.')
         await channel.send(embed=embed)
 
+    #lock all text and voice channel except the ones that are invisible
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -346,6 +353,7 @@ class Moderation(commands.Cog):
             else:
                 await channel.set_permissions(ctx.guild.default_role, connect=False)
 
+    #end the server lockdown
     @commands.command(aliases=['lockdown-end'])
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -363,10 +371,11 @@ class Moderation(commands.Cog):
             else:
                 await channel.set_permissions(ctx.guild.default_role, connect=True)
 
+    #revoke a server invite
     @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def delinv(self, ctx, invite: discord.invite.Invite):
+    async def delinv(self, ctx, invite: discord.Invite):
         await self.bot.delete_invite(invite)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully revoked invite.')
         await ctx.send(embed=embed)
@@ -505,9 +514,8 @@ class Moderation(commands.Cog):
                 message.set_thumbnail(url=ctx.guild.icon_url)
                 await dm.send(embed=message)
         
-    #ban a user / mass ban users
+    #ban a member / mass ban members
     #same thing as above
-    #it will need some further inspection because it does not work with the user id if the user is not in the guild
     @commands.command()
     @commands.has_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -540,7 +548,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def unban(self, ctx, victims : commands.Greedy[discord.Object]=None):
+    async def unban(self, ctx, victims : commands.Greedy[discord.User]=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
             return await ctx.send(embed=embed)
@@ -548,7 +556,7 @@ class Moderation(commands.Cog):
         for victim in victims:
             await ctx.guild.unban(victim)  #unban the user by it's id
             banned_user = str(victim).split("=", 1)
-            users.append(f'<@{banned_user[1][:-1]}>')
+            users.append(victim.mention)
         _list = ', '.join(users)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully unbanned** {_list}**.**')
         await ctx.send(embed=embed)
@@ -599,6 +607,9 @@ class Moderation(commands.Cog):
             await ctx.guild.unban(user)
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: **Successfully unbanned all guild bans.**')
         await ctx.send(embed=embed)
+
+    #below is some work in progress
+    #I will try to make some audit log commands to ease the acces to it
 
     @commands.group(case_insensitive=True, aliases=['audit'])
     @commands.cooldown(1, 3, commands.BucketType.user)
