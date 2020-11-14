@@ -7,8 +7,15 @@ class Listeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    #a listener for when the bot is removed from a guild
-    #it removes the data stored in the guild data such as custom prefixes, roles
+    #creates a default value for the prefix when the bot joins a guild
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        with open ('./guild data/prefixes.json', 'r') as f: #open the json file containing prefixes
+            prefixes = json.load(f) #load it
+        prefixes[str(guild.id)] = '>'   #set the prefix to that guild to the default bot prefix
+        with open('./guild data/prefixes.json', 'w') as f:  #open the json file in write mode
+            json.dump(prefixes, f, indent=4)    #dump the default prefix
+
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         try:
@@ -48,9 +55,6 @@ class Listeners(commands.Cog):
             else:
                 raise
 
-    #a listener which adds roles to bots/members when they join
-    #the roles must be manually set using the config command
-    #and this is exactly the problem, not fatal, but needs to be fixed because it raises an error if the guild does not have the roles set
     @commands.Cog.listener()
     async def on_member_join(self, member):
         try:
@@ -123,7 +127,6 @@ class Listeners(commands.Cog):
             else:
                 raise
 
-
     #todo continue this and fix problems
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -131,13 +134,34 @@ class Listeners(commands.Cog):
             with open('./guild data/logsch.json', 'r') as f:
                 logsch = json.load(f)
             logs = self.bot.get_channel(logsch[str(before.guild.id)])
-            if before.nick != after.nick:
+            if before.nick is not after.nick:
                 embed = discord.Embed(
                     color=0x0019ff, title='Nickname Changed', timestamp=datetime.datetime.utcnow(),
                     description=f"{after.mention}\n**Before:** {before.nick}\n**After:** {after.nick}\n**ID:** {after.id}"
                 )
                 embed.set_author(name=after, icon_url=after.avatar_url)
+                embed.set_thumbnail(url=after.guild.icon_url)
                 await logs.send(embed=embed)
+            elif len(before.roles) < len(after.roles):
+                role = [x for x in after.roles if x not in before.roles]
+                embed = discord.Embed(
+                    color=0x0019ff, title='Role Given', timestamp=datetime.datetime.utcnow(),
+                    description=f"{after.mention} {role[0].mention}\n**Role ID:** {role[0].id}\n**User ID:** {after.id}"
+                )
+                embed.set_author(name=f"{after} -> {role[0]}", icon_url=after.avatar_url)
+                embed.set_thumbnail(url=after.guild.icon_url)
+                await logs.send(embed=embed)
+            elif len(before.roles) > len(after.roles):
+                role = [x for x in before.roles if x not in after.roles]
+                embed = discord.Embed(
+                    color=0x0019ff, title='Role Removed', timestamp=datetime.datetime.utcnow(),
+                    description=f"{after.mention} {role[0].mention}\n**Role ID:** {role[0].id}\n**User ID:** {after.id}"
+                )
+                embed.set_author(name=f"{after} -> {role[0]}", icon_url=after.avatar_url)
+                embed.set_thumbnail(url=after.guild.icon_url)
+                await logs.send(embed=embed)
+            else:
+                pass
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
@@ -195,15 +219,18 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         try:
-            with open('./guild data/logsch.json', 'r') as f:
-                logsch = json.load(f)
-            logs = self.bot.get_channel(logsch[str(message.guild.id)])
-            embed = discord.Embed(
-                color=0xff0000, title='Message Deleted', timestamp=datetime.datetime.utcnow(),
-                description=f"{message.author.mention}\n{message.content}\n**Channel: {message.channel.name}**\n**Author ID:** {message.author.id}\n**Message ID:** {message.id}\n**Channel ID:** {message.channel.id}"
-            )
-            embed.set_author(icon_url=message.author.avatar_url, name=message.author)
-            await logs.send(embed=embed)
+            if message is discord.Embed:
+                pass
+            else:
+                with open('./guild data/logsch.json', 'r') as f:
+                    logsch = json.load(f)
+                logs = self.bot.get_channel(logsch[str(message.guild.id)])
+                embed = discord.Embed(
+                    color=0xff0000, title='Message Deleted', timestamp=datetime.datetime.utcnow(),
+                    description=f"{message.author.mention}\n{message.content}\n**Channel: {message.channel.name}**\n**Author ID:** {message.author.id}\n**Message ID:** {message.id}\n**Channel ID:** {message.channel.id}"
+                )
+                embed.set_author(icon_url=message.author.avatar_url, name=message.author)
+                await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
@@ -211,16 +238,18 @@ class Listeners(commands.Cog):
                 raise
 
     @commands.Cog.listener()
-    async def on_bulk_message_delete(self, messages):
+    async def on_raw_bulk_message_delete(self, payload):
         try:
             with open('./guild data/logsch.json', 'r') as f:
                 logsch = json.load(f)
-            logs = self.bot.get_channel(logsch[str(messages[0].guild.id)])
+            logs = self.bot.get_channel(logsch[str(payload.guild_id)])
+            guild = self.bot.get_guild(payload.guild_id)
+            channel = self.bot.get_channel(payload.channel_id)
             embed = discord.Embed(
                 color=0xff0000, title='Bulk Message Delete', timestamp=datetime.datetime.utcnow(),
-                description=f"**{len(messages)} messages**\n**Channel:** {messages[0].channel.mention}"
+                description=f"**{len(payload.message_ids)} messages**\n**Channel:** {channel.name}"
             )
-            embed.set_thumbnail(url=messages[0].guild.icon_url)
+            embed.set_thumbnail(url=guild.icon_url)
             await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
@@ -228,24 +257,23 @@ class Listeners(commands.Cog):
             else:
                 raise
 
-
-    #! links are took as edited messages which is pretty weird
-    #! probable cause: links turn into embeds after being sent
-    #todo fix needed
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         try:
-            with open('./guild data/logsch.json', 'r') as f:
-                logsch = json.load(f)
-            logs = self.bot.get_channel(logsch[str(before.guild.id)])
-            embed = discord.Embed(
-                color=0x0019ff, title=f'Message Edited', timestamp=datetime.datetime.utcnow(),
-                description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}"
-            )
-            embed.set_author(icon_url=before.author.avatar_url, name=before.author)
-            embed.add_field(name='Before', value=f'{before.content}')
-            embed.add_field(name='After', value=f'{after.content}')
-            await logs.send(embed=embed)
+            if (after is discord.Embed) or (after is discord.Attachment):
+                pass
+            else:
+                with open('./guild data/logsch.json', 'r') as f:
+                    logsch = json.load(f)
+                logs = self.bot.get_channel(logsch[str(before.guild.id)])
+                embed = discord.Embed(
+                    color=0x0019ff, title=f'Message Edited', timestamp=datetime.datetime.utcnow(),
+                    description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}\n**Message ID:** {after.id}\n**Channel ID:** {after.channel.id}"
+                )
+                embed.set_author(icon_url=before.author.avatar_url, name=before.author)
+                embed.add_field(name='Before', value=before.content)
+                embed.add_field(name='After', value=after.content, inline=False)
+                await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
@@ -371,16 +399,6 @@ class Listeners(commands.Cog):
                 pass
             else:
                 raise
-
-    @commands.command()
-    async def j(self, ctx):
-        channel = self.bot.get_channel(592064545057538051)
-        await channel.connect()
-
-    @commands.command()
-    async def l(self, ctx):
-        voice_state = ctx.message.guild.voice_client
-        await voice_state.disconnect()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
