@@ -1094,7 +1094,7 @@ class Help(commands.Cog):
     @help.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lock(self, ctx):
-        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock a text channel', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock a text channel (set the `send_messages` permission to false)', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='lock command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
         embed.add_field(name='**Usage**', value=f'{ctx.prefix}lock or {ctx.prefix}lock #channel')
@@ -1106,7 +1106,7 @@ class Help(commands.Cog):
     @help.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unlock(self, ctx):
-        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock a text channel', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock a text channel (set the `send_messages` permission to true)', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='lock command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
         embed.add_field(name='**Usage**', value=f'{ctx.prefix}lock or {ctx.prefix}lock #channel')
@@ -1118,7 +1118,7 @@ class Help(commands.Cog):
     @help.command()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lockdown(self, ctx):
-        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock every guild channel (Text/Voice except for the ones with Read Messages/View Channel set to false)', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock every guild channel (set the `send_messages` permission to false)', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='lockdown command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
         embed.add_field(name='**Usage**', value=f'{ctx.prefix}lockdown')
@@ -1130,7 +1130,7 @@ class Help(commands.Cog):
     @help.command(aliases=['lockdown-end'])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lockdown_end(self, ctx):
-        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock every guild channel (Text/Voice except for the ones with Read Messages/View Channel set to false)', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock every guild channel (set the `send_messages` and `connect` permissions to true)', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='lockdown command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
         embed.add_field(name='**Usage**', value=f'{ctx.prefix}lockdown-end')
