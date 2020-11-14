@@ -320,7 +320,9 @@ class Moderation(commands.Cog):
     async def lock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
             channel = ctx.channel
-        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        perms = channel.overwrites_for(ctx.guild.default_role)
+        perms.send_messages = False
+        await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
         embed = discord.Embed(color=0xfccc51, description=':warning: Channel has been locked.')
         await channel.send(embed=embed)
 
@@ -331,7 +333,9 @@ class Moderation(commands.Cog):
     async def unlock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
             channel =  ctx.channel
-        await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        perms = channel.overwrites_for(ctx.guild.default_role)
+        perms.send_messages = True
+        await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Channel has been unlocked.')
         await channel.send(embed=embed)
 
@@ -340,36 +344,34 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown(self, ctx):
+        embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
         for channel in ctx.guild.text_channels:
-            if channel.overwrites_for(ctx.guild.default_role).read_messages is False:
-                pass
-            else:
-                await channel.set_permissions(ctx.guild.default_role, send_messages=False)
-                embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
-                await channel.send(embed=embed)
+            perms = channel.overwrites_for(ctx.guild.default_role)
+            perms.send_messages = False
+            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+            await channel.send(embed=embed)
+            await asyncio.sleep(1)
         for channel in ctx.guild.voice_channels:
-            if channel.overwrites_for(ctx.guild.default_role).view_channel is False:
-                pass
-            else:
-                await channel.set_permissions(ctx.guild.default_role, connect=False)
+            perms = channel.overwrites_for(ctx.guild.default_role)
+            perms.connect = False
+            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
     #end the server lockdown
     @commands.command(aliases=['lockdown-end'])
     @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown_end(self, ctx):
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
         for channel in ctx.guild.text_channels:
-            if channel.overwrites_for(ctx.guild.default_role).read_messages is False:
-                pass
-            else:
-                await channel.set_permissions(ctx.guild.default_role, send_messages=True)
-                embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
-                await channel.send(embed=embed)
+            perms = channel.overwrites_for(ctx.guild.default_role)
+            perms.send_messages = True
+            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+            await channel.send(embed=embed)
+            await asyncio.sleep(1)
         for channel in ctx.guild.voice_channels:
-            if channel.overwrites_for(ctx.guild.default_role).view_channel is False:
-                pass
-            else:
-                await channel.set_permissions(ctx.guild.default_role, connect=True)
+            perms = channel.overwrites_for(ctx.guild.default_role)
+            perms.connect = True
+            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
     #revoke a server invite
     @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
