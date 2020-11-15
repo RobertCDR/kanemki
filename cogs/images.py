@@ -45,11 +45,12 @@ class Images(commands.Cog):
                     #assign the embed assets
                     embed.color = 0x1DB954
                     embed.title = activity.title
+                    embed.url = f"https://open.spotify.com/track/{activity.track_id}"
                     embed.set_author(name='Spotify', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
                     embed.description = ', '.join(activity.artists)
                     embed.description = f'**by**: {embed.description}\n**on**: {activity.album}'
                     embed.set_image(url=activity.album_cover_url)
-                    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/753667014827966464/spotify.png')
+                    embed.set_thumbnail(url=member.avatar_url)
             if not embed.description:   #if no discord.Spotify activity is detected
                 embed.color = 0xde2f43
                 embed.description = ':x: No Spotify activity detected.'
