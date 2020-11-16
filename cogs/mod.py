@@ -28,9 +28,9 @@ class Moderation(commands.Cog):
             description += f'{ctx.prefix}config botrole-remove: Remove the role given to bots when they join the guild.\n'
             description += f'{ctx.prefix}config welcomech-set `#channel`: Set a welcome channel to greet new members.\n'
             description += f'{ctx.prefix}config welcomech-remove: Remove the welcome channel for new members.\n'
-            description += f'{ctx.prefix}config welcomemsg-set: Set a welcome message for new members.\n'
+            description += f'{ctx.prefix}config welcomemsg-set `message`: Set a welcome message for new members.\n'
             description += f'{ctx.prefix}config welcomemesg-remove: Remove the welcome message.\n'
-            description += f'{ctx.prefix}config logsch-set: Set a logs channel\n'
+            description += f'{ctx.prefix}config logsch-set `#channel`: Set a logs channel\n'
             description += f'{ctx.prefix}config logsch-remove: Remove the logs channel.\n'
             embed.description = description
             await ctx.send(embed=embed)
