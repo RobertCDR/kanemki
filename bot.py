@@ -153,7 +153,7 @@ async def _eval(ctx, *, body):
             _last_result = ret
             await ctx.send(f'```py\n{value}{ret}\n```')
 
-@bot.command(hidden=True, aliases=['1000-7', "Jason", "Yamori"])
+@bot.command(hidden=True, aliases=['1000-7', "Jason", "Yamori", "Kaneki", "Ghoul", "Rize"])
 async def whats1000_7(ctx):
     gif_list=[
         "https://cdn.discordapp.com/attachments/725102631185547427/777798974862000168/8IzZ.gif",
@@ -192,7 +192,14 @@ async def whats1000_7(ctx):
         "https://tenor.com/view/kaneki-ken-tokyo-ghoul-transform-anime-gif-17947332",
         "https://tenor.com/view/kaneki-tokyo-ghoul-transformation-gif-9291708",
         "https://tenor.com/view/anime-tokyoghoul-kaneki-gif-5125910",
-        "https://tenor.com/view/tokyo-ghoul-kaneki-touka-kaneki-x-touka-gif-9498908"
+        "https://tenor.com/view/tokyo-ghoul-kaneki-touka-kaneki-x-touka-gif-9498908",
+        "https://tenor.com/view/kaneki-vs-jason-tokyo-ghoul-anime-hit-it-fight-gif-16128860",
+        "https://tenor.com/view/jason-vs-kaneki-tokyo-ghoul-dash-jump-gif-15922547",
+        "https://tenor.com/view/tokyo-ghoul-jason-omar-es-gay-yakumo-oomori-gif-14355745",
+        "https://tenor.com/view/tokyo-ghoul-jason-gif-5319896",
+        "https://tenor.com/view/kaneki-haise-gone-tokyo-ghoul-kaneki-gone-gif-18847282",
+        "https://tenor.com/view/sherry-birkin-rize-kashimiro-tokyo-ghoul-gif-9646157",
+        "https://tenor.com/view/tokyoghoul-gif-7918613"
     ]
     x=993
     embed = discord.Embed(color=0xffffff, title="What's 1000-7?", description=f"{x}...")
