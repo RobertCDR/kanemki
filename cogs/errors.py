@@ -40,6 +40,9 @@ class ErrorHandler(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 raise error
+        elif isinstance(error, discord.Forbidden):   #when status code 403 occurs due to role hierarchy etc.
+            embed = discord.Embed(color=0xde2f43, description=':x: Could not complete action due to missing permissions/role hierarchy/etc.')
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.BadArgument): #if the argument passed in the command is not good (yes, shut up, I'm not good at explaining things)
             member_errors = ['userinfo', 'permissions', 'mute', 'unmute', 'kick', 'ban', 'softban', 'unban', 'pfp', 'award', '' 'fuck', 'hack', 'pula', 'gayrate', 'ship', 'hug', 'kiss', 'slap', 'wink', 'stare', 'lick', 'bite', 'cuddle', 'pat', 'smile', 'poke', 'tickle', 'point', 'punch']
             role_errors = ['roleinfo', 'rpermissions', 'config muted_set', 'config joinrole_set', 'config botrole_set']

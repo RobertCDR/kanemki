@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 import random
 import praw
+from bot import reddit_client_id, reddit_client_secret
 
-reddit = praw.Reddit(client_id='YAD0cRFQ2mnFpQ', client_secret='3yotbah1AEJ6gfbwPDQoSkkkyDY', user_agent='windows:Kanemki Discord Bot:v1.0 (by /u/RobertCDR)')
+reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0P (by /u/RobertCDR)')
 
 class Animals(commands.Cog):
     def __init__(self, bot):

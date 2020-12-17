@@ -113,6 +113,10 @@ class Info(commands.Cog):
             verified_bot_dev = ':white_check_mark:'
         else:
             verified_bot_dev = ':x:'
+        if member.bot:
+            bot = ':white_check_mark:'
+        else:
+            bot = ':x:'
         if member.public_flags.verified_bot:
             verified_bot = ':white_check_mark:'
         else:
@@ -121,7 +125,7 @@ class Info(commands.Cog):
             hypesquad = ':white_check_mark:'
         else:
             hypesquad = ':x:'
-        embed.add_field(name='Others', value=f"**Nitro:**{premium}  **Early Supporter:**{early_supporter}  **Discord Partner:**{partner}\n**Discord Staff:**{staff}  **Bug Hunter:**{bug_hunter}  **HypeSquad Events:**{hypesquad}\n**Verified Bot Dev:**{verified_bot_dev}  **Verified Bot:**{verified_bot}")
+        embed.add_field(name='Others', value=f"**Nitro:**{premium}  **Early Supporter:**{early_supporter}  **Discord Partner:**{partner}\n**Discord Staff:**{staff}  **Bug Hunter:**{bug_hunter}  **HypeSquad Events:**{hypesquad}\n**Verified Bot Dev:**{verified_bot_dev}  **Bot:**{bot}  **Verified Bot:**{verified_bot}")
         await ctx.send(embed=embed)
 
     #a command for getting info about the guild

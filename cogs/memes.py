@@ -3,13 +3,12 @@ from discord.ext import commands
 import random
 import praw
 import aiohttp
-import json
 from bot import reddit_client_id, reddit_client_secret
 
 #variable containing data for requests
 #yes, I use praw and I hate it but don't know what else to do
 #tried with aiohttp but it has the same delay of 2-3 seconds
-reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v2.0 (by /u/RobertCDR)')
+reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0 (by /u/RobertCDR)')
 
 class Reddit(commands.Cog):
     def __init__(self, bot):
