@@ -32,12 +32,14 @@ class Moderation(commands.Cog):
             description += f'{ctx.prefix}config welcomemesg-remove: Remove the welcome message.\n'
             description += f'{ctx.prefix}config logsch-set `#channel`: Set a logs channel\n'
             description += f'{ctx.prefix}config logsch-remove: Remove the logs channel.\n'
+            description += f'{ctx.prefix}config starboard-set `#channel`: Set a starboard channel where messages with the :star: reaction will be highlighted.\n'
+            description += f'{ctx.prefix}config starboard-remove: Remove the starboard channel.'
             embed.description = description
             await ctx.send(embed=embed)
 
     #a command which sets a custom prefix for the guild
     @config.command()
-    @commands.has_permissions(administrator=True)   #check if the command author is a server admin
+    @commands.has_guild_permissions(administrator=True)   #check if the command author is a server admin
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def prefix(self, ctx, prefix : str=None):
         if not prefix:  #if a prefix is not specified return and notify the user
@@ -62,7 +64,7 @@ class Moderation(commands.Cog):
     #the same principle is followed by the next subcommands
     #a subcommand which sets a custom mute role for the mute command
     @config.command(aliases=['muted-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_set(self, ctx, role: discord.Role):
         with open('./guild data/mutedroles.json', 'r') as f:    #open the json file contaning mute roles
@@ -75,7 +77,7 @@ class Moderation(commands.Cog):
 
     #this subcommand removes the custom muted role of a guild
     @config.command(aliases=['muted-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_remove(self, ctx):
         with open ('./guild data/mutedroles.json', 'r') as f:   #open the json file containing mute role ids for guilds
@@ -94,7 +96,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_set(self, ctx, role: discord.Role):
         with open('./guild data/joinroles.json', 'r') as f:
@@ -106,7 +108,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_remove(self, ctx):
         with open ('./guild data/joinroles.json', 'r') as f:
@@ -125,7 +127,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_set(self, ctx, role: discord.Role):
         with open('./guild data/botroles.json', 'r') as f:
@@ -137,7 +139,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_remove(self, ctx):
         with open ('./guild data/botroles.json', 'r') as f:
@@ -156,7 +158,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
         with open('./guild data/logsch.json', 'r') as f:
@@ -168,7 +170,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_remove(self, ctx):
         with open('./guild data/logsch.json', 'r') as f:
@@ -187,7 +189,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
         with open('./guild data/welcome.json', 'r') as f:
@@ -204,7 +206,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_remove(self, ctx):
         with open('./guild data/welcome.json', 'r') as f:
@@ -223,7 +225,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomemsg-set'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_set(self, ctx, *, args):
         with open('./guild data/welcome.json', 'r') as f:
@@ -241,7 +243,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomemsg-remove'])
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_remove(self, ctx):
         with open('./guild data/welcome.json', 'r') as f:
@@ -259,9 +261,40 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
 
+    @config.command(aliases=['starboard-set'])
+    @commands.has_guild_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def starboard_set(self, ctx, channel: discord.channel.TextChannel):
+        with open('./guild data/starboards.json', 'r') as f:
+            starboards = json.load(f)
+        starboards[str(ctx.guild.id)] = channel.id
+        with open('./guild data/starboards.json', 'w') as f:
+            json.dump(starboards, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set starboard to {channel.mention}.')
+        await ctx.send(embed=embed)
+
+    @config.command(aliases=['starboard-remove'])
+    @commands.has_guild_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def starboard_remove(self, ctx):
+        with open('./guild data/starboards.json', 'r') as f:
+            starboards = json.load(f)
+        try:
+            starboards.pop(str(ctx.guild.id))
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No logs was channel set.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
+        with open('./guild data/starboards.json', 'w') as f:
+            json.dump(starboards, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed starboard channel.')
+        await ctx.send(embed=embed)
+
     #this command displays a list of the guild roles
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def roles(self, ctx):
         #create a string with mentioned roles in top to bottom order
@@ -274,7 +307,7 @@ class Moderation(commands.Cog):
 
     #create a new role with optional color, hoist and mention parameters
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
         if name is None:    #the role needs at least a name
@@ -288,7 +321,7 @@ class Moderation(commands.Cog):
 
     #delete a role
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def delrole(self, ctx, role: discord.Role):
         await role.delete()
@@ -297,7 +330,7 @@ class Moderation(commands.Cog):
 
     #add a role to a member
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def addrole(self, ctx, member: discord.Member, role: discord.Role):
         await member.add_roles(role)
@@ -306,7 +339,7 @@ class Moderation(commands.Cog):
 
     #remove a role from a member
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def remrole(self, ctx, member: discord.Member, role: discord.Role):
         await member.remove_roles(role)
@@ -315,7 +348,7 @@ class Moderation(commands.Cog):
 
     #lock a text channel
     @commands.command()
-    @commands.has_permissions(manage_guild=True)
+    @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def lock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
@@ -328,7 +361,7 @@ class Moderation(commands.Cog):
 
     #unlock a text channel
     @commands.command()
-    @commands.has_permissions(manage_guild=True)
+    @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unlock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
@@ -341,7 +374,7 @@ class Moderation(commands.Cog):
 
     #lock all text and voice channel except the ones that are invisible
     @commands.command()
-    @commands.has_permissions(manage_guild=True)
+    @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown(self, ctx):
         embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
@@ -358,7 +391,7 @@ class Moderation(commands.Cog):
 
     #end the server lockdown
     @commands.command(aliases=['lockdown-end'])
-    @commands.has_permissions(manage_guild=True)
+    @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown_end(self, ctx):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
@@ -375,7 +408,7 @@ class Moderation(commands.Cog):
 
     #revoke a server invite
     @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
-    @commands.has_permissions(manage_guild=True)
+    @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def delinv(self, ctx, invite: discord.Invite):
         await self.bot.delete_invite(invite)
@@ -385,7 +418,7 @@ class Moderation(commands.Cog):
     #a purge command
     #this will need further development too
     @commands.command(aliases=['purge', 'clean'])
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_guild_permissions(manage_messages=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def clear(self, ctx, amount: int=0):
         if not amount:  #if no amount is specified
@@ -400,7 +433,7 @@ class Moderation(commands.Cog):
 
     #mute a user / mass mute users
     @commands.command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def mute(self, ctx, victims : commands.Greedy[discord.Member]=None, time=None, *, reason=None):
         if victims is None:
@@ -457,7 +490,7 @@ class Moderation(commands.Cog):
 
     #unmute a user / mass unmute users
     @commands.command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unmute(self, ctx, victims : commands.Greedy[discord.Member]=None):
         if victims is None:
@@ -489,7 +522,7 @@ class Moderation(commands.Cog):
 
     #kick a user / mass kick users
     @commands.command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def kick(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
         if victims is None:
@@ -519,7 +552,7 @@ class Moderation(commands.Cog):
     #ban a member / mass ban members
     #same thing as above
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ban(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
         if victims is None:
@@ -549,7 +582,7 @@ class Moderation(commands.Cog):
     #! not functional
     #todo look into banning users outside of the guild
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def banid(self, ctx, victim: discord.User=None, *, reason=None):
         if victim is None:
@@ -559,12 +592,12 @@ class Moderation(commands.Cog):
                 embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
                 return await ctx.send(embed=embed)
         await victim.ban(reason=reason)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {user.mention}**.**')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {victim.mention}**.**')
         await ctx.send(embed=embed)
 
     #unban a user / mass unban users
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unban(self, ctx, victims : commands.Greedy[discord.User]=None):
         if victims is None:
@@ -582,7 +615,7 @@ class Moderation(commands.Cog):
     #not so sure about this command
     #it will need some reworking in the future
     @commands.command(aliases=['tempban'])
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def softban(self, ctx, victim : discord.Member, time=None, *, reason=None):
         if victim.bot:
@@ -616,7 +649,7 @@ class Moderation(commands.Cog):
 
     #unban all the users that have been banned in the guild
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def unbanall(self, ctx):
         banned_users = await ctx.guild.bans()   #get all the banned users
@@ -640,7 +673,7 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
 
     @auditlog.command()
-    @commands.has_permissions(administrator=True)
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def recent(self, ctx):
         menu = PaginatedMenu(ctx)

@@ -3,6 +3,10 @@ import json
 from discord.ext import commands
 import datetime
 
+#! this is still kind of f-ed up because of previous bugs which I thought I had fixed
+#* I mean it does it's job, but a little too much
+#todo guess I'll need to investigate further...
+
 class Listeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -465,6 +469,27 @@ class Listeners(commands.Cog):
                 await logs.send(embed=embed)
             else:
                 pass
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        try:
+            with open('./guild data/starboards.json', 'r') as f:
+                starboards = json.load(f)
+            starboard = self.bot.get_channel(starboards[str(payload.guild_id)])
+            channel = self.bot.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id)
+            reaction = discord.utils.get(message.reactions, emoji='⭐')
+            #todo store the message id somewhere
+            if reaction.count >= 1:            
+                embed = discord.Embed(color=0xffac33, description=f"{message.content}\n\n[Jump to message]({message.jump_url})", timestamp=datetime.datetime.utcnow())
+                embed.set_author(icon_url=message.author.avatar_url, name=message.author)
+                embed.set_footer(icon_url=message.guild.icon_url, text=f'★ {message.guild} Starboard')
+                await starboard.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
