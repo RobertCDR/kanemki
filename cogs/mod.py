@@ -31,6 +31,9 @@ class Moderation(commands.Cog):
         if user.id == 465138950223167499:
             embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the creator of the bot from his own bot.')
             return await ctx.send(embed=embed)
+        elif user.id == 723864146965168168:
+            embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the bot.')
+            return await ctx.send(embed=embed)
         else:
             try:
                 id_list[str(ctx.guild.id)].append(user.id)
