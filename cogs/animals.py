@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 import praw
 from bot import reddit_client_id, reddit_client_secret
+from cogs.errors import CustomChecks
 
 reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0P (by /u/RobertCDR)')
 
@@ -11,6 +12,7 @@ class Animals(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['aww', 'cute'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def eyebleach(self, ctx):
         eyebleach_submissions = reddit.subreddit('eyebleach').hot()
@@ -26,6 +28,7 @@ class Animals(commands.Cog):
             await ctx.send(embed=image)
 
     @commands.command(aliases=['doggo', 'doggie', 'woof'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def dog(self, ctx):
         dogpictures_submissions =  reddit.subreddit('dogpictures').hot()
@@ -47,6 +50,7 @@ class Animals(commands.Cog):
             await ctx.send(embed=image)
 
     @commands.command(aliases=['kitty', 'meow', 'kat'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cat(self, ctx):
         cats_submissions = reddit.subreddit('cats').hot()
@@ -71,6 +75,7 @@ class Animals(commands.Cog):
             await ctx.send(embed=image)
 
     @commands.command(aliases=['bunny', 'bunbun', 'longears', 'bun'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def rabbit(self, ctx):
         rabbits_submissions =  reddit.subreddit('rabbits').hot()
@@ -91,6 +96,7 @@ class Animals(commands.Cog):
             await ctx.send(embed=image)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def bear(self, ctx):
         bears_submissions =  reddit.subreddit('bears').hot()

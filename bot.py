@@ -10,6 +10,7 @@ import traceback
 from contextlib import redirect_stdout
 import json
 import config
+from cogs.errors import CustomChecks
 
 intents = discord.Intents.all()
 mentions = discord.AllowedMentions(everyone=False)
@@ -45,7 +46,7 @@ async def on_ready():
 #remote leave a guild by it's id
 @bot.command(hidden=True)
 @commands.is_owner()
-async def leave(ctx, guild_id: int): 
+async def leave(ctx, guild_id: int):
     embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Left guild: **{bot.get_guild(guild_id).name}**')
     await bot.get_guild(guild_id).leave()   #get the guild by it's id and leave it
     await ctx.send(embed=embed)
@@ -154,6 +155,7 @@ async def _eval(ctx, *, body):
             await ctx.send(f'```py\n{value}{ret}\n```')
 
 @bot.command(hidden=True, aliases=['1000-7', "Jason", "Yamori", "Kaneki", "Ghoul", "Rize"])
+@CustomChecks.blacklist_check()
 async def whats1000_7(ctx):
     gif_list=[
         "https://cdn.discordapp.com/attachments/725102631185547427/777798974862000168/8IzZ.gif",

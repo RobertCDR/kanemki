@@ -3,12 +3,14 @@ from discord.ext import commands
 import random
 import asyncio
 import typing
+from cogs.errors import CustomChecks
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(aliases=['frick'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fuck(self, ctx, partner : discord.Member):
         if partner is ctx.message.author:
@@ -21,24 +23,28 @@ class Fun(commands.Cog):
     #opens a file and selects a random thing from it
     #same principle applies for the following commands
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pun(self, ctx):
         pun = random.choice(list(open('./text files/puns.txt', encoding='utf8')))   #opens the text file, converts the content into a list and picks a random line from it
         await ctx.send(pun) #send the pun (yes, I manually selected them and actually laughed, help)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def sex(self, ctx):
         response = random.choice(list(open('./text files/sex.txt', encoding='utf8')))
         await ctx.send(f'{ctx.message.author.mention} {response}')
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roast(self, ctx):
         roast = random.choice(list(open('./text files/roast.txt', encoding='utf8')))
         await ctx.send(roast)
 
     @commands.command(aliases=['fortunecookie', 'fortune'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fookie(self, ctx):
         fortune = random.choice(list(open('./text files/fookies.txt', encoding='utf8')))
@@ -47,6 +53,7 @@ class Fun(commands.Cog):
 
     #had some fun doing this command
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def hack(self, ctx, victim : discord.Member):
         if victim is ctx.message.author:    #if you mention yourself
@@ -86,6 +93,7 @@ class Fun(commands.Cog):
         await ctx.send(f'**Successfully hacked** {victim.mention}**.**')  #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
 
     @commands.command(aliases=['pula', 'penis', 'ppsize'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pp(self, ctx, member : discord.Member=None):
         if not member:
@@ -115,12 +123,14 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
                     
     @commands.command(aliases=['8ball'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ask(self, ctx, *, question : str):
         response = random.choice(list(open('./text files/8ball.txt')))
         await ctx.send(f'{ctx.message.author.mention} {response}')
 
     @commands.command(aliases=['howgay', 'gay', 'gayr8'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def gayrate(self, ctx, member : discord.Member=None):
         if not member:
@@ -136,6 +146,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['howhot', 'hotr8'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hotrate(self, ctx, member: discord.Member=None):
         if not member:
@@ -154,6 +165,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['love', 'compatibility', 'lovemeter'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ship(self, ctx, pair: discord.Member, pair2: typing.Optional[discord.Member]=None):
         if (pair is ctx.message.author and pair2 is None) or (pair is ctx.message.author and pair2 is ctx.message.author):
@@ -206,6 +218,7 @@ class Fun(commands.Cog):
     #the classic say command
     #utils.escape_mentions is broken
     @commands.command(aliases=['parrot', 'mimic', 'repeat'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def say(self, ctx, *, mimic):
         await ctx.message.delete()  #first, delete the message sent by the command author
@@ -213,6 +226,7 @@ class Fun(commands.Cog):
 
     #a variation of the say command
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def clapify(self, ctx, *, text):
         message = ''    #initiate a variable as an empty string
@@ -226,6 +240,7 @@ class Fun(commands.Cog):
     #yes, I'm evil, but the decision to use this command is yours
     #like the forbidden apple
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spoilify(self, ctx, *, text):
         await ctx.message.delete()
@@ -236,6 +251,7 @@ class Fun(commands.Cog):
 
     #convert string characters into emojis
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def emojify(self, ctx, *, text):
         message = ''    #initiate an empty string
@@ -257,6 +273,7 @@ class Fun(commands.Cog):
 
     #why did I make this?
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lewdify(self, ctx, *, text):
         text = text.split(' ')

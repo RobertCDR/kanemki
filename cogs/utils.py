@@ -7,6 +7,7 @@ import aiohttp
 import json
 from dpymenus import PaginatedMenu
 from bot import rapid_api
+from cogs.errors import CustomChecks
 
 class Info(commands.Cog):
     def __init__(self, bot):
@@ -14,6 +15,7 @@ class Info(commands.Cog):
 
     #create an invite link for the bot
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def invite(self, ctx):
         #create the embed containing the link with the bot scope and administrator (integer 8) permissions
@@ -24,6 +26,7 @@ class Info(commands.Cog):
 
     #return the client latency
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ping(self, ctx):
         ping = round(self.bot.latency*1000)
@@ -38,6 +41,7 @@ class Info(commands.Cog):
 
     #get info about yourself or someone else on a discord server
     @commands.command(aliases=['uinfo', 'about', 'whois'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def userinfo(self, ctx, member : discord.Member=None):
         if not member:  #if nobody is mentioned
@@ -130,6 +134,7 @@ class Info(commands.Cog):
 
     #a command for getting info about the guild
     @commands.command(aliases=['sinfo', 'aboutsrv'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def serverinfo(self, ctx):
         embed = discord.Embed(color=0xff0000, timestamp=datetime.datetime.utcnow()) #create the embed
@@ -166,6 +171,7 @@ class Info(commands.Cog):
 
     #get info about a role
     @commands.command(aliases=['rinfo'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def roleinfo(self, ctx, *, role : discord.Role):
         embed = discord.Embed(description=role.mention, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
@@ -192,6 +198,7 @@ class Info(commands.Cog):
 
     #see the your guild perms or another user's
     @commands.command(aliases=['perms', 'userperms'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def permissions(self, ctx, member : discord.Member=None):
         if not member:  #if nobody is mentioned
@@ -209,6 +216,7 @@ class Info(commands.Cog):
 
     #see the permissions of a guild role
     @commands.command(aliases=['rperms', 'roleperms'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def rpermissions(self, ctx, *, role : discord.Role):
         #create a string of permissions of the role and capitalize them
@@ -225,6 +233,7 @@ class Info(commands.Cog):
     #stil not sure if dpymenus was the best solution
     #I also removed the error handler on this command because it was raising an annoying error even after displaying the results properly
     @commands.command(aliases=['urbandict', 'urbandic', 'urbdic', 'urbdict'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 10, commands.BucketType.user) #cooldown 10s/user
     async def urban(self, ctx, *, search):
         search.replace(' ', '+')    #replace the spaces with plus signs so the link won't be broken
@@ -274,6 +283,7 @@ class Info(commands.Cog):
 
     #get the daily covid19 statistics for a given country
     @commands.command(aliases=['covid19', 'sarscov2'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 10, commands.BucketType.user) #cooldown 10s/user
     async def coronavirus(self, ctx, *, country):
         country.replace(' ', '+')   #replace spaces with plus signs for countries with multiple words in their name
@@ -316,6 +326,7 @@ class Info(commands.Cog):
 
     #a command group in which you can create a shopping list, add different tasks, you know the deal
     @commands.group()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def todo(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -331,6 +342,7 @@ class Info(commands.Cog):
 
     #add an item to the list
     @todo.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def add(self, ctx, *, task: str):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it
@@ -348,6 +360,7 @@ class Info(commands.Cog):
 
     #see your todo list
     @todo.command(aliases=['list'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def _list(self, ctx):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it
@@ -373,6 +386,7 @@ class Info(commands.Cog):
 
     #remove an item from the list
     @todo.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def remove(self, ctx, item: int):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it
@@ -405,6 +419,7 @@ class Info(commands.Cog):
     #edit an item from the list
     #same as above, but instead of removing the item, we replace it
     @todo.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def edit(self, ctx, item: int, *, task):
         with open('./user data/todo.json', 'r') as f:
@@ -436,6 +451,7 @@ class Info(commands.Cog):
 
     #clear the list
     @todo.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def clear(self, ctx):
         with open('./user data/todo.json', 'r') as f:   #open the json file and load it

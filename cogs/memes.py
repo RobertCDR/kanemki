@@ -4,6 +4,7 @@ import random
 import praw
 import aiohttp
 from bot import reddit_client_id, reddit_client_secret
+from cogs.errors import CustomChecks
 
 #variable containing data for requests
 #yes, I use praw and I hate it but don't know what else to do
@@ -16,6 +17,7 @@ class Reddit(commands.Cog):
 
     #aiohttp tryout to get things from Reddit
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def meme(self, ctx):
         nr = random.randint(0, 99)  #position of a meme
@@ -47,6 +49,7 @@ class Reddit(commands.Cog):
 
     #yes, it may seem easier to use praw, but it's not recommended
     @commands.command(aliases=['wmeme', 'whlsm', 'wholesomeme'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)  #the cooldown of the command
     async def wholesome(self, ctx):
         wholesomememes_submissions = reddit.subreddit('wholesomememes').hot()   #the iterator of the subreddit's hot section
@@ -59,6 +62,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=meme)  #send the embed
 
     @commands.command(aliases=['14deep', 'deep', 'im14andthisisdeep'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def im14(self, ctx):
         im14_submissions = reddit.subreddit('im14andthisisdeep').hot()
@@ -71,6 +75,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=meme)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def meirl(self, ctx):
         meirl_submissions = reddit.subreddit('meirl').hot()
@@ -83,6 +88,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=meme)
 
     @commands.command(aliases=['insult', 'rareins', 'insultcom'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def rareinsult(self, ctx):
         rareinsults_submissions = reddit.subreddit('rareinsults').hot()
@@ -98,6 +104,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=comment)
 
     @commands.command(aliases=['ccom', 'cursedcom'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cursedcomment(self, ctx):
         cursedcomments_submissions = reddit.subreddit('cursedcomments').hot()
@@ -110,6 +117,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=comment)
 
     @commands.command(aliases=['holdup'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def holup(self, ctx):
         holup_submissions = reddit.subreddit('holup').hot()
@@ -122,6 +130,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=image)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def blursed(self, ctx):
         blursed_submissions = reddit.subreddit('blursedimages').hot()
@@ -134,6 +143,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=image)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cursed(self, ctx):
         cursed_submissions = reddit.subreddit('cursedimages').hot()
@@ -146,6 +156,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=image)
 
     @commands.command(aliases=['50/50', 'fifty'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def fiftyfifty(self, ctx):
         fiftyfifty_submissions = reddit.subreddit('fiftyfifty').new()
@@ -157,6 +168,7 @@ class Reddit(commands.Cog):
         await ctx.send(embed=link)
 
     @commands.command(aliases=['fax', 'fact'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def facts(self, ctx):
         facts_submissions = reddit.subreddit('facts').hot()

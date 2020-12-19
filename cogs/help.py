@@ -2,6 +2,7 @@ import discord
 import datetime
 import random
 from discord.ext import commands
+from cogs.errors import CustomChecks
 
 class Help(commands.Cog):
     def __init__(self, bot):
@@ -9,6 +10,7 @@ class Help(commands.Cog):
         bot.remove_command('help')  #remove the built-in help command
 
     @commands.group(case_insensitive=True)  #a group of subcommands which offers informations about the commands of the bot
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def help(self, ctx):  #the main help command
         if ctx.invoked_subcommand is None:  #if help about a specific command is not requested ('{ctx.prefix}help', not '{ctx.prefix}help some_command')
@@ -27,30 +29,35 @@ class Help(commands.Cog):
             embed.add_field(name=':hammer: Moderation', value=f'`{ctx.prefix}help mod`', inline=True)
             await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fun(self, ctx):
         embed = discord.Embed(title=':grin: Fun Commands', description='`fuck`, `sex`, `pp`, `ask`, `gayrate`, `hotrate`, `love`, `hack`, `say`, `clapify`, `spoilify`, `lewdify`, `pun`, `roast`, `fookie`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def games(self, ctx):
         embed = discord.Embed(title=':video_game: Games Commands', description='`flip`, `roll`, `rockpaperscissors`, `guess`, `truthordare`, `hangman`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def memes(self, ctx):
         embed = discord.Embed(title=':alien: Memes n Stuff Commands', description='`meme`, `wholesome`, `rareinsult`, `cursedcomment`, `holup`, `blursed`, `cursed`, `fifty`, `facts`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def images(self, ctx):
         embed = discord.Embed(title=':camera: Images Commands', description='`pfp`, `spotify`, `award`, `xkcd`, `color`, `battlestation`, `flower`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def actions(self, ctx):
         embed = discord.Embed(title=':sparkles: Action Commands', description='`gif`, `facepalm`, `shrug`, `cry`, `run`, `tongue`, `point`, `hug`, `kiss`, `slap`, `punch`, `wink`, `stare`, `lick`, `bite`, `cuddle`, `pat`, `smile`, `poke`, `tickle`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
@@ -58,30 +65,35 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def animals(self, ctx):
         embed = discord.Embed(title=':frog: Animals Commands', description='`eyebleach`, `dog`, `cat`, `rabbit`, `bear`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def misc(self, ctx):
         embed = discord.Embed(title=':rosette: Misc Commands', description='`embed`, `age`, `morsetotext`, `texttomorse`, `search`, `passwordgen`, `pick`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def utils(self, ctx):
         embed = discord.Embed(title=':bulb: Utilities Commands', description='`help`, `ping`, `userinfo`, `serverinfo`, `roleinfo`, `permissions`, `rpermissions`, `urban`, `coronavirus`, `todo`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def mod(self, ctx):
         embed = discord.Embed(title=':hammer: Moderation Commands', description='`config`, `roles`, `newrole`, `delrole`, `addrole`, `remrole`, `lock`, `unlock`, `lockdown`, `lockdown-end`, `deleteinvite`, `clear`, `mute`, `unmute`, `kick`, `softban`, `ban`, `unban`, `unbanall`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['frick'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fuck(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nhave some fun with your friends', timestamp=datetime.datetime.utcnow())
@@ -94,6 +106,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def sex(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nprobably every single message is true (excepting the ones that involve more than one person)', timestamp=datetime.datetime.utcnow())
@@ -106,6 +119,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['pp', 'ppsize', 'penis'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pula(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nvalues over 20 are real only in porn', timestamp=datetime.datetime.utcnow())
@@ -118,6 +132,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['8ball'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ask(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nresponds to your questions through magic voodoo shit', timestamp=datetime.datetime.utcnow())
@@ -130,6 +145,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['gay', 'howgay', 'gayr8'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def gayrate(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows how gay you are deep inside yourself', timestamp=datetime.datetime.utcnow())
@@ -142,6 +158,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['howhot', 'hotr8'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hotrate(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nmeasures how hot you are', timestamp=datetime.datetime.utcnow())
@@ -154,6 +171,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)    
     @help.command(aliases=['ship', 'lovemeter', 'compatibility'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def love(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nThe ultimate and most revolutionary Love Machine', timestamp=datetime.datetime.utcnow())
@@ -166,6 +184,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hack(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nWe are Anonymous. We are legion. We do not forget. We do not forgive. Expect us.', timestamp=datetime.datetime.utcnow())
@@ -178,6 +197,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['parrot', 'mimic', 'repeat'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def say(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nmake the bot say everything you want (Detroit: Become Human shit)', timestamp=datetime.datetime.utcnow())
@@ -190,6 +210,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def clapify(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nmake your message be extremely sarcastic or over enthusiastic', timestamp=datetime.datetime.utcnow())
@@ -202,6 +223,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spoilify(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nencrypt your message to annoy someone (for long-"posterior" texts Satan has a spot waiting just for you)', timestamp=datetime.datetime.utcnow())
@@ -214,6 +236,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lewdify(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ncan someone please tell me why I coded this?', timestamp=datetime.datetime.utcnow())
@@ -226,6 +249,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['tomorse'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def texttomorse(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ntranslate text into Morse code', timestamp=datetime.datetime.utcnow())
@@ -238,6 +262,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['totext'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def morsetotext(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ntranslate Morse code into text', timestamp=datetime.datetime.utcnow())
@@ -250,6 +275,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['age', 'howmanydays'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def agedays(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nsee how many days old are you", timestamp=datetime.datetime.utcnow())
@@ -262,6 +288,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['emb'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def embed(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\ncreate a custom embed", timestamp=datetime.datetime.utcnow())
@@ -274,6 +301,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pun(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nyou literally don't have anything better to do if you're using this command, am I right?", timestamp=datetime.datetime.utcnow())
@@ -286,6 +314,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roast(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nroast someone or yourself", timestamp=datetime.datetime.utcnow())
@@ -298,6 +327,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['fortunecookie', 'fortune'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fookie(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nyes, fortune cookies, let's see what you get", timestamp=datetime.datetime.utcnow())
@@ -310,6 +340,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def flip(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nheads or tails', timestamp=datetime.datetime.utcnow())
@@ -322,6 +353,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['dice'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roll(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nroll the dices', timestamp=datetime.datetime.utcnow())
@@ -334,6 +366,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['rockpaperscissors'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def rps(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nduel with someone in the ultimate battle', timestamp=datetime.datetime.utcnow())
@@ -346,6 +379,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def guess(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nguess random numbers', timestamp=datetime.datetime.utcnow())
@@ -358,6 +392,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['tod'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def truthordare(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nplay Truth or Dare with your friends', timestamp=datetime.datetime.utcnow())
@@ -370,6 +405,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['hman', 'hang'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hangman(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nplay a game of Hangman by yourself or with your friends', timestamp=datetime.datetime.utcnow())
@@ -382,6 +418,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def meme(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget memes from reddit', timestamp=datetime.datetime.utcnow())
@@ -394,6 +431,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['whlsm', 'wholesomeme', 'wmeme'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def wholesome(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a wholesome meme', timestamp=datetime.datetime.utcnow())
@@ -406,6 +444,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['rinsult', 'rareins'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def rareinsult(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nsee the creativity of internet people when it comes to insults', timestamp=datetime.datetime.utcnow())
@@ -418,6 +457,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['cursedcom', 'ccom'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def cursedcomment(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nsee how sick are some people and wonder what it is gonna be of the humanity', timestamp=datetime.datetime.utcnow())
@@ -430,6 +470,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['holdup'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def holup(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nthe name speaks for itself', timestamp=datetime.datetime.utcnow())
@@ -442,6 +483,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def blursed(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows a blursed image (a cursed but no so cursed image)', timestamp=datetime.datetime.utcnow())
@@ -454,6 +496,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def cursed(self, ctx):    
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows a cursed image', timestamp=datetime.datetime.utcnow())
@@ -466,6 +509,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['50/50', 'fifty'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fiftyfifty(self, ctx):    
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nr/FiftyFifty - may God take care of you and erase the horrible things that you see from your memory', timestamp=datetime.datetime.utcnow())
@@ -478,6 +522,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['fact', 'fax'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def facts(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget random facts from r/facts', timestamp=datetime.datetime.utcnow())
@@ -490,6 +535,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pfp(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nshows your avatar or someone else's", timestamp=datetime.datetime.utcnow())
@@ -502,6 +548,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spotify(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nif you've found yourself in the situation of wanting to get the cover art of a Spotify track, this command can help you out (it literally does nothing more)", timestamp=datetime.datetime.utcnow())
@@ -514,6 +561,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def award(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\naward someone for whatever reason it goes through your head', timestamp=datetime.datetime.utcnow())
@@ -526,6 +574,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def xkcd(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a comic from [xkcd.com](https://xkcd.com)', timestamp=datetime.datetime.utcnow())
@@ -538,6 +587,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['colour'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def color(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nvisualize a hex color', timestamp=datetime.datetime.utcnow())
@@ -550,6 +600,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['nasapc', 'wowsetup', 'rocketpc'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def battlestation(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nsee some good looking pc setups', timestamp=datetime.datetime.utcnow())
@@ -563,6 +614,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def flower(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows a flower', timestamp=datetime.datetime.utcnow())
@@ -575,6 +627,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def gif(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a gif from GIPHY', timestamp=datetime.datetime.utcnow())
@@ -587,6 +640,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def facepalm(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a facepalm gif', timestamp=datetime.datetime.utcnow())
@@ -599,6 +653,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def shrug(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a shrug gif', timestamp=datetime.datetime.utcnow())
@@ -611,6 +666,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def cry(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a cry gif', timestamp=datetime.datetime.utcnow())
@@ -623,6 +679,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pout(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a pout gif', timestamp=datetime.datetime.utcnow())
@@ -635,6 +692,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def run(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a run gif', timestamp=datetime.datetime.utcnow())
@@ -647,6 +705,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def tongue(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a tongue out gif', timestamp=datetime.datetime.utcnow())
@@ -659,6 +718,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hug(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nhug someone', timestamp=datetime.datetime.utcnow())
@@ -671,6 +731,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def point(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nfinger point someone', timestamp=datetime.datetime.utcnow())
@@ -683,6 +744,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def punch(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\npunch someone', timestamp=datetime.datetime.utcnow())
@@ -695,6 +757,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def kiss(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nkiss someone', timestamp=datetime.datetime.utcnow())
@@ -707,6 +770,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def slap(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nslap someone', timestamp=datetime.datetime.utcnow())
@@ -719,6 +783,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed) 
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def wink(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nwink at someone', timestamp=datetime.datetime.utcnow())
@@ -731,6 +796,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def stare(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nstare at someone', timestamp=datetime.datetime.utcnow())
@@ -743,6 +809,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lick(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlick someone', timestamp=datetime.datetime.utcnow())
@@ -755,6 +822,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def bite(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nbite someone', timestamp=datetime.datetime.utcnow())
@@ -767,6 +835,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def cuddle(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ncuddle with someone', timestamp=datetime.datetime.utcnow())
@@ -779,6 +848,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pat(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\npat someone', timestamp=datetime.datetime.utcnow())
@@ -791,6 +861,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def smile(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nsmile at someone', timestamp=datetime.datetime.utcnow())
@@ -803,6 +874,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def poke(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\npoke someone', timestamp=datetime.datetime.utcnow())
@@ -815,6 +887,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def tickle(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ntickle someone', timestamp=datetime.datetime.utcnow())
@@ -827,6 +900,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['cute', 'eyebleach'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def aww(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows you cute animals', timestamp=datetime.datetime.utcnow())
@@ -840,6 +914,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['doggo', 'woof', 'doggy'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def dog(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows you a dog', timestamp=datetime.datetime.utcnow())
@@ -852,6 +927,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['kitty', 'meow', 'kat'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def cat(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows you a cat', timestamp=datetime.datetime.utcnow())
@@ -864,6 +940,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['bunny', 'bunbun', 'bun', 'longears'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def rabbit(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows you a rabbit', timestamp=datetime.datetime.utcnow())
@@ -876,6 +953,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def bear(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows you a bear', timestamp=datetime.datetime.utcnow())
@@ -888,6 +966,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def invite(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget an invite link to invite the bot to your server', timestamp=datetime.datetime.utcnow())
@@ -900,6 +979,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ping(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nbot latency', timestamp=datetime.datetime.utcnow())
@@ -912,6 +992,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['uinfo', 'about', 'whois'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def userinfo(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget info about yourself or someone', timestamp=datetime.datetime.utcnow())
@@ -924,6 +1005,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['sinfo', 'aboutsrv'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def serverinfo(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget info about the server', timestamp=datetime.datetime.utcnow())
@@ -936,6 +1018,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['rinfo'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roleinfo(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget info about a role', timestamp=datetime.datetime.utcnow())
@@ -948,6 +1031,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['perms', 'userperms'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def permissions(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a list of guild permissions someone has', timestamp=datetime.datetime.utcnow())
@@ -960,6 +1044,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['rperms', 'roleperms'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def rpermissions(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget a list of permissions for a role', timestamp=datetime.datetime.utcnow())
@@ -972,6 +1057,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['passgen', 'password'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def passwordgen(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ngenerate a random password for whatever use you want', timestamp=datetime.datetime.utcnow())
@@ -984,6 +1070,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['lmgtfy'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def search(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\nfor every person that's tired of someone's stupid questions or too lazy to switch tabs", timestamp=datetime.datetime.utcnow())
@@ -996,6 +1083,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pick(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description="**Description**\npick a random thing", timestamp=datetime.datetime.utcnow())
@@ -1008,6 +1096,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['urbandict', 'urbandic', 'urbdic', 'urbdict'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def urban(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nget the urban definition of a word from Urban Dictionary', timestamp=datetime.datetime.utcnow())
@@ -1020,6 +1109,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['covid19', 'sarscov2'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def coronavirus(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nCountry statistics for COVID-19', timestamp=datetime.datetime.utcnow())
@@ -1032,6 +1122,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['help'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def _help(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ndisplays a list of categories of commands', timestamp=datetime.datetime.utcnow())
@@ -1044,6 +1135,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roles(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nshows a list of all roles in the guild', timestamp=datetime.datetime.utcnow())
@@ -1056,6 +1148,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def newrole(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ncreate a new role', timestamp=datetime.datetime.utcnow())
@@ -1068,6 +1161,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def delrole(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\ndelete a role', timestamp=datetime.datetime.utcnow())
@@ -1080,6 +1174,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def addrole(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nadd a role to a member', timestamp=datetime.datetime.utcnow())
@@ -1092,6 +1187,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def remrole(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nremove a role from a member', timestamp=datetime.datetime.utcnow())
@@ -1104,6 +1200,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lock(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock a text channel (set the `send_messages` permission to false)', timestamp=datetime.datetime.utcnow())
@@ -1116,6 +1213,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unlock(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock a text channel (set the `send_messages` permission to true)', timestamp=datetime.datetime.utcnow())
@@ -1128,6 +1226,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lockdown(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nlock every guild channel (set the `send_messages` permission to false)', timestamp=datetime.datetime.utcnow())
@@ -1140,6 +1239,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['lockdown-end'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lockdown_end(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunlock every guild channel (set the `send_messages` and `connect` permissions to true)', timestamp=datetime.datetime.utcnow())
@@ -1152,6 +1252,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def delinv(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nrevokes aa guild invite link', timestamp=datetime.datetime.utcnow())
@@ -1164,6 +1265,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['purge', 'clean'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def clear(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nclears an amount of messages', timestamp=datetime.datetime.utcnow())
@@ -1176,6 +1278,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def mute(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nmute someone', timestamp=datetime.datetime.utcnow())
@@ -1188,6 +1291,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unmute(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunmute someone', timestamp=datetime.datetime.utcnow())
@@ -1200,6 +1304,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def kick(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nkick someone', timestamp=datetime.datetime.utcnow())
@@ -1212,6 +1317,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ban(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nban someone', timestamp=datetime.datetime.utcnow())
@@ -1224,6 +1330,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['tempban'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def softban(self, ctx):
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nsoftban someone', timestamp=datetime.datetime.utcnow())
@@ -1236,6 +1343,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unban(self, ctx):    
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunban someone', timestamp=datetime.datetime.utcnow())
@@ -1248,6 +1356,7 @@ class Help(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unbanall(self, ctx):    
         embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunban all guild users (server administrator only command)', timestamp=datetime.datetime.utcnow())

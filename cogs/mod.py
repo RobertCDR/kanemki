@@ -5,6 +5,7 @@ import json
 import datetime
 import typing
 from dpymenus import PaginatedMenu
+from cogs.errors import CustomChecks
 
 #the moderation commands need some reworking because I can't catch the errors properly and they still need some fixes
 class Moderation(commands.Cog):
@@ -13,6 +14,7 @@ class Moderation(commands.Cog):
 
     #a command group for server configuration commands
     @commands.group(case_insensitive=True)
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def config(self, ctx):
         if ctx.invoked_subcommand is None: #if a subcommand is not invoked, display a list with server configuration commands
@@ -39,6 +41,7 @@ class Moderation(commands.Cog):
 
     #a command which sets a custom prefix for the guild
     @config.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)   #check if the command author is a server admin
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def prefix(self, ctx, prefix : str=None):
@@ -64,6 +67,7 @@ class Moderation(commands.Cog):
     #the same principle is followed by the next subcommands
     #a subcommand which sets a custom mute role for the mute command
     @config.command(aliases=['muted-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_set(self, ctx, role: discord.Role):
@@ -77,6 +81,7 @@ class Moderation(commands.Cog):
 
     #this subcommand removes the custom muted role of a guild
     @config.command(aliases=['muted-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_remove(self, ctx):
@@ -96,6 +101,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_set(self, ctx, role: discord.Role):
@@ -108,6 +114,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_remove(self, ctx):
@@ -127,6 +134,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_set(self, ctx, role: discord.Role):
@@ -139,6 +147,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_remove(self, ctx):
@@ -158,6 +167,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
@@ -170,6 +180,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_remove(self, ctx):
@@ -189,6 +200,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
@@ -206,6 +218,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_remove(self, ctx):
@@ -225,6 +238,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomemsg-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_set(self, ctx, *, args):
@@ -243,6 +257,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomemsg-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_remove(self, ctx):
@@ -262,6 +277,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['starboard-set'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def starboard_set(self, ctx, channel: discord.channel.TextChannel):
@@ -274,6 +290,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @config.command(aliases=['starboard-remove'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def starboard_remove(self, ctx):
@@ -294,6 +311,7 @@ class Moderation(commands.Cog):
 
     #this command displays a list of the guild roles
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def roles(self, ctx):
@@ -307,6 +325,7 @@ class Moderation(commands.Cog):
 
     #create a new role with optional color, hoist and mention parameters
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
@@ -321,6 +340,7 @@ class Moderation(commands.Cog):
 
     #delete a role
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def delrole(self, ctx, role: discord.Role):
@@ -330,6 +350,7 @@ class Moderation(commands.Cog):
 
     #add a role to a member
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def addrole(self, ctx, member: discord.Member, role: discord.Role):
@@ -339,6 +360,7 @@ class Moderation(commands.Cog):
 
     #remove a role from a member
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def remrole(self, ctx, member: discord.Member, role: discord.Role):
@@ -348,6 +370,7 @@ class Moderation(commands.Cog):
 
     #lock a text channel
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def lock(self, ctx, channel: discord.TextChannel=None):
@@ -361,6 +384,7 @@ class Moderation(commands.Cog):
 
     #unlock a text channel
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unlock(self, ctx, channel: discord.TextChannel=None):
@@ -374,6 +398,7 @@ class Moderation(commands.Cog):
 
     #lock all text and voice channel except the ones that are invisible
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown(self, ctx):
@@ -391,6 +416,7 @@ class Moderation(commands.Cog):
 
     #end the server lockdown
     @commands.command(aliases=['lockdown-end'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def lockdown_end(self, ctx):
@@ -408,6 +434,7 @@ class Moderation(commands.Cog):
 
     #revoke a server invite
     @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def delinv(self, ctx, invite: discord.Invite):
@@ -418,6 +445,7 @@ class Moderation(commands.Cog):
     #a purge command
     #this will need further development too
     @commands.command(aliases=['purge', 'clean'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_messages=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def clear(self, ctx, amount: int=0):
@@ -433,6 +461,7 @@ class Moderation(commands.Cog):
 
     #mute a user / mass mute users
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def mute(self, ctx, victims : commands.Greedy[discord.Member]=None, time=None, *, reason=None):
@@ -490,6 +519,7 @@ class Moderation(commands.Cog):
 
     #unmute a user / mass unmute users
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unmute(self, ctx, victims : commands.Greedy[discord.Member]=None):
@@ -522,6 +552,7 @@ class Moderation(commands.Cog):
 
     #kick a user / mass kick users
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def kick(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
@@ -552,6 +583,7 @@ class Moderation(commands.Cog):
     #ban a member / mass ban members
     #same thing as above
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ban(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
@@ -582,6 +614,7 @@ class Moderation(commands.Cog):
     #! not functional
     #todo look into banning users outside of the guild
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def banid(self, ctx, victim: discord.User=None, *, reason=None):
@@ -597,6 +630,7 @@ class Moderation(commands.Cog):
 
     #unban a user / mass unban users
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def unban(self, ctx, victims : commands.Greedy[discord.User]=None):
@@ -615,6 +649,7 @@ class Moderation(commands.Cog):
     #not so sure about this command
     #it will need some reworking in the future
     @commands.command(aliases=['tempban'])
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def softban(self, ctx, victim : discord.Member, time=None, *, reason=None):
@@ -649,6 +684,7 @@ class Moderation(commands.Cog):
 
     #unban all the users that have been banned in the guild
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def unbanall(self, ctx):
@@ -663,6 +699,7 @@ class Moderation(commands.Cog):
     #I will try to make some audit log commands to ease the acces to it
 
     @commands.group(case_insensitive=True, aliases=['audit'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def auditlog(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -673,6 +710,7 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
 
     @auditlog.command()
+    @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def recent(self, ctx):

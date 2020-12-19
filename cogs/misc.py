@@ -5,6 +5,7 @@ import datetime
 import wolframalpha
 import typing
 from bot import wolfram_key
+from cogs.errors import CustomChecks
 
 wolfram = wolframalpha.Client(wolfram_key)
 #print(next(res.results).text)
@@ -19,6 +20,7 @@ class Misc(commands.Cog):
     #embed sandbox
     #maybe I will further develop it someday
     @commands.command(aliases=['emb'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def embed(self, ctx, *, args: str=None):
         if not args:    #if there are no parameters given, return
@@ -46,6 +48,7 @@ class Misc(commands.Cog):
 
     #this will transform text into Morse code according to the International Morse Code
     @commands.command(aliases=['tomorse'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def texttomorse(self, ctx, *, text):
         #this is the dictionary with letters and their Morse code equivalent
@@ -70,6 +73,7 @@ class Misc(commands.Cog):
 
     #this is the viceversa of the previous command
     @commands.command(aliases=['totext'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def morsetotext(self, ctx, *, text):
         morse_to_text = {
@@ -89,6 +93,7 @@ class Misc(commands.Cog):
         await ctx.send(message)
 
     @commands.command(aliases=['age', 'howmanydays'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def agedays(self, ctx, *, birthday):
         date = birthday.split('/')  #the date should come in format dd/mm/yyyy so it can be split and formatted
@@ -114,6 +119,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     @commands.command(aliases=['lmgtfy'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def search(self, ctx, *, search):
         copy_search = search.replace(' ', '+')
@@ -125,6 +131,7 @@ class Misc(commands.Cog):
 
     #generate random passwords
     @commands.command(aliases=['passgen', 'password'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def passwordgen(self, ctx, length: typing.Optional[int]=10, *, use: typing.Optional[str]=None):
         gen = random.SystemRandom() #random generator that uses sources provided by the OS
@@ -138,6 +145,7 @@ class Misc(commands.Cog):
 
     #pick a random thing
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pick(self, ctx, *args):
         if args:
@@ -149,6 +157,7 @@ class Misc(commands.Cog):
     #I will make some nice additions using it
     #the command below is far from ready
     @commands.command(aliases=["calculate"])
+    @CustomChecks.blacklist_check()
     @commands.is_owner()
     async def math(self, ctx, *, query: str):
         data = wolfram.query(query)

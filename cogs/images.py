@@ -5,6 +5,7 @@ import datetime
 import praw
 import aiohttp
 from bot import reddit_client_id, reddit_client_secret
+from cogs.errors import CustomChecks
 
 reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0 (by /u/RobertCDR)')
 
@@ -14,6 +15,7 @@ class Images(commands.Cog):
 
     #get someone's profile pic or yours
     @commands.command(aliases=['avatar', 'av'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pfp(self, ctx, member: discord.Member=None):  
         if not member:  #if no one is mentioned then the bot will show the avatar of the command author
@@ -28,6 +30,7 @@ class Images(commands.Cog):
     #I made this command just because sometimes I want to get the cover art of a spotify track
     #I read in the docs that there is actually a way to get it and said "why not?"
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spotify(self, ctx, member: discord.Member=None):
         if not member:  #if you want to get cover art from a track that you are listening
@@ -56,6 +59,7 @@ class Images(commands.Cog):
         return await ctx.send(embed=embed)  #send the embed
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def award(self, ctx, awarded : discord.User, *, awreas : str):
         embed = discord.Embed(color=0xffec00, title='Award', description=f"Congrats {awarded.mention}! You've been awarded by {ctx.message.author.mention}: ***{awreas}***", timestamp=datetime.datetime.utcnow())
@@ -68,6 +72,7 @@ class Images(commands.Cog):
     #get comics from xkcd.com
     #I don't understand most of them, but they seem funny to me anyway 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)  #cooldown: 1 use once every 3 seconds / user
     async def xkcd(self, ctx, comic: str=None):
         #the first request below is for keeping the comics up to date
@@ -91,6 +96,7 @@ class Images(commands.Cog):
     #tried to make it work with rgb codes too but I got tired of doing it and moved on
     #I plan to do it someday, but today is not that day
     @commands.command(aliases=['colour'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def color(self, ctx, *, color):
         color = str(color).replace('#', '') #remove the # if it's given along with the code
@@ -119,6 +125,7 @@ class Images(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     @commands.command(aliases=['nasapc', 'rocketpc', 'wowsetup'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def battlestation(self, ctx):
         battlestations_submissions =  reddit.subreddit('battlestations').hot()
@@ -130,6 +137,7 @@ class Images(commands.Cog):
         await ctx.send(embed=image)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def flower(self, ctx):
         flowers_submissions = reddit.subreddit('flowers').hot()

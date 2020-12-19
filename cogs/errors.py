@@ -1,6 +1,21 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import CheckFailure, CommandOnCooldown
+import json
+
+class CustomChecks():
+
+    def blacklist_check():
+        def predicate(ctx):
+            with open('./user data/blacklist.json', 'r') as f:
+                id_list = json.load(f)
+            return ctx.author.id not in id_list['ids']
+        return commands.check(predicate)
+
+    def guild_owner_check():
+        def predicate(ctx):
+            return ctx.author is ctx.guild.owner
+        return commands.check(predicate)
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -16,9 +31,10 @@ class ErrorHandler(commands.Cog):
             embed = discord.Embed(color=0xbf1932, description=':exclamation: Invalid Command')
             await ctx.send(embed=embed)
         elif isinstance(error, CheckFailure):   #if the person does not meet the permissions necessary for the command
-            await ctx.send('the command could not be executed due to lack of permissions, dummy')
+            embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot or you do not meet the permissions required for this command.')
+            await ctx.send(embed=embed)
         elif isinstance(error, CommandOnCooldown):  #self explanatory
-            await ctx.send('wait for the cooldown, speedy')
+            await ctx.send('wait for the cooldown, speedy') 
         elif isinstance(error, commands.BadInviteArgument): #if it's bad invite url
             embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
             await ctx.send(embed=embed)

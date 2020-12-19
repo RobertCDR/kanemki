@@ -2,14 +2,16 @@ import discord
 from discord.ext import commands
 import random
 import asyncio
+from cogs.errors import CustomChecks
 
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     #now this, ladies and gentlemen, is a mess of if statements
-    #but it works and, after 2 good hours of bug hunting and errors    
+    #but it works and, after 2 good hours of bug hunting and errors 
     @commands.command(aliases=['hman', 'hang'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def hangman(self, ctx, members : commands.Greedy[discord.Member]):
         def check(x):   #if the guesses are said by the game participants in the same channel
@@ -139,6 +141,7 @@ class Games(commands.Cog):
     #guess the number game
     #todo I should make a hint system
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def guess(self, ctx, number: int = 10):
         if number < 10:
@@ -204,6 +207,7 @@ class Games(commands.Cog):
                 await ctx.send(embed=embed)
     
     @commands.command(aliases=['rps'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def rockpaperscissors(self, ctx, choice: str=None, member: discord.Member=None):
         choice_list = ['rock', 'paper', 'scissors']
@@ -282,6 +286,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)  #send the embed
     
     @commands.command(aliases=['tod'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def truthordare(self, ctx):
         def check(x):   #checks if the response is sent by the command author in the same channel where the command was invoked
@@ -311,11 +316,12 @@ class Games(commands.Cog):
 
     #flip a coin
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def flip(self, ctx):
         responses = ['heads','tails']
         choice = random.choice(responses)
-        if str(choice) == 'heads':            
+        if choice == 'heads':            
             cap = discord.Embed(title='Heads', color=0x36393E)
             cap.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/725102815768215602/cap.png')
             await ctx.send(embed=cap)
@@ -327,6 +333,7 @@ class Games(commands.Cog):
     #roll the dices
     #todo maybe I'll further develop this command too
     @commands.command(aliases=['dice'])
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roll(self, ctx):
         number = random.randint(1, 12)

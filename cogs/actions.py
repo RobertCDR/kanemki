@@ -3,8 +3,8 @@ from discord.ext import commands
 import json
 import aiohttp
 import random
-import datetime
 from bot import giphy_api_key
+from cogs.errors import CustomChecks
 
 class Actions(commands.Cog):
     def __init__(self, bot):
@@ -13,6 +13,7 @@ class Actions(commands.Cog):
     #search a gif from giphy
     #the other commands are almost the same, except the search variable already has a value
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def gif(self, ctx, *, search):
         search = search.replace(' ', '+')   #replace the spaces with plus signs otherwise the request link will be broken
@@ -32,6 +33,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def facepalm(self, ctx):
         search = 'facepalm'
@@ -52,6 +54,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def shrug(self, ctx):
         search = 'shrug'
@@ -72,6 +75,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cry(self, ctx):
         search = 'cry'
@@ -92,6 +96,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def pout(self, ctx):
         search = 'pout'
@@ -112,6 +117,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def run(self, ctx):
         search = 'run'
@@ -132,6 +138,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def tongue(self, ctx):
         search = 'tongue out'
@@ -153,6 +160,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def hug(self, ctx, member : discord.Member):
         search = 'hug'
@@ -173,6 +181,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def kiss(self, ctx, member : discord.Member):
         search = 'kiss'
@@ -193,6 +202,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def slap(self, ctx, member : discord.Member):
         search = 'slap'
@@ -213,6 +223,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def wink(self, ctx, member : discord.Member):
         search = 'wink'
@@ -233,6 +244,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def stare(self, ctx, member : discord.Member):
         search = 'stare'
@@ -253,6 +265,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def lick(self, ctx, member : discord.Member):
         search = 'lick'
@@ -273,6 +286,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def bite(self, ctx, member : discord.Member):
         search = 'bite'
@@ -293,6 +307,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cuddle(self, ctx, member : discord.Member):
         search = 'cuddle'
@@ -313,6 +328,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def pat(self, ctx, member : discord.Member):
         search = 'pat'
@@ -333,6 +349,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def smile(self, ctx, member : discord.Member):
         search = 'smile'
@@ -353,6 +370,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def poke(self, ctx, member : discord.Member):
         search = 'finger poke'
@@ -374,6 +392,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def tickle(self, ctx, member : discord.Member):
         search = 'tickle'
@@ -394,6 +413,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def point(self, ctx, member : discord.Member):
         search = 'finger point'
@@ -415,6 +435,7 @@ class Actions(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def punch(self, ctx, member : discord.Member):
         search = 'punch'
