@@ -12,6 +12,65 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.group()
+    async def blacklist(self, ctx):
+        if ctx.invoked_subcommand is None:
+            embed = discord.Embed(title='Blacklist', description='Blacklist or whitelist users from using the bot on this guild.\n\n')
+            embed.description += f"{ctx.prefix}blacklist add `user` or `user_id`\n"
+            embed.description += f"{ctx.prefix}blacklist remove `user` or `user_id`"
+            embed.set_thumbnail(url=self.bot.user.avatar_url)
+            await ctx.send(embed=embed)
+
+    @blacklist.command()
+    @CustomChecks.blacklist_check()
+    @CustomChecks.blacklist_perm_check()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def add(self, ctx, user: discord.User):
+        with open('./user data/blacklist.json', 'r') as f:
+            id_list = json.load(f)
+        if user.id == 465138950223167499:
+            embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the creator of the bot from his own bot.')
+            return await ctx.send(embed=embed)
+        else:
+            try:
+                id_list[str(ctx.guild.id)].append(user.id)
+            except Exception as error:
+                if isinstance(error, KeyError):
+                    id_list[str(ctx.guild.id)] = []
+                    id_list[str(ctx.guild.id)].append(user.id)
+        with open('./user data/blacklist.json', 'w') as f:
+            json.dump(id_list, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot.')
+        await ctx.send(embed=embed)
+
+    @blacklist.command()
+    @CustomChecks.blacklist_check()
+    @CustomChecks.blacklist_perm_check()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def remove(self, ctx, user: discord.User):
+        with open('./user data/blacklist.json', 'r') as f:
+            id_list = json.load(f)
+        try:
+            guild_id_list = id_list[str(ctx.guild.id)]
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
+                return await ctx.send(embed=embed)
+        if guild_id_list == []:
+            embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
+            return await ctx.send(embed=embed)
+        try:
+            guild_id_list.remove(user.id)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: User not blacklisted.')
+                return await ctx.send(embed=embed)
+        id_list[str(ctx.guild.id)] = guild_id_list
+        with open('./user data/blacklist.json', 'w') as f:
+            json.dump(id_list, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed {user.mention} from bot blacklist.')
+        await ctx.send(embed=embed)
+
     #a command group for server configuration commands
     @commands.group(case_insensitive=True)
     @CustomChecks.blacklist_check()

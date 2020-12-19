@@ -89,7 +89,7 @@ class Help(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def mod(self, ctx):
-        embed = discord.Embed(title=':hammer: Moderation Commands', description='`config`, `roles`, `newrole`, `delrole`, `addrole`, `remrole`, `lock`, `unlock`, `lockdown`, `lockdown-end`, `deleteinvite`, `clear`, `mute`, `unmute`, `kick`, `softban`, `ban`, `unban`, `unbanall`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(title=':hammer: Moderation Commands', description='`config`, `blacklist`, `roles`, `newrole`, `delrole`, `addrole`, `remrole`, `lock`, `unlock`, `lockdown`, `lockdown-end`, `deleteinvite`, `clear`, `mute`, `unmute`, `kick`, `softban`, `ban`, `unban`, `unbanall`', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed)
     @help.command(aliases=['frick'])
