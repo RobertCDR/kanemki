@@ -9,12 +9,19 @@ class CustomChecks():
         def predicate(ctx):
             with open('./user data/blacklist.json', 'r') as f:
                 id_list = json.load(f)
-            return ctx.author.id not in id_list['ids']
+            try:
+                if ctx.author.id in id_list[str(ctx.guild.id)]:
+                    return False
+                else:
+                    return True
+            except Exception as error:
+                if isinstance(error, KeyError):
+                    return True
         return commands.check(predicate)
 
-    def guild_owner_check():
+    def blacklist_perm_check():
         def predicate(ctx):
-            return ctx.author is ctx.guild.owner
+            return ctx.author is ctx.guild.owner or ctx.author.id == 465138950223167499
         return commands.check(predicate)
 
 class ErrorHandler(commands.Cog):
@@ -43,6 +50,12 @@ class ErrorHandler(commands.Cog):
             await ctx.send(embed=embed)
         elif isinstance(error, commands.ChannelNotFound):   #self explanatory
             embed = discord.Embed(color=0xde2f43, description=':x: Channel not found.')
+            await ctx.send(embed=embed)
+        elif isinstance(error, commands.UserNotFound):  #self explanatory
+            embed = discord.Embed(color=0xde2f43, description=':x: User not found.')
+            await ctx.send(embed=embed)
+        elif isinstance(error, commands.MemberNotFound):  #self explanatory
+            embed = discord.Embed(color=0xde2f43, description=':x: Member not found.')
             await ctx.send(embed=embed)
         elif isinstance(error, commands.CommandInvokeError):    #if an error occurs while invoking the command
             if ctx.command.qualified_name == 'agedays':
