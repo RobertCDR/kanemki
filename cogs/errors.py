@@ -7,7 +7,7 @@ class CustomChecks():
 
     def blacklist_check():
         def predicate(ctx):
-            with open('./user data/blacklist.json', 'r') as f:
+            with open('./guild data/blacklist.json', 'r') as f:
                 id_list = json.load(f)
             try:
                 if ctx.author.id in id_list[str(ctx.guild.id)]:

@@ -26,7 +26,7 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_perm_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def add(self, ctx, user: discord.User):
-        with open('./user data/blacklist.json', 'r') as f:
+        with open('./guild data/blacklist.json', 'r') as f:
             id_list = json.load(f)
         if user.id == 465138950223167499:
             embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the creator of the bot from his own bot.')
@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
                 if isinstance(error, KeyError):
                     id_list[str(ctx.guild.id)] = []
                     id_list[str(ctx.guild.id)].append(user.id)
-        with open('./user data/blacklist.json', 'w') as f:
+        with open('./guild data/blacklist.json', 'w') as f:
             json.dump(id_list, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot.')
         await ctx.send(embed=embed)
@@ -51,7 +51,7 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_perm_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def remove(self, ctx, user: discord.User):
-        with open('./user data/blacklist.json', 'r') as f:
+        with open('./guild data/blacklist.json', 'r') as f:
             id_list = json.load(f)
         try:
             guild_id_list = id_list[str(ctx.guild.id)]
@@ -69,7 +69,7 @@ class Moderation(commands.Cog):
                 embed = discord.Embed(color=0xde2f43, description=':x: User not blacklisted.')
                 return await ctx.send(embed=embed)
         id_list[str(ctx.guild.id)] = guild_id_list
-        with open('./user data/blacklist.json', 'w') as f:
+        with open('./guild data/blacklist.json', 'w') as f:
             json.dump(id_list, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed {user.mention} from bot blacklist.')
         await ctx.send(embed=embed)
