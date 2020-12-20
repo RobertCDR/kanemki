@@ -41,7 +41,7 @@ class ErrorHandler(commands.Cog):
             embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot or you do not meet the permissions required for this command.')
             await ctx.send(embed=embed)
         elif isinstance(error, CommandOnCooldown):  #self explanatory
-            await ctx.send('wait for the cooldown, speedy') 
+            await ctx.send('wait for the cooldown, speedy')
         elif isinstance(error, commands.BadInviteArgument): #if it's bad invite url
             embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
             await ctx.send(embed=embed)
@@ -113,7 +113,7 @@ class ErrorHandler(commands.Cog):
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the ID of the user.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'search':
-                embed = discord.Embed(color=0x3c8bc7, description=':globe_with_meridians: Tell me what to look for.') 
+                embed = discord.Embed(color=0x3c8bc7, description=':globe_with_meridians: Tell me what to look for.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'rolename':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the name of the role.')
@@ -143,6 +143,6 @@ class ErrorHandler(commands.Cog):
                 raise error
         else:   #if the error is none of the above, raise it in the terminal for further debugging (pain.)
             raise error
-            
+
 def setup(bot):
     bot.add_cog(ErrorHandler(bot))

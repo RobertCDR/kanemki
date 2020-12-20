@@ -380,7 +380,7 @@ class Listeners(commands.Cog):
                 pass
             else:
                 raise
-    
+
     @commands.Cog.listener()
     async def on_guild_role_update(self, before, after):
         try:
@@ -474,7 +474,7 @@ class Listeners(commands.Cog):
                 pass
             else:
                 raise
-
+    """
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         try:
@@ -495,6 +495,7 @@ class Listeners(commands.Cog):
                 pass
             else:
                 raise
+    """
 
 def setup(bot):
     bot.add_cog(Listeners(bot))
