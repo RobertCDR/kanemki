@@ -63,7 +63,11 @@ class Moderation(commands.Cog):
             embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
             return await ctx.send(embed=embed)
         try:
-            guild_id_list.remove(user.id)
+            if user.id in guild_id_list:
+                guild_id_list.remove(user.id)
+            else:
+                embed = discord.Embed(color=0xde2f43, description=':x: User not on blacklist.')
+                return await ctx.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: User not blacklisted.')
@@ -96,8 +100,10 @@ class Moderation(commands.Cog):
             description += f'{ctx.prefix}config welcomemesg-remove: Remove the welcome message.\n'
             description += f'{ctx.prefix}config logsch-set `#channel`: Set a logs channel\n'
             description += f'{ctx.prefix}config logsch-remove: Remove the logs channel.\n'
+            """
             description += f'{ctx.prefix}config starboard-set `#channel`: Set a starboard channel where messages with the :star: reaction will be highlighted.\n'
             description += f'{ctx.prefix}config starboard-remove: Remove the starboard channel.'
+            """
             embed.description = description
             await ctx.send(embed=embed)
 
@@ -337,7 +343,7 @@ class Moderation(commands.Cog):
             json.dump(welcomemsg, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
-
+    """
     @config.command(aliases=['starboard-set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
@@ -370,7 +376,7 @@ class Moderation(commands.Cog):
             json.dump(starboards, f, indent=4)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed starboard channel.')
         await ctx.send(embed=embed)
-
+    """
     #this command displays a list of the guild roles
     @commands.command()
     @CustomChecks.blacklist_check()
@@ -405,9 +411,10 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def delrole(self, ctx, role: discord.Role):
-        await role.delete()
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Role deleted.')
+    async def delrole(self, ctx, role: commands.Greedy[discord.Role]):
+        for x in role:
+            await x.delete()
+        embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Roles deleted: {', '.join(list(map(lambda x: x.name, role)))}.")
         await ctx.send(embed=embed)
 
     #add a role to a member
@@ -415,9 +422,13 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def addrole(self, ctx, member: discord.Member, role: discord.Role):
-        await member.add_roles(role)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully added role {role.mention} to {member.mention}.')
+    async def addrole(self, ctx, role: discord.Role, member: commands.Greedy[discord.Member]):
+        for x in member:
+            if role in x.roles:
+                pass
+            else:
+                await x.add_roles(role)
+        embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Successfully added role {role.mention} to {' '.join(list(map(lambda x: x.mention, member)))}.")
         await ctx.send(embed=embed)
 
     #remove a role from a member
@@ -425,9 +436,13 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def remrole(self, ctx, member: discord.Member, role: discord.Role):
-        await member.remove_roles(role)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed role {role.mention} from {member.mention}.')
+    async def remrole(self, ctx, role: discord.Role, member: commands.Greedy[discord.Member]):
+        for x in member:
+            if role not in x.roles:
+                pass
+            else:
+                await x.remove_roles(role)
+        embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Successfully removed role {role.mention} from {' '.join(list(map(lambda x: x.mention, member)))}.")
         await ctx.send(embed=embed)
 
     #lock a text channel
