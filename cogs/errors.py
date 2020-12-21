@@ -34,7 +34,8 @@ class ErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         if hasattr(ctx.command, 'on_error'):    #if the command already has a local handler ignore every error raised by it (keep that in mind)
             return
-        elif isinstance(error, commands.CommandNotFound):   #if the command does not exist
+        error = getattr(error, "original", error)   #unwrap the error
+        if isinstance(error, commands.CommandNotFound):   #if the command does not exist
             embed = discord.Embed(color=0xbf1932, description=':exclamation: Invalid Command')
             await ctx.send(embed=embed)
         elif isinstance(error, CheckFailure):   #if the person does not meet the permissions necessary for the command
