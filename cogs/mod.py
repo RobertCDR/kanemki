@@ -663,7 +663,7 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def ban(self, ctx, victims : commands.Greedy[discord.Member]=None, *, reason=None):
+    async def ban(self, ctx, victims : commands.Greedy[typing.Union[discord.Member, discord.User]]=None, *, reason=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim(s).')
             return await ctx.send(embed=embed)
@@ -672,11 +672,15 @@ class Moderation(commands.Cog):
             if victim.bot:
                 embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
                 return await ctx.send(embed=embed)
-            elif victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
-                embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
-                return await ctx.send(embed=embed)
+            if victim in ctx.guild.members:
+                if victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
+                    embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
+                    return await ctx.send(embed=embed)
+                else:
+                    await ctx.guild.ban(victim, reason=reason, delete_message_days=1)    #ban the member
+                banned_list.append(victim)
             else:
-                await victim.ban(reason=reason)    #ban the member
+                await ctx.guild.ban(victim, reason=reason, delete_message_days=1)    #ban the user
                 banned_list.append(victim)
         if len(banned_list) > 0:
             _list = ', '.join(victim.mention for victim in banned_list)
@@ -687,21 +691,6 @@ class Moderation(commands.Cog):
                 message = discord.Embed(color=0xff0000, title=f"You've been banned in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
                 message.set_thumbnail(url=ctx.guild.icon_url)
                 await dm.send(embed=message)
-
-    @commands.command()
-    @CustomChecks.blacklist_check()
-    @commands.has_guild_permissions(ban_members=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def banid(self, ctx, victim: discord.User=None, *, reason=None):
-        if victim is None:
-            embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
-            return await ctx.send(embed=embed)
-        if victim.bot:
-                embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
-                return await ctx.send(embed=embed)
-        await ctx.guild.ban(victim)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {victim.mention}**.**')
-        await ctx.send(embed=embed)
 
     #unban a user / mass unban users
     @commands.command()
