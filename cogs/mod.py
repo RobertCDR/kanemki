@@ -688,8 +688,6 @@ class Moderation(commands.Cog):
                 message.set_thumbnail(url=ctx.guild.icon_url)
                 await dm.send(embed=message)
 
-    #! not functional
-    #todo look into banning users outside of the guild
     @commands.command()
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
@@ -701,7 +699,7 @@ class Moderation(commands.Cog):
         if victim.bot:
                 embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
                 return await ctx.send(embed=embed)
-        await victim.ban(reason=reason)
+        await ctx.guild.ban(victim)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {victim.mention}**.**')
         await ctx.send(embed=embed)
 
