@@ -3,8 +3,10 @@ from discord.ext import commands
 from discord.ext.commands import CheckFailure, CommandOnCooldown
 import json
 
+#a custom checks class meant to create some decorators for the bot's commands
 class CustomChecks():
 
+    #check if the user is or not in the bot blacklist of the guild
     def blacklist_check():
         def predicate(ctx):
             with open('./guild data/blacklist.json', 'r') as f:
@@ -19,6 +21,7 @@ class CustomChecks():
                     return True
         return commands.check(predicate)
 
+    #check if the user is the server owner or me (for blacklisting users)
     def blacklist_perm_check():
         def predicate(ctx):
             return ctx.author is ctx.guild.owner or ctx.author.id == 465138950223167499
@@ -70,7 +73,7 @@ class ErrorHandler(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 raise error
-        elif isinstance(error, discord.Forbidden):   #when status code 403 occurs due to role hierarchy etc.
+        elif isinstance(error, discord.Forbidden):   #when discord.Forbidden 403 occurs due to role hierarchy etc.
             embed = discord.Embed(color=0xde2f43, description=':x: Could not complete action due to missing permissions/role hierarchy/etc.')
             await ctx.send(embed=embed)
         elif isinstance(error, commands.BadArgument): #if the argument passed in the command is not good (yes, shut up, I'm not good at explaining things)

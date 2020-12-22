@@ -7,7 +7,8 @@ import typing
 from dpymenus import PaginatedMenu
 from cogs.errors import CustomChecks
 
-#the moderation commands need some reworking because I can't catch the errors properly and they still need some fixes
+#if you are here for examples, scroll through this and you'll find commentaries on some of these commands
+
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -15,7 +16,7 @@ class Moderation(commands.Cog):
     @commands.group()
     async def blacklist(self, ctx):
         if ctx.invoked_subcommand is None:
-            embed = discord.Embed(title='Blacklist', description='Blacklist or whitelist users from using the bot on this guild.\n\n')
+            embed = discord.Embed(title='Blacklist', description='Blacklist or whitelist users from using the bot on this guild. *Note that only the server owner or the creator of the bot himself can use these commands.*\n\n')
             embed.description += f"{ctx.prefix}blacklist add `user` or `user_id`\n"
             embed.description += f"{ctx.prefix}blacklist remove `user` or `user_id`"
             embed.set_thumbnail(url=self.bot.user.avatar_url)
@@ -399,6 +400,8 @@ class Moderation(commands.Cog):
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
         if name is None:    #the role needs at least a name
             return await ctx.send("name the role first")
+        #create the role using the given parameters
+        #todo optional permissions shall be added when I remember
         if color:
             role = await ctx.guild.create_role(name=name, color=color, hoist=hoist, mentionable=mentionable)
         else:
@@ -453,8 +456,11 @@ class Moderation(commands.Cog):
     async def lock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
             channel = ctx.channel
+        #get the channel overwrites for @everyone
         perms = channel.overwrites_for(ctx.guild.default_role)
+        #deny the permissions to send messages
         perms.send_messages = False
+        #overwrite the new permissions for @everyone
         await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
         embed = discord.Embed(color=0xfccc51, description=':warning: Channel has been locked.')
         await channel.send(embed=embed)
@@ -474,6 +480,7 @@ class Moderation(commands.Cog):
         await channel.send(embed=embed)
 
     #lock all text and voice channel except the ones that are invisible
+    #same thing as above, but in a for loop and with overwrites for voice channels
     @commands.command()
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
@@ -520,7 +527,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     #a purge command
-    #this will need further development too
+    #todo this will need further development too
     @commands.command(aliases=['purge', 'clean'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_messages=True)
@@ -645,7 +652,7 @@ class Moderation(commands.Cog):
                 embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
                 return await ctx.send(embed=embed)
             else:
-                await victim.kick(reason=reason)    #kick the member
+                await victim.kick(reason=reason)
                 kicked_list.append(victim)
         if len(kicked_list) > 0:
             _list = ', '.join(victim.mention for victim in kicked_list)
@@ -663,6 +670,7 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
+    #Greedy and Union will allow you to ban guild members and users outside of the guild
     async def ban(self, ctx, victims : commands.Greedy[typing.Union[discord.Member, discord.User]]=None, *, reason=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim(s).')
@@ -672,15 +680,15 @@ class Moderation(commands.Cog):
             if victim.bot:
                 embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
                 return await ctx.send(embed=embed)
-            if victim in ctx.guild.members:
+            if victim in ctx.guild.members: #check if the user is a guild member and the look if he got mod perms
                 if victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
                     embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
                     return await ctx.send(embed=embed)
-                else:
-                    await ctx.guild.ban(victim, reason=reason, delete_message_days=1)    #ban the member
+                else:   #ban the member if doesn't have permissions
+                    await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
                 banned_list.append(victim)
-            else:
-                await ctx.guild.ban(victim, reason=reason, delete_message_days=1)    #ban the user
+            else:   #if the user is not in the guild, ban him from the guild
+                await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
                 banned_list.append(victim)
         if len(banned_list) > 0:
             _list = ', '.join(victim.mention for victim in banned_list)
@@ -703,7 +711,7 @@ class Moderation(commands.Cog):
             return await ctx.send(embed=embed)
         users = []
         for victim in victims:
-            await ctx.guild.unban(victim)  #unban the user by it's id
+            await ctx.guild.unban(victim)
             banned_user = str(victim).split("=", 1)
             users.append(victim.mention)
         _list = ', '.join(users)
@@ -762,6 +770,7 @@ class Moderation(commands.Cog):
     #below is some work in progress
     #I will try to make some audit log commands to ease the acces to it
 
+    """
     @commands.group(case_insensitive=True, aliases=['audit'])
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -798,6 +807,7 @@ class Moderation(commands.Cog):
             embed_list.append(embed)
         menu.add_pages(embed_list)    
         await menu.open()
-
+    """
+    
 def setup(bot):
     bot.add_cog(Moderation(bot))

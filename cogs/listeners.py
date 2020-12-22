@@ -20,15 +20,16 @@ class Listeners(commands.Cog):
         with open('./guild data/prefixes.json', 'w') as f:  #open the json file in write mode
             json.dump(prefixes, f, indent=4)    #dump the default prefix
 
+    #when the bot is removed from the guild, remove the data stored about it except the user blacklist
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         try:
-            with open ('./guild data/mutedroles.json', 'r') as f:
+            with open('./guild data/mutedroles.json', 'r') as f:
                 mutedrole = json.load(f)
             mutedrole.pop(str(guild.id))
             with open('./guild data/mutedroles.json', 'w') as f:
                 json.dump(mutedrole, f, indent=4)
-            with open ('./guild data/joinroles.json', 'r') as f:
+            with open('./guild data/joinroles.json', 'r') as f:
                 joinrole = json.load(f)
             joinrole.pop(str(guild.id))
             with open('./guild data/joinroles.json', 'w') as f:
@@ -41,14 +42,14 @@ class Listeners(commands.Cog):
             with open('./guild data/welcome.json', 'r') as f:
                 welcome = json.load(f)
             welcome.pop(str(guild.id))
-            with open ('./guild data/welcome.json', 'w') as f:
+            with open('./guild data/welcome.json', 'w') as f:
                 json.dump(welcome, f, indent=4)
             with open('./guild data/logsch.json', 'r') as f:
                 logsch = json.load(f)
             logsch.pop(str(guild.id))
             with open('./guild data/logsch.json', 'w') as f:
                 json.dump(logsch, f, indent=4)
-            with open ('./guild data/prefixes.json', 'r') as f:
+            with open('./guild data/prefixes.json', 'r') as f:
                 prefixes = json.load(f)
             prefixes.pop(str(guild.id))
             with open('./guild data/prefixes.json', 'w') as f:

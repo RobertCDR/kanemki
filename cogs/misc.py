@@ -28,7 +28,7 @@ class Misc(commands.Cog):
             return await ctx.send(embed=embed)
         embed = discord.Embed(color=random.randint(0, 0xffffff))    #create the embed with only the color field
         args = list(args.split(', '))   #create a list containing the parameters and the content of each one
-        for i in range(0, len(args)):   #create a for loop to iterate over the elements 
+        for i in range(0, len(args)):   #create a for loop to iterate over the elements
             x = list(args[i].split('=', 1)) #create another another list from each element
             if x[0] == 'title' or x[0] == 't':
                 embed.title = x[1]

@@ -47,6 +47,7 @@ class Info(commands.Cog):
         if not member:  #if nobody is mentioned
             member = ctx.message.author #the member is set to the command author
         embed = discord.Embed(color=0xff0000, timestamp=datetime.datetime.utcnow(), description=member.mention) #create the embed
+        #check the user's hypesquad house
         if member.public_flags.hypesquad_balance:
             embed.set_author(name=f'{member}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/769659063759667280/balance.png')
         elif member.public_flags.hypesquad_bravery:
@@ -57,7 +58,7 @@ class Info(commands.Cog):
             embed.set_author(name=f'{member}', icon_url=member.avatar_url)
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_footer(text=f'Requested by {ctx.message.author}', icon_url=ctx.message.author.avatar_url)
-        #create an embed field containing the current status of the user
+        #check what status does the user have
         if member.status is discord.Status.online:
             embed.add_field(name='**Status**', value=f'```css\n+{member.status}\n```', inline=True)
         elif member.status is discord.Status.dnd:
@@ -93,6 +94,7 @@ class Info(commands.Cog):
             embed.add_field(name=f'**Roles** ({len(member.roles)-1})', value=allroles, inline=False)
         else:
             embed.add_field(name='**Roles** (0)', value='```css\n[None]\n```', inline=False)
+        #some further checks for different things
         if member.premium_since:
             premium = ':white_check_mark:'
         else:
@@ -137,7 +139,7 @@ class Info(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def serverinfo(self, ctx):
-        embed = discord.Embed(color=0xff0000, timestamp=datetime.datetime.utcnow()) #create the embed
+        embed = discord.Embed(color=0xff0000, timestamp=datetime.datetime.utcnow())
         embed.set_author(icon_url=ctx.guild.icon_url, name=f'{ctx.guild} Server Info')
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
