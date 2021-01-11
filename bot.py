@@ -28,7 +28,14 @@ def get_prefix(bot, message):
         prefixes = json.load(f) #load it
     return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)  #return the prefix associated with the guild id
 
-bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, allowed_mentions=mentions, intents=intents)
+bot = commands.Bot(
+    command_prefix=get_prefix,
+    case_insensitive=True,
+    allowed_mentions=mentions,
+    intents=intents,
+    activity=discord.Activity(type=discord.ActivityType.watching, name='Tomkyo Ghoul | >help'),
+    status=discord.Status.dnd
+    )
 
 #the for loop below loads every cog when starting the bot
 for filename in os.listdir('./cogs'):
@@ -41,7 +48,6 @@ bot.load_extension('jishaku')
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} - {bot.user.id}\ndiscord.py: v{discord.__version__}\n')
-    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Activity(type=discord.ActivityType.watching, name='Tomkyo Ghoul | >help'))
 
 #remote leave a guild by it's id
 @bot.command(hidden=True)
