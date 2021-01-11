@@ -1359,7 +1359,7 @@ class Help(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def unbanall(self, ctx):    
-        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunban all guild users (server administrator only command)', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description='**Description**\nunban all guild users (server owner only command)', timestamp=datetime.datetime.utcnow())
         embed.set_author(name='unbanall command help', icon_url=self.bot.user.avatar_url)
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/740546485560803450/question.png')
         embed.add_field(name='**Usage**', value=f'{ctx.prefix}unbanall')
