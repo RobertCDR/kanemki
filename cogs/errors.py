@@ -27,6 +27,28 @@ class CustomChecks():
             return ctx.author is ctx.guild.owner or ctx.author.id == 465138950223167499
         return commands.check(predicate)
 
+    def guild_owner_check():
+        def predicate(ctx):
+            return ctx.author is ctx.guild.owner
+        return commands.check(predicate)
+
+    def rep_points_check():
+        def predicate(ctx):
+            with open('./user data/reputation.json') as f:
+                reputation = json.load(f)
+            try:
+                points = reputation[str(ctx.author.id)]['points']
+            except Exception as error:
+                if isinstance(error, KeyError):
+                    return True
+                else:
+                    raise
+            if points > 0:
+                return True
+            else:
+                return False
+        return commands.check(predicate)
+
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -42,8 +64,14 @@ class ErrorHandler(commands.Cog):
             embed = discord.Embed(color=0xbf1932, description=':exclamation: Invalid Command')
             await ctx.send(embed=embed)
         elif isinstance(error, CheckFailure):   #if the person does not meet the permissions necessary for the command
-            embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot or you do not meet the permissions required for this command.')
-            await ctx.send(embed=embed)
+            if ctx.command.qualified_name == 'reputation':
+                embed = discord.Embed(color=0xff0000, description='**You already gave a reputation point to someone today!**')
+                embed.set_author(icon_url=ctx.author.avatar_url, name=ctx.author)
+                embed.set_footer(icon_url=self.bot.user.avatar_url, text=f'Reputation points reset daily at 00:00 UTC.')
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot or you do not meet the permissions required for this command.')
+                await ctx.send(embed=embed)
         elif isinstance(error, CommandOnCooldown):  #self explanatory
             await ctx.send('wait for the cooldown, speedy')
         elif isinstance(error, commands.BadInviteArgument): #if it's bad invite url
@@ -76,6 +104,12 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, discord.Forbidden):   #when discord.Forbidden 403 occurs due to role hierarchy etc.
             embed = discord.Embed(color=0xde2f43, description=':x: Could not complete action due to missing permissions/role hierarchy/etc.')
             await ctx.send(embed=embed)
+        elif isinstance(error, discord.NotFound):
+            if ctx.command.qualified_name == 'unban':
+                embed = discord.Embed(color=0xde2f43, description=':x: Unknown ban.')
+                await ctx.send(embed=embed)
+            else:
+                raise
         elif isinstance(error, commands.BadArgument): #if the argument passed in the command is not good (yes, shut up, I'm not good at explaining things)
             member_errors = ['userinfo', 'permissions', 'mute', 'unmute', 'kick', 'ban', 'softban', 'unban', 'pfp', 'award', '' 'fuck', 'hack', 'pula', 'gayrate', 'ship', 'hug', 'kiss', 'slap', 'wink', 'stare', 'lick', 'bite', 'cuddle', 'pat', 'smile', 'poke', 'tickle', 'point', 'punch']
             role_errors = ['roleinfo', 'rpermissions', 'config muted_set', 'config joinrole_set', 'config botrole_set']
