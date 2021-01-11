@@ -556,11 +556,22 @@ class Moderation(commands.Cog):
             embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of time (ex: 10s, 10m, 10h, 10d, 10w).')
             return await ctx.send(embed=embed)
         def convert_time_to_seconds(time):  #a function that converts the mute time according to how the command author specified
-            time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+            time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "S": 1, "M": 60, "H": 3600, "D": 86400, "W": 604800}
             try:
-                return int(time[:-1]) * time_convert[time[-1]]
-            except:
-                return time
+                x = time_convert[time[-1]]
+            except Exception as error:
+                if isinstance(error, KeyError):
+                    x = 0;
+            if x:
+                try:
+                    return int(time[:-1]) * time_convert[time[-1]]
+                except:
+                    return time
+            else:
+                return False
+        if not convert_time_to_seconds(time):
+                embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of time (ex: 10s, 10m, 10h, 10d, 10w).')
+                return await ctx.send(embed=embed)
         with open('./guild data/mutedroles.json', 'r') as f:    #open the json file containing muted roles ids
             mutedrole = json.load(f)    #load the file
         if str(ctx.guild.id) in str(mutedrole): #if the guild has already a muted role set
@@ -573,30 +584,38 @@ class Moderation(commands.Cog):
             #after creating the default mute role dump it into the json file
             with open('./guild data/mutedroles.json', 'w') as f:
                 json.dump(mutedrole, f, indent=4)
+            for channel in ctx.guild.text_channels:
+                perms = channel.overwrites_for(muted)
+                perms.send_messages = False
+                await channel.set_permissions(muted, overwrite=perms)
+            for channel in ctx.guild.voice_channels:
+                perms = channel.overwrites_for(muted)
+                perms.connect = False
+                await channel.set_permissions(muted, overwrite=perms)
         muted_members = []
         for victim in victims:  #iterate through the mentioned users
-            if victim.bot:  #if the member mentioned is a bot
-                embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Cannot mute bots (due to solidarity for my people).')
-                await ctx.send(embed=embed)
             #if the member mentioned has mod permissions or is an admin
-            elif victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
+            if (victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator) and not victim.bot:
                 embed = discord.Embed(color=0xde2f43, description=':x: That user is a mod/admin.')
                 await ctx.send(embed=embed)
             elif muted in victim.roles: #if the user is already muted
                 embed = discord.Embed(color=0xde2f43, description=':x: That user is already muted.')
                 await ctx.send(embed=embed)
             else:   #if the user passed the above checks
-                await victim.add_roles(muted)   #add the role to the user
-                muted_members.append(victim)    #add the user to a list of muted users
+                if not victim.bot:
+                    await victim.add_roles(muted)
+                    muted_members.append(victim)
+                    dm = await victim.create_dm()   #create a conversation with the members
+                    message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}", timestamp=datetime.datetime.utcnow())
+                    message.set_thumbnail(url=ctx.guild.icon_url)
+                    await dm.send(embed=message)   #message that he/she was muted in that guild
+                else:
+                    await victim.add_roles(muted)   #add the role to the user
+                    muted_members.append(victim)    #add the user to a list of muted users
         if len(muted_members) > 0:  #if at least one member was muted
             _list = ', '.join(victim.mention for victim in muted_members)
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully muted** {_list}**.**')
             await ctx.send(embed=embed)
-            for victim in muted_members:    #iterate through the muted users list
-                dm = await victim.create_dm()   #create a conversation with the members
-                message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}", timestamp=datetime.datetime.utcnow())
-                message.set_thumbnail(url=ctx.guild.icon_url)
-                await dm.send(embed=message)   #message that he/she was muted in that guild
             await asyncio.sleep(convert_time_to_seconds(time))  #wait for the time to pass
             for victim in muted_members:
                 await victim.remove_roles(muted)    #remove the role from the members
@@ -616,11 +635,8 @@ class Moderation(commands.Cog):
         muted = discord.utils.get(ctx.guild.roles, id=muted)  #get the role
         unmuted_list = []
         for victim in victims:  #iterate through the mentioned users
-            if victim.bot:  #if the member mentioned is a bot
-                embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: That user is a bot.')
-                await ctx.send(embed=embed)
             #if the member mentioned has mod permissions or is an admin
-            elif victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
+            if victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
                 embed = discord.Embed(color=0xde2f43, description=':x: That user is a mod/admin.')
                 await ctx.send(embed=embed)
             elif muted in victim.roles: #if the user is indeed muted
@@ -645,24 +661,24 @@ class Moderation(commands.Cog):
             return await ctx.send(embed=embed)
         kicked_list = []
         for victim in victims:
-            if victim.bot:
-                embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot kick bots (due to solidarity for my people).')
-                return await ctx.send(embed=embed)
-            elif victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
+            if (victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator) and not victim.bot:
                 embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
                 return await ctx.send(embed=embed)
             else:
-                await victim.kick(reason=reason)
-                kicked_list.append(victim)
+                if not victim.bot:
+                    await victim.kick(reason=reason)
+                    kicked_list.append(victim)
+                    dm = await victim.create_dm()
+                    message = discord.Embed(color=0xff0000, title=f"You've been kicked from **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
+                    message.set_thumbnail(url=ctx.guild.icon_url)
+                    await dm.send(embed=message)
+                else:
+                    await victim.kick(reason=reason)
+                    kicked_list.append(victim)
         if len(kicked_list) > 0:
             _list = ', '.join(victim.mention for victim in kicked_list)
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully kicked** {_list}**.**')
             await ctx.send(embed=embed)
-            for victim in kicked_list:
-                dm = await victim.create_dm()
-                message = discord.Embed(color=0xff0000, title=f"You've been kicked from **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
-                message.set_thumbnail(url=ctx.guild.icon_url)
-                await dm.send(embed=message)
         
     #ban a member / mass ban members
     #same thing as above
@@ -677,28 +693,28 @@ class Moderation(commands.Cog):
             return await ctx.send(embed=embed)
         banned_list = []
         for victim in victims:
-            if victim.bot:
-                embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
-                return await ctx.send(embed=embed)
             if victim in ctx.guild.members: #check if the user is a guild member and the look if he got mod perms
-                if victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
+                if (victim.guild_permissions.manage_messages or victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator) and not victim.bot:
                     embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
                     return await ctx.send(embed=embed)
                 else:   #ban the member if doesn't have permissions
                     await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
                 banned_list.append(victim)
             else:   #if the user is not in the guild, ban him from the guild
-                await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
-                banned_list.append(victim)
+                if not victim.bot:
+                    await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
+                    banned_list.append(victim)
+                    dm = await victim.create_dm()
+                    message = discord.Embed(color=0xff0000, title=f"You've been banned in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
+                    message.set_thumbnail(url=ctx.guild.icon_url)
+                    await dm.send(embed=message)
+                else:
+                    await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
+                    banned_list.append(victim)
         if len(banned_list) > 0:
             _list = ', '.join(victim.mention for victim in banned_list)
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {_list}**.**')
             await ctx.send(embed=embed)
-            for victim in banned_list:
-                dm = await victim.create_dm()
-                message = discord.Embed(color=0xff0000, title=f"You've been banned in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
-                message.set_thumbnail(url=ctx.guild.icon_url)
-                await dm.send(embed=message)
 
     #unban a user / mass unban users
     @commands.command()
@@ -725,9 +741,6 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def softban(self, ctx, victim : discord.Member, time=None, *, reason=None):
-        if victim.bot:
-            embed = discord.Embed(color=0xde2f43, description=':stop_sign: Cannot ban bots (due to solidarity for my people).')
-            return await ctx.send(embed=embed)
         if victim.guild_permissions.kick_members or victim.guild_permissions.ban_members or victim.guild_permissions.administrator:
             embed = discord.Embed(color=0xde2f43, description=':x: This user is a mod/admin.')
             return await ctx.send(embed=embed)
@@ -757,7 +770,7 @@ class Moderation(commands.Cog):
     #unban all the users that have been banned in the guild
     @commands.command()
     @CustomChecks.blacklist_check()
-    @commands.has_guild_permissions(administrator=True)
+    @CustomChecks.guild_owner_check()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def unbanall(self, ctx):
         banned_users = await ctx.guild.bans()   #get all the banned users
