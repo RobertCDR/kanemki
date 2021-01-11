@@ -17,7 +17,7 @@ class Images(commands.Cog):
     @commands.command(aliases=['avatar', 'av'])
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def pfp(self, ctx, member: discord.Member=None):  
+    async def pfp(self, ctx, member: discord.User=None):  
         if not member:  #if no one is mentioned then the bot will show the avatar of the command author
             member = ctx.message.author
         pfp = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
@@ -123,6 +123,106 @@ class Images(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=str(ctx.message.author))
         embed.set_thumbnail(url=url)    #this is the image set to be the thumbnail
         await ctx.send(embed=embed) #send the embed
+
+    @commands.command(aliases=['aww', 'cute'])
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def eyebleach(self, ctx):
+        eyebleach_submissions = reddit.subreddit('eyebleach').hot()
+        post = random.randint(1, 100)
+        for x in range (0, post):
+            submission = next(x for x in eyebleach_submissions if not x.stickied)
+        if submission.is_video:
+            await ctx.send(submission.url)
+        else:
+            image = discord.Embed(title=submission.title, url=submission.url, color=random.randint(0, 0xffffff))
+            image.set_image(url=submission.url)
+            image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
+            await ctx.send(embed=image)
+
+    @commands.command(aliases=['doggo', 'doggie', 'woof'])
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def dog(self, ctx):
+        dogpictures_submissions =  reddit.subreddit('dogpictures').hot()
+        dogswithjobs_submissions = reddit.subreddit('dogswithjobs').hot()
+        lookatmydog_submissions = reddit.subreddit('lookatmydog').hot()
+        corgi_submissions = reddit.subreddit('corgi').hot()
+        goldenretrievers_submissions = reddit.subreddit('goldenretrievers').hot()
+        list = [dogpictures_submissions, dogswithjobs_submissions, lookatmydog_submissions, corgi_submissions, goldenretrievers_submissions]
+        submissions = random.choice(list)
+        post = random.randint(1, 100)
+        for x in range (0, post):
+            submission = next(x for x in submissions if not x.stickied)
+        if submission.is_video:
+            await ctx.send(submission.url)
+        else:
+            image = discord.Embed(title=submission.title, url=submission.url, color=random.randint(0, 0xffffff))
+            image.set_image(url=submission.url)
+            image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
+            await ctx.send(embed=image)
+
+    @commands.command(aliases=['kitty', 'meow', 'kat'])
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def cat(self, ctx):
+        cats_submissions = reddit.subreddit('cats').hot()
+        catbellies_submissions =  reddit.subreddit('catbellies').hot()
+        supermodelcats_submissions = reddit.subreddit('supermodelcats').hot()
+        catloaf_submissions = reddit.subreddit('catloaf').hot()
+        stuffoncats_submissions = reddit.subreddit('stuffoncats').hot()
+        catpictures_submissions = reddit.subreddit('catpictures').hot()
+        catsinsinks_submissions = reddit.subreddit('catsinsinks').hot()
+        cat_submissions = reddit.subreddit('cat').hot()
+        list = [cat_submissions, cats_submissions, catbellies_submissions, supermodelcats_submissions, catloaf_submissions, stuffoncats_submissions, catpictures_submissions, catsinsinks_submissions]
+        submissions = random.choice(list)
+        post = random.randint(1, 100)
+        for x in range (0, post):
+            submission = next(x for x in submissions if not x.stickied)
+        if submission.is_video:
+            await ctx.send(submission.url)
+        else:
+            image = discord.Embed(title=submission.title, url=submission.url, color=random.randint(0, 0xffffff))
+            image.set_image(url=submission.url)
+            image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
+            await ctx.send(embed=image)
+
+    @commands.command(aliases=['bunny', 'bunbun', 'longears', 'bun'])
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def rabbit(self, ctx):
+        rabbits_submissions =  reddit.subreddit('rabbits').hot()
+        bunnieswithhats_submissions = reddit.subreddit('bunnieswithhats').hot()
+        buncomfortable_submissions = reddit.subreddit('buncomfortable').hot()
+        hairybuns_submissions = reddit.subreddit('hairybuns').hot()
+        list = [rabbits_submissions, bunnieswithhats_submissions, buncomfortable_submissions, hairybuns_submissions]
+        submissions = random.choice(list)
+        post = random.randint(1, 100)
+        for x in range (0, post):
+            submission =  next(x for x in submissions if not x.stickied)
+        if submission.is_video:
+            await ctx.send(submission.url)
+        else:
+            image = discord.Embed(title=submission.title, url=submission.url, color=random.randint(0, 0xffffff))
+            image.set_image(url=submission.url)
+            image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
+            await ctx.send(embed=image)
+
+    @commands.command()
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def bear(self, ctx):
+        bears_submissions =  reddit.subreddit('bears').hot()
+        post = random.randint(1, 100)
+        for x in range (0, post):
+            submission = next(x for x in bears_submissions if not x.stickied)
+        if submission.is_video:
+            await ctx.send(submission.url)
+        else:
+            image = discord.Embed(title=submission.title, url=submission.url, color=random.randint(0, 0xffffff))
+            image.set_image(url=submission.url)
+            image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
+            await ctx.send(embed=image)
 
     @commands.command(aliases=['nasapc', 'rocketpc', 'wowsetup'])
     @CustomChecks.blacklist_check()
