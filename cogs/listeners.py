@@ -265,20 +265,17 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         try:
-            if (after is discord.Embed) or (after is discord.Attachment):
-                pass
-            else:
-                with open('./guild data/logsch.json', 'r') as f:
-                    logsch = json.load(f)
-                logs = self.bot.get_channel(logsch[str(before.guild.id)])
-                embed = discord.Embed(
-                    color=0x0019ff, title=f'Message Edited', timestamp=datetime.datetime.utcnow(),
-                    description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}\n**Message ID:** {after.id}\n**Channel ID:** {after.channel.id}"
-                )
-                embed.set_author(icon_url=before.author.avatar_url, name=before.author)
-                embed.add_field(name='Before', value=before.content)
-                embed.add_field(name='After', value=after.content, inline=False)
-                await logs.send(embed=embed)
+            with open('./guild data/logsch.json', 'r') as f:
+                logsch = json.load(f)
+            logs = self.bot.get_channel(logsch[str(before.guild.id)])
+            embed = discord.Embed(
+                color=0x0019ff, title=f'Message Edited', timestamp=datetime.datetime.utcnow(),
+                description=f"{before.author.mention}\n[Jump to message]({after.jump_url})\n**Author ID:** {before.author.id}\n**Message ID:** {after.id}\n**Channel ID:** {after.channel.id}"
+            )
+            embed.set_author(icon_url=before.author.avatar_url, name=before.author)
+            embed.add_field(name='Before', value=before.content)
+            embed.add_field(name='After', value=after.content, inline=False)
+            await logs.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
