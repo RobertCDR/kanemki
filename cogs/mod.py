@@ -474,7 +474,7 @@ class Moderation(commands.Cog):
         if channel is None:
             channel =  ctx.channel
         perms = channel.overwrites_for(ctx.guild.default_role)
-        perms.send_messages = True
+        perms.send_messages = None
         await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Channel has been unlocked.')
         await channel.send(embed=embed)
@@ -489,14 +489,20 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(ctx.guild.default_role)
-            perms.send_messages = False
-            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
-            await channel.send(embed=embed)
-            await asyncio.sleep(1)
+            if perms.send_messages is (None or True):
+                perms.send_messages = False
+                await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+                await channel.send(embed=embed)
+                await asyncio.sleep(1.5)
+            else:
+                pass
         for channel in ctx.guild.voice_channels:
             perms = channel.overwrites_for(ctx.guild.default_role)
-            perms.connect = False
-            await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+            if perms.connect is (None or True):
+                perms.connect = False
+                await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+            else:
+                pass
 
     #end the server lockdown
     @commands.command(aliases=['lockdown-end'])
@@ -507,13 +513,13 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(ctx.guild.default_role)
-            perms.send_messages = True
+            perms.send_messages = None
             await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
             await channel.send(embed=embed)
-            await asyncio.sleep(1)
+            await asyncio.sleep(1.5)
         for channel in ctx.guild.voice_channels:
             perms = channel.overwrites_for(ctx.guild.default_role)
-            perms.connect = True
+            perms.connect = None
             await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
     #revoke a server invite
