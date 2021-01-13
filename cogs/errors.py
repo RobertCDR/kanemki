@@ -70,7 +70,7 @@ class ErrorHandler(commands.Cog):
                 embed.set_footer(icon_url=self.bot.user.avatar_url, text=f'Reputation points reset daily at 00:00 UTC.')
                 await ctx.send(embed=embed)
             else:
-                embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot or you do not meet the permissions required for this command.')
+                embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot on this server or you do not meet the permissions required for this command.')
                 await ctx.send(embed=embed)
         elif isinstance(error, CommandOnCooldown):  #self explanatory
             await ctx.send('wait for the cooldown, speedy')
