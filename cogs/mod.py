@@ -139,13 +139,22 @@ class Moderation(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def muted_set(self, ctx, role: discord.Role):
+    async def muted_set(self, ctx, muted: discord.Role):
         with open('./guild data/mutedroles.json', 'r') as f:    #open the json file contaning mute roles
             mutedrole = json.load(f)    #load it
-        mutedrole[str(ctx.guild.id)] = role.id  #put the id into the json file as the value associated with the guild's id
-        with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
-            json.dump(mutedrole, f, indent=4)   #dump the guild's id along with it's value, the role id
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed muted role to {role.mention}.')
+        mutedrole[str(ctx.guild.id)] = muted.id  #put the id into the json file as the value associated with the guild's id
+        with open('./guild data/mutedroles.json', 'w') as f:
+            json.dump(mutedrole, f, indent=4)
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed muted role to {muted.mention}.')
+        #overwrite the channel permissions for the muted role
+        for channel in ctx.guild.text_channels:
+            perms = channel.overwrites_for(muted)
+            perms.send_messages = False
+            await channel.set_permissions(muted, overwrite=perms)
+        for channel in ctx.guild.voice_channels:
+            perms = channel.overwrites_for(muted)
+            perms.connect = False
+            await channel.set_permissions(muted, overwrite=perms)
         await ctx.send(embed=embed)
 
     #this subcommand removes the custom muted role of a guild
