@@ -1,6 +1,8 @@
+from urllib.parse import uses_params
 import discord
 from discord.ext import commands
 import random
+from discord.ext.commands.core import cooldown
 import discord.utils
 import datetime
 import aiohttp
@@ -9,12 +11,13 @@ from dpymenus import PaginatedMenu
 from bot import rapid_api
 from cogs.errors import CustomChecks
 
-class Info(commands.Cog):
+class Utils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    #create an invite link for the bot
-    @commands.command()
+    alias = "Utilities"
+
+    @commands.command(help="get an invite link for the bot", usage="invite###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def invite(self, ctx):
@@ -24,8 +27,7 @@ class Info(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed) #send the embed
 
-    #return the client latency
-    @commands.command()
+    @commands.command(help="Displays the bot latency.", aliases=["latency"], usage="ping###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ping(self, ctx):
@@ -40,7 +42,9 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     #get info about yourself or someone else on a discord server
-    @commands.command(aliases=['uinfo', 'about', 'whois'])
+    @commands.command(aliases=['uinfo', 'about', 'whois'], help="get info about yourself or someone else",
+        usage="userinfo @user`[optional]`###2s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def userinfo(self, ctx, member : discord.Member=None):
@@ -134,8 +138,7 @@ class Info(commands.Cog):
         embed.add_field(name='Others', value=f"**Nitro:**{premium}  **Early Supporter:**{early_supporter}  **Discord Partner:**{partner}\n**Discord Staff:**{staff}  **Bug Hunter:**{bug_hunter}  **HypeSquad Events:**{hypesquad}\n**Verified Bot Dev:**{verified_bot_dev}  **Bot:**{bot}  **Verified Bot:**{verified_bot}")
         await ctx.send(embed=embed)
 
-    #a command for getting info about the guild
-    @commands.command(aliases=['sinfo', 'aboutsrv'])
+    @commands.command(aliases=['sinfo', 'aboutsrv'], help="get info about the server", usage="serverinfo###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def serverinfo(self, ctx):
@@ -171,11 +174,10 @@ class Info(commands.Cog):
         embed.add_field(name=f'**Roles** ({len(ctx.guild.roles)-1})', value=allroles, inline=False)
         await ctx.send(embed=embed)
 
-    #get info about a role
-    @commands.command(aliases=['rinfo'])
+    @commands.command(aliases=['rinfo'], help="get info about a role", usage="roleinfo @role###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def roleinfo(self, ctx, *, role : discord.Role):
+    async def roleinfo(self, ctx, role : discord.Role):
         embed = discord.Embed(description=role.mention, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
         embed.set_thumbnail(url=ctx.guild.icon_url)
@@ -198,8 +200,9 @@ class Info(commands.Cog):
             embed.add_field(name='**Hoisted**', value=f'```ini\n[{role.hoist}]\n```')
         await ctx.send(embed=embed)
 
-    #see the your guild perms or another user's
-    @commands.command(aliases=['perms', 'userperms'])
+    @commands.command(aliases=['perms', 'userperms'], help="see a user's guild permissions",
+        usage="permissions @user`[optional]`###2s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def permissions(self, ctx, member : discord.Member=None):
@@ -216,7 +219,6 @@ class Info(commands.Cog):
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {ctx.message.author}')
         await ctx.send(embed=embed) #send the embed
 
-    #see the permissions of a guild role
     @commands.command(aliases=['rperms', 'roleperms'])
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -232,11 +234,12 @@ class Info(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     #search a word on urban dictionary and return an embed menu containing 5 definitions
-    #stil not sure if dpymenus was the best solution
-    #I also removed the error handler on this command because it was raising an annoying error even after displaying the results properly
-    @commands.command(aliases=['urbandict', 'urbandic', 'urbdic', 'urbdict'])
+    #todo rework needed
+    @commands.command(aliases=['urbandict', 'urbandic', 'urbdic', 'urbdict'], help="get word definitions from urban dictionary",
+        usage="urban <word>###5s/user###Depends on what you search"
+    )
     @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 10, commands.BucketType.user) #cooldown 10s/user
+    @commands.cooldown(1, 5, commands.BucketType.user) #cooldown 10s/user
     async def urban(self, ctx, *, search):
         search.replace(' ', '+')    #replace the spaces with plus signs so the link won't be broken
         querystring = {"term":f"{search}"}  #the term searched will be used in the link
@@ -283,10 +286,11 @@ class Info(commands.Cog):
         menu.allow_multisession()   #this will let the user invoke another menu while the another one is still active
         await menu.open()   #open the menu
 
-    #get the daily covid19 statistics for a given country
-    @commands.command(aliases=['covid19', 'sarscov2'])
+    @commands.command(aliases=['covid19', 'sarscov2'], help="get daily statistics for covid19 in a country",
+        usage="coronavirus <country>###5s/user###No"
+    )
     @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 10, commands.BucketType.user) #cooldown 10s/user
+    @commands.cooldown(1, 5, commands.BucketType.user) #cooldown 10s/user
     async def coronavirus(self, ctx, *, country):
         country.replace(' ', '+')   #replace spaces with plus signs for countries with multiple words in their name
         session = aiohttp.ClientSession()   #create the aiohttp session
@@ -327,7 +331,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     #a command group in which you can create a shopping list, add different tasks, you know the deal
-    @commands.group()
+    @commands.group(help="create task/shopping/etc. lists", usage="todo###1s/user###No", case_insensitive=True)
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def todo(self, ctx):
@@ -465,4 +469,4 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
 def setup(bot):
-    bot.add_cog(Info(bot))
+    bot.add_cog(Utils(bot))

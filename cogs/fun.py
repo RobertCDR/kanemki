@@ -9,7 +9,9 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['frick'])
+    alias = "Fun"
+
+    @commands.command(help="have some fun with your friends", usage="fuck @user###1s/user###No", aliases=['frick'])
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fuck(self, ctx, partner : discord.Member):
@@ -22,28 +24,28 @@ class Fun(commands.Cog):
 
     #opens a file and selects a random thing from it
     #same principle applies for the following commands
-    @commands.command()
+    @commands.command(help="you literally don't have anything better to do if you're using this command, am I right?", usage="pun###1s/user##No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pun(self, ctx):
         pun = random.choice(list(open('./text files/puns.txt', encoding='utf8')))   #opens the text file, converts the content into a list and picks a random line from it
         await ctx.send(pun) #send the pun (yes, I manually selected them and actually laughed, help)
 
-    @commands.command()
+    @commands.command(help="probably every single message is true (excepting those that involve more than one person)", usage="sex###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def sex(self, ctx):
         response = random.choice(list(open('./text files/sex.txt', encoding='utf8')))
         await ctx.send(f'{ctx.message.author.mention} {response}')
 
-    @commands.command()
+    @commands.command(help="roast someone or yourself", usage="roast @user`[optional]`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roast(self, ctx):
         roast = random.choice(list(open('./text files/roast.txt', encoding='utf8')))
         await ctx.send(roast)
 
-    @commands.command(aliases=['fortunecookie', 'fortune'])
+    @commands.command(aliases=['fortunecookie', 'fortune'], help="yes, fortune cookies, let's see what you get", usage="fookie###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fookie(self, ctx):
@@ -52,7 +54,9 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     #had some fun doing this command
-    @commands.command()
+    @commands.command(help="We are Anonymous. We are legion. We do not forget. We do not forgive. Expect us.",
+        usage="hack @user\n\nIf you time it right you can ***counter*** the hack. It will ***stop*** and after this ***counterhack*** the hacker will be ***report***ed.###20s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def hack(self, ctx, victim : discord.Member):
@@ -90,12 +94,13 @@ class Fun(commands.Cog):
             except asyncio.TimeoutError:
                 await asyncio.sleep(random.randint(1.0, 3.0))   #wait after every edit starting with the first message
                 await message.edit(content=f'```diff\n-{action[i]}\n``` ```fix\nStatus: {percent[i]}\n{animation[i]}\n```') #edit the message
-        await ctx.send(f'**Successfully hacked** {victim.mention}**.**')  #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
+        #confirmation that the hacking was done as if the big "100% - hacking complete" was not enough
+        await ctx.send(f'**Successfully hacked** {victim.mention}**.**')
 
-    @commands.command(aliases=['pula', 'penis', 'ppsize'])
+    @commands.command(aliases=['pula', 'penis', 'ppsize'], help="values over 20 are real only in porn", usage="pp @user`[optional]`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def pp(self, ctx, member : discord.Member=None):
+    async def pp(self, ctx, member: discord.User=None):
         if not member:
             member = ctx.message.author
         nr = random.randint(0,30)
@@ -121,18 +126,18 @@ class Fun(commands.Cog):
             embed = discord.Embed(color=random.randint(0,0xffffff), description=f"{member.mention}'s pula is {nr} centimeters long")
             embed.set_author(name='not the best, not the worst', icon_url='{}'.format(member.avatar_url))
             await ctx.send(embed=embed)
-               
-    @commands.command(aliases=['8ball'])
+
+    @commands.command(aliases=['8ball'], help="responds to your questions through magic voodoo shit", usage="ask <question>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def ask(self, ctx, *, question : str):
+    async def ask(self, ctx, *, question: str):
         response = random.choice(list(open('./text files/8ball.txt')))
         await ctx.send(f'{ctx.message.author.mention} {response}')
 
-    @commands.command(aliases=['howgay', 'gay', 'gayr8'])
+    @commands.command(aliases=['howgay', 'gayr8'], help="shows how gay you are deep inside yourself", usage="gayrate @user`[optional]`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def gayrate(self, ctx, member : discord.Member=None):
+    async def gayrate(self, ctx, member : discord.User=None):
         if not member:
             member = ctx.message.author
         nr = random.randint(0, 100)
@@ -145,7 +150,7 @@ class Fun(commands.Cog):
             embed.add_field(name=':rainbow_flag:', value=f'you are {nr}% gay')
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=['howhot', 'hotr8'])
+    @commands.command(aliases=['howhot', 'hotr8'], help="measures how hot you are", usage="hotrate @user`[optional]`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def hotrate(self, ctx, member: discord.Member=None):
@@ -164,7 +169,7 @@ class Fun(commands.Cog):
             embed.add_field(name=':grimacing:', value=f"you're {nr}% hot")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['love', 'compatibility', 'lovemeter'])
+    @commands.command(aliases=['love', 'compatibility', 'lovemeter'], help="The ultimate and most revolutionary Love Machine", usage="ship @user1 @user2`[optional]`")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def ship(self, ctx, pair: discord.Member, pair2: typing.Optional[discord.Member]=None):
@@ -217,7 +222,7 @@ class Fun(commands.Cog):
 
     #the classic say command
     #utils.escape_mentions is broken
-    @commands.command(aliases=['parrot', 'mimic', 'repeat'])
+    @commands.command(aliases=['parrot', 'mimic', 'repeat'], help="make the bot say what you want (Detroit: Become Human shit)", usage="say <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def say(self, ctx, *, mimic):
@@ -225,7 +230,7 @@ class Fun(commands.Cog):
         await ctx.send(mimic)   #send the message
 
     #a variation of the say command
-    @commands.command()
+    @commands.command(help="make your message be extremely sarcastic or overenthusiastic", usage="clapify <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def clapify(self, ctx, *, text):
@@ -239,7 +244,7 @@ class Fun(commands.Cog):
     #another variation of the say command, but this one adds spoiler tags for each character
     #yes, I'm evil, but the decision to use this command is yours
     #like the forbidden apple
-    @commands.command()
+    @commands.command(help='encrypt your message to annoy someone (for long texts Satan has a spot waiting just for you)', usage="spoilify <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spoilify(self, ctx, *, text):
@@ -250,7 +255,7 @@ class Fun(commands.Cog):
         await ctx.send(message)
 
     #convert string characters into emojis
-    @commands.command()
+    @commands.command(help="convert text into corresponding emojis", usage="emojify <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def emojify(self, ctx, *, text):
@@ -272,7 +277,7 @@ class Fun(commands.Cog):
         await ctx.send(message)
 
     #why did I make this?
-    @commands.command()
+    @commands.command(help="can someone please tell me why I coded this?", usage="lewdify <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def lewdify(self, ctx, *, text):

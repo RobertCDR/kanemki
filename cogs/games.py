@@ -8,9 +8,11 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    alias = "Games"
+
     #now this, ladies and gentlemen, is a mess of if statements
-    #but it works and, after 2 good hours of bug hunting and errors 
-    @commands.command(aliases=['hman', 'hang'])
+    #but it works and, after 2 good hours of bug hunting and errors
+    @commands.command(aliases=['hman', 'hang'], help="play a game of Hangman by yourself or with your friends", usage="hangman @users`[optional]`###30s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def hangman(self, ctx, members : commands.Greedy[discord.Member]):
@@ -36,7 +38,7 @@ class Games(commands.Cog):
         ]
         chances = 10    #these are the chances that the players are getting
         tried_cases = []    #every guess will be kept here
-        #this will be the string the tried_cases list will be formatted 
+        #this will be the string the tried_cases list will be formatted
         _cases = '** **'    #the default value is a trick because embed fields cannot have spaces as values (thx doggo <3)
         aux_embed = discord.Embed(color=random.randint(0, 0xffffff))    #this is an auxiliary embed
         word = random.choice(list(open('./text files/hang.txt', encoding='utf8')))  #get a random word from the text file
@@ -140,7 +142,7 @@ class Games(commands.Cog):
 
     #guess the number game
     #todo I should make a hint system
-    @commands.command()
+    @commands.command(help="guess a random number", usage="guess <limit>`[optional]`###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def guess(self, ctx, number: int = 10):
@@ -206,7 +208,7 @@ class Games(commands.Cog):
                 embed.set_footer(icon_url=self.bot.user.avatar_url, text="C'mon... Read my robo-mind...")
                 await ctx.send(embed=embed)
     
-    @commands.command(aliases=['rps'])
+    @commands.command(aliases=['rps'], help="duel with someone in the ultimate battle", usage="rps <choice> @user###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def rockpaperscissors(self, ctx, choice: str=None, member: discord.Member=None):
@@ -285,7 +287,7 @@ class Games(commands.Cog):
             return await ctx.send(embed=embed)
         await ctx.send(embed=embed)  #send the embed
     
-    @commands.command(aliases=['tod'])
+    @commands.command(aliases=['tod'], help="play Truth or Dare with your friends", usage="tod###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def truthordare(self, ctx):
@@ -315,7 +317,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     #flip a coin
-    @commands.command()
+    @commands.command(help="flip a coin", usage="flip###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def flip(self, ctx):
@@ -332,7 +334,7 @@ class Games(commands.Cog):
 
     #roll the dices
     #todo maybe I'll further develop this command too
-    @commands.command(aliases=['dice'])
+    @commands.command(aliases=['dice', 'dices'], help="roll the dices", usage="roll###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def roll(self, ctx):

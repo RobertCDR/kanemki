@@ -73,7 +73,9 @@ class ErrorHandler(commands.Cog):
                 embed = discord.Embed(color=0xfccc51, description=':warning: You are either blacklisted from using the bot on this server or you do not meet the permissions required for this command.')
                 await ctx.send(embed=embed)
         elif isinstance(error, CommandOnCooldown):  #self explanatory
-            await ctx.send('wait for the cooldown, speedy')
+            embed = discord.Embed(color=0xff0000, description=f"You can use this command again in {round(error.retry_after, 2)} seconds.")
+            embed.set_author(name="Easy on there, Kaneki", icon_url=self.bot.user.avatar_url)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.BadInviteArgument): #if it's bad invite url
             embed = discord.Embed(color=0xde2f43, description=':x: Invalid invite.')
             await ctx.send(embed=embed)
@@ -109,7 +111,7 @@ class ErrorHandler(commands.Cog):
                 embed = discord.Embed(color=0xde2f43, description=':x: Unknown ban.')
                 await ctx.send(embed=embed)
             else:
-                raise
+                raise error
         elif isinstance(error, commands.BadArgument): #if the argument passed in the command is not good (yes, shut up, I'm not good at explaining things)
             member_errors = ['userinfo', 'permissions', 'mute', 'unmute', 'kick', 'ban', 'softban', 'unban', 'pfp', 'award', '' 'fuck', 'hack', 'pula', 'gayrate', 'ship', 'hug', 'kiss', 'slap', 'wink', 'stare', 'lick', 'bite', 'cuddle', 'pat', 'smile', 'poke', 'tickle', 'point', 'punch']
             role_errors = ['roleinfo', 'rpermissions', 'config muted_set', 'config joinrole_set', 'config botrole_set']

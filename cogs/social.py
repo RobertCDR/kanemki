@@ -6,12 +6,14 @@ import datetime
 import random
 import PIL
 
-class SocialnEconomy(commands.Cog):
+class Social(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         #self.rep_points_reset.start()
 
-    @commands.command(aliases=["rep"])
+    alias = "Social & Economy"
+
+    @commands.command(aliases=["rep"], help="`command under development`", usage="-###-###No")
     @CustomChecks.blacklist_check()
     @CustomChecks.rep_points_check()
     async def reputation(self, ctx, user: discord.User=None):
@@ -73,4 +75,4 @@ class SocialnEconomy(commands.Cog):
             user['points'] = 1"""
 
 def setup(bot):
-    bot.add_cog(SocialnEconomy(bot))
+    bot.add_cog(Social(bot))

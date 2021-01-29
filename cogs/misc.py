@@ -4,22 +4,23 @@ import random
 import datetime
 import wolframalpha
 import typing
+import string
 from bot import wolfram_key
 from cogs.errors import CustomChecks
 
 wolfram = wolframalpha.Client(wolfram_key)
-#print(next(res.results).text)
-#add the key into the config file
 
-#this is an experimental cog
-#don't know how to make string based operations or how to parse the user input so I'll stick to this until I become a better programmer
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    alias = "Misc"
+
     #embed sandbox
     #maybe I will further develop it someday
-    @commands.command(aliases=['emb'])
+    @commands.command(aliases=['emb'], help="create a custom embed",
+        usage="embed <title>(t) <description>(descr, d) <author> <footer> <thumbnail>(thumb, tn) <image>(img, i) <time>\n\n*thumbnail and image parameters require links, the others are only text*###1s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def embed(self, ctx, *, args: str=None):
@@ -47,15 +48,16 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     #this will transform text into Morse code according to the International Morse Code
-    @commands.command(aliases=['tomorse'])
+    @commands.command(aliases=['tomorse'], help="translate text into Morse code", usage="textomorse <text>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def texttomorse(self, ctx, *, text):
         #this is the dictionary with letters and their Morse code equivalent
         text_to_morse = {
-            "A":".-", "B":"-...", "C":"-.-.", "D":"-..", "E":".", "F":"..-.", "G":"--.", "H":"....", "I":"..", "J":".---", "K":"-.-", "L":".-..", "M":"--",
-            "N":"-.", "O":"---", "P":".--.", "Q":"--.-", "R":".-.", "S":"...", "T":"-", "U":"..-", "V":"...-", "W":".--", "X":"-..-", "Y":"-.--", "Z":"--..",
-            "1":".----", "2":"..---", "3":"...--", "4":"....-", "5":".....", "6":"-....", "7":"--...", "8":"---..", "9":"----.", "0":"-----"
+            "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---",
+            "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-",
+            "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..",
+            "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----.", "0": "-----"
         }
         #this is the reversed dictionary
         text = text.upper() #uppercase the string
@@ -72,14 +74,15 @@ class Misc(commands.Cog):
         await ctx.send(message)
 
     #this is the viceversa of the previous command
-    @commands.command(aliases=['totext'])
+    @commands.command(aliases=['totext'], help="translate Morse code into text", usage="morsetotext <morse_code>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def morsetotext(self, ctx, *, text):
         morse_to_text = {
-            '.-':'A', '-...':'B', '-.-.':'C', '-..':'D', '.':'E', '..-.':'F', '--.':'G', '....':'H', '..':'I', '.---':'J', '-.-':'K', '.-..':'L', '--':'M',
-            '-.':'N', '---':'O', '.--.':'P', '--.-':'Q', '.-.':'R', '...':'S', '-':'T', '..-':'U', '...-':'V', '.--':'W', '-..-':'X', '-.--':'Y', '--..':'Z',
-            '.----':'1', '..---':'2', '...--':'3', '....-':'4', '.....':'5', '-....':'6', '--...':'7', '---..':'8', '----.':'9', '-----':'0'
+            '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+            '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+            '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y', '--..': 'Z',
+            '.----': '1', '..---': '2', '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8', '----.': '9', '-----': '0'
         }
         text = text.split(' ')
         message = ''
@@ -92,7 +95,7 @@ class Misc(commands.Cog):
                 message += x
         await ctx.send(message)
 
-    @commands.command(aliases=['age', 'howmanydays'])
+    @commands.command(aliases=['age', 'howmanydays'], help="calculate your age in days", usage="agedays `dd`/`mm`/`yyyy`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def agedays(self, ctx, *, birthday):
@@ -103,7 +106,7 @@ class Misc(commands.Cog):
             return await ctx.send('Invalid date')
         #if february has more than 28 days and the year is not divisible by 4 then it's not a bisect year and it's not a valid date
         #damn primary school was useful
-        elif int(date[1]) == 2 and int(date[0]) > 28 and int(date[2])%4 != 0:   
+        elif int(date[1]) == 2 and int(date[0]) > 28 and int(date[2])%4 != 0:
             return await ctx.send('Invalid date')
         #these are the conditions for every month with 30 days
         #damn kindergarten was useful with it's knuckle rule for months
@@ -118,9 +121,11 @@ class Misc(commands.Cog):
         embed = discord.Embed(title=str(ctx.message.author), description=days[0], color=random.randint(0, 0xffffff))   #create the embed
         await ctx.send(embed=embed) #send the embed
 
-    @commands.command(aliases=['lmgtfy'])
+    @commands.command(aliases=['lmgtfy'], help="for every person that's tired of someone's stupid questions or too lazy to switch tabs",
+        usage="search <query>###1s/user###Depends on what you search"
+    )
     @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def search(self, ctx, *, search):
         copy_search = search.replace(' ', '+')
         embed = discord.Embed(title=f"Here's your Google search for: {search}.", url=f'http://lmgtfy.com/?q={copy_search}', color=random.randint(0, 0xffffff), timestamp=datetime.datetime.utcnow())
@@ -130,7 +135,9 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     #generate random passwords
-    @commands.command(aliases=['passgen', 'password'])
+    @commands.command(aliases=['passgen', 'password'], help="generate a random password for whatever use you want",
+        usage="passwordgen <length>`[optional]` <purpose>`[optional]`"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def passwordgen(self, ctx, length: typing.Optional[int]=10, *, use: typing.Optional[str]=None):
@@ -144,24 +151,23 @@ class Misc(commands.Cog):
         await dm.send(embed=embed)
 
     #pick a random thing
-    @commands.command()
+    @commands.command(help="let the bot pick between different things", usage="pick <items>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def pick(self, ctx, *args):
         if args:
             await ctx.send(random.choice(args))
         else:
-            await ctx.send('gimme some choices')    
+            await ctx.send('gimme some choices')
 
     #the wolframalpha api is very interesting
     #I will make some nice additions using it
     #the command below is far from ready
-    @commands.command(aliases=["calculate"])
+    @commands.command(aliases=["calculate"], hidden=True)
     @CustomChecks.blacklist_check()
     @commands.is_owner()
     async def math(self, ctx, *, query: str):
         data = wolfram.query(query)
-        embed = discord.Embed(color=random.randint(0, 0xffffff))
         for pod in data.pods:
             await ctx.send(f"{pod}\n\n")
 

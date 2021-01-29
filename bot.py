@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 import json
 import config
 from cogs.errors import CustomChecks
+import help_refactor
 
 intents = discord.Intents.all()
 mentions = discord.AllowedMentions(everyone=False)
@@ -28,20 +29,25 @@ def get_prefix(bot, message):
         prefixes = json.load(f) #load it
     return commands.when_mentioned_or(prefixes[str(message.guild.id)])(bot, message)  #return the prefix associated with the guild id
 
-bot = commands.Bot(
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._BotBase__cogs = commands.core._CaseInsensitiveDict()
+
+bot = Bot (
     command_prefix=get_prefix,
     case_insensitive=True,
+    help_command=help_refactor.help_object,
     allowed_mentions=mentions,
     intents=intents,
     activity=discord.Activity(type=discord.ActivityType.watching, name='Tomkyo Ghoul | >help'),
-    status=discord.Status.dnd
-    )
+    status=discord.Status.dnd,
+)
 
 #the for loop below loads every cog when starting the bot
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
-bot.load_extension('jishaku')
 
 #those below are developer only commands
 #changes the bot's status and prints some things in my console to show that he's fully online
@@ -154,6 +160,7 @@ async def _eval(ctx, *, body):
         except:
             pass
     if ret is None:
+        # pyright: reportUnboundVariable=false
         if value:
             await ctx.send(f'```py\n{value}\n```')
         else:

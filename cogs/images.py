@@ -3,7 +3,6 @@ from discord.ext import commands
 import random
 import datetime
 import praw
-import aiohttp
 from bot import reddit_client_id, reddit_client_secret
 from cogs.errors import CustomChecks
 
@@ -13,11 +12,13 @@ class Images(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    alias = "Images"
+
     #get someone's profile pic or yours
-    @commands.command(aliases=['avatar', 'av'])
+    @commands.command(aliases=['avatar', 'av'], help="shows your avatar or someone else's", usage="pfp @user`[optional]`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def pfp(self, ctx, member: discord.User=None):  
+    async def pfp(self, ctx, member: discord.User=None):
         if not member:  #if no one is mentioned then the bot will show the avatar of the command author
             member = ctx.message.author
         pfp = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url, color=0xff0000, timestamp=datetime.datetime.utcnow())   #create the embed
@@ -26,10 +27,12 @@ class Images(commands.Cog):
         pfp.set_footer(text=f'Requested by {str(ctx.author)}', icon_url=ctx.message.author.avatar_url)
         pfp.set_author(name=f'{member}', icon_url=member.avatar_url)
         await ctx.send(embed=pfp)   #send the embed
-    
+
     #I made this command just because sometimes I want to get the cover art of a spotify track
     #I read in the docs that there is actually a way to get it and said "why not?"
-    @commands.command()
+    @commands.command(help="if you've found yourself in the situation of wanting to get the cover art of a Spotify track, this command can help you out (it literally does nothing more)",
+        usage="spotify @user`[optional]`###1s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def spotify(self, ctx, member: discord.Member=None):
@@ -58,10 +61,10 @@ class Images(commands.Cog):
                 embed.description = ':x: No Spotify activity detected.'
         return await ctx.send(embed=embed)  #send the embed
 
-    @commands.command()
+    @commands.command(help="award someone for whatever reason it goes through your head", usage="award @user <reason>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
-    async def award(self, ctx, awarded : discord.User, *, awreas : str):
+    async def award(self, ctx, awarded: discord.User, *, awreas : str):
         embed = discord.Embed(color=0xffec00, title='Award', description=f"Congrats {awarded.mention}! You've been awarded by {ctx.message.author.mention}: ***{awreas}***", timestamp=datetime.datetime.utcnow())
         embed.set_image(url='https://cdn.discordapp.com/attachments/725102631185547427/726574014037753886/190614-Award-nominations-iStock-1002281408.png')
         embed.set_author(name=awarded, icon_url=awarded.avatar_url)
@@ -69,33 +72,10 @@ class Images(commands.Cog):
         await ctx.channel.purge(limit=1)
         await ctx.send(embed=embed)
 
-    #get comics from xkcd.com
-    #I don't understand most of them, but they seem funny to me anyway 
-    @commands.command()
-    @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 3, commands.BucketType.user)  #cooldown: 1 use once every 3 seconds / user
-    async def xkcd(self, ctx, comic: str=None):
-        #the first request below is for keeping the comics up to date
-        #I don't want to check the site daily to see the latest comic number
-        session = aiohttp.ClientSession()
-        response = await session.get(url='https://xkcd.com/info.0.json')
-        data = await response.json()
-        await session.close()
-        if not comic:   #if no comic number is specified
-            comic = str(random.randint(1, int(data['num'])))    #then it will be a random one between the first and the latest
-        session = aiohttp.ClientSession()   #create a session using aiohttp
-        response = await session.get(url='https://xkcd.com/' + comic + '/info.0.json')  #make a request to the json interface of that comic
-        data = await response.json()    #json parse the requested data
-        await session.close()   #close the session
-        embed = discord.Embed(color=random.randint(0, 0xffffff), title=data['title'], url=data['img'])  #create the embed
-        embed.set_image(url=data['img'])    #set the image to the comic
-        embed.set_footer(text=f'xkcd.com  |  Comic #{comic}  |  {data["day"]}•{data["month"]}•{data["year"]}', icon_url=self.bot.user.avatar_url)
-        await ctx.send(embed=embed) #send the embed
-
     #visualize any hex code
-    #tried to make it work with rgb codes too but I got tired of doing it and moved on
+    #todo tried to make it work with rgb codes too but I got tired of doing it and moved on
     #I plan to do it someday, but today is not that day
-    @commands.command(aliases=['colour'])
+    @commands.command(aliases=['colour'], help="visualize a hex color", usage="color <hex>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def color(self, ctx, *, color):
@@ -124,7 +104,7 @@ class Images(commands.Cog):
         embed.set_thumbnail(url=url)    #this is the image set to be the thumbnail
         await ctx.send(embed=embed) #send the embed
 
-    @commands.command(aliases=['aww', 'cute'])
+    @commands.command(aliases=['aww', 'cute'], help="melts your heart", usage="eyebleach###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def eyebleach(self, ctx):
@@ -140,7 +120,7 @@ class Images(commands.Cog):
             image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
             await ctx.send(embed=image)
 
-    @commands.command(aliases=['doggo', 'doggie', 'woof'])
+    @commands.command(aliases=['doggo', 'doggie', 'woof'], help="see some cute doggos", usage="dog###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def dog(self, ctx):
@@ -162,7 +142,7 @@ class Images(commands.Cog):
             image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
             await ctx.send(embed=image)
 
-    @commands.command(aliases=['kitty', 'meow', 'kat'])
+    @commands.command(aliases=['kitty', 'meow', 'kat'], help="see some cute kitties", usage="cat###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cat(self, ctx):
@@ -187,7 +167,9 @@ class Images(commands.Cog):
             image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
             await ctx.send(embed=image)
 
-    @commands.command(aliases=['bunny', 'bunbun', 'longears', 'bun'])
+    @commands.command(aliases=['bunny', 'bunbun', 'longears', 'bun'], help="brighten up your day by seeing some cute bun-buns",
+        usage="rabbit###3s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def rabbit(self, ctx):
@@ -208,7 +190,7 @@ class Images(commands.Cog):
             image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
             await ctx.send(embed=image)
 
-    @commands.command()
+    @commands.command(help="see some bears", usage="bear###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def bear(self, ctx):
@@ -224,7 +206,7 @@ class Images(commands.Cog):
             image.set_footer(text=f'from r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
             await ctx.send(embed=image)
 
-    @commands.command(aliases=['nasapc', 'rocketpc', 'wowsetup'])
+    @commands.command(aliases=['nicepc', 'wowsetup'], help="see other people's setups", usage="battlestation###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def battlestation(self, ctx):
@@ -236,7 +218,7 @@ class Images(commands.Cog):
         image.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=image)
 
-    @commands.command()
+    @commands.command(help="see some nice flowers", usage="flower###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def flower(self, ctx):

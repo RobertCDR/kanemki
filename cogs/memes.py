@@ -11,12 +11,14 @@ from cogs.errors import CustomChecks
 #tried with aiohttp but it has the same delay of 2-3 seconds
 reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0 (by /u/RobertCDR)')
 
-class Reddit(commands.Cog):
+class Memes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    alias = "Memes & Stuff"
+
     #aiohttp tryout to get things from Reddit
-    @commands.command()
+    @commands.command(help="get memes from reddit", usage="meme###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def meme(self, ctx):
@@ -29,7 +31,7 @@ class Reddit(commands.Cog):
         ]
         #private info
         headers = {
-            'User-Agent': 'windows:Kanemki Discord Bot:v2.0 (by /u/RobertCDR)',
+            'User-Agent': 'windows:Kanemki Discord Bot:v1.1.0 (by /u/RobertCDR)',
             'Client-Id': reddit_client_id,
             'Client-Secret': reddit_client_secret
         }
@@ -47,8 +49,8 @@ class Reddit(commands.Cog):
         meme.set_footer(text=f'r/{subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=meme)  #send the embed
 
-    #yes, it may seem easier to use praw, but it's not recommended
-    @commands.command(aliases=['wmeme', 'whlsm', 'wholesomeme'])
+    #yes, it may seem easier to use praw, but slow
+    @commands.command(aliases=['wmeme', 'whlsm', 'wholesomeme'], help="get wholesome memes", usage="wholesome###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)  #the cooldown of the command
     async def wholesome(self, ctx):
@@ -61,7 +63,7 @@ class Reddit(commands.Cog):
         meme.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=meme)  #send the embed
 
-    @commands.command(aliases=['14deep', 'deep', 'im14andthisisdeep'])
+    @commands.command(aliases=['14deep', 'deep', 'im14andthisisdeep'], help="I'm 14 and this is deep", usage="im14###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def im14(self, ctx):
@@ -74,7 +76,7 @@ class Reddit(commands.Cog):
         meme.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=meme)
 
-    @commands.command()
+    @commands.command(help="see relatable memes", usage="meirl###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def meirl(self, ctx):
@@ -87,7 +89,7 @@ class Reddit(commands.Cog):
         meme.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=meme)
 
-    @commands.command(aliases=['insult', 'rareins', 'insultcom'])
+    @commands.command(aliases=['insult', 'rareins', 'insultcom'], help="epic insults from internet people", usage="rareinsult###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def rareinsult(self, ctx):
@@ -103,7 +105,7 @@ class Reddit(commands.Cog):
         comment.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=comment)
 
-    @commands.command(aliases=['ccom', 'cursedcom'])
+    @commands.command(aliases=['ccom', 'cursedcom'], help="wonder what is gonna be left of humanity", usage="cursedcomment###3s/user###Only if you imagine it I guess (friendly advice, don't)")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cursedcomment(self, ctx):
@@ -116,7 +118,7 @@ class Reddit(commands.Cog):
         comment.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=comment)
 
-    @commands.command(aliases=['holdup'])
+    @commands.command(aliases=['holdup'], help="hold up memes", usage="holup###3s/user###Not really")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def holup(self, ctx):
@@ -129,7 +131,7 @@ class Reddit(commands.Cog):
         image.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=image)
 
-    @commands.command()
+    @commands.command(help="see some blursed images (some cursed but not so cursed images)", usage="blursed###3s/user###Not so bad")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def blursed(self, ctx):
@@ -142,7 +144,7 @@ class Reddit(commands.Cog):
         image.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=image)
 
-    @commands.command()
+    @commands.command(help="see some cursed images", usage="cursed###3s/user###Not necessarily but with some exceptions")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cursed(self, ctx):
@@ -155,7 +157,9 @@ class Reddit(commands.Cog):
         image.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=image)
 
-    @commands.command(aliases=['50/50', 'fifty'])
+    @commands.command(aliases=['50/50', 'fifty'], help="r/FiftyFifty - may God take care of you and erase the horrible things that you see from your memory",
+        usage="fifty###3s/user###YES"
+    )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def fiftyfifty(self, ctx):
@@ -167,7 +171,7 @@ class Reddit(commands.Cog):
         link.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=link)
 
-    @commands.command(aliases=['fax', 'fact'])
+    @commands.command(aliases=['fax', 'fact'], help="get a random fact", usage="fact###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def facts(self, ctx):
@@ -179,5 +183,27 @@ class Reddit(commands.Cog):
         fact.set_footer(text=f'r/{submission.subreddit} | {str(ctx.message.author)}', icon_url='https://cdn.discordapp.com/attachments/725102631185547427/732974326671998986/reddit.png')
         await ctx.send(embed=fact)
 
+    #get comics from xkcd.com
+    #I don't understand most of them, but they seem funny to me anyway
+    @commands.command(help="get comics from xkcd.com", usage="xkcd <comic_number>`[optional]`###3s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)  #cooldown: 1 use once every 3 seconds / user
+    async def xkcd(self, ctx, comic: str=None):
+        #the first request below is for keeping the comics up to date
+        #I don't want to check the site daily to see the latest comic number
+        session = aiohttp.ClientSession()
+        response = await session.get(url='https://xkcd.com/info.0.json')
+        data = await response.json()
+        await session.close()
+        if not comic:   #if no comic number is specified
+            comic = str(random.randint(1, int(data['num'])))    #then it will be a random one between the first and the latest
+        async with aiohttp.ClientSession() as session:   #create a session using aiohttp
+            async with session.get(url='https://xkcd.com/' + comic + '/info.0.json') as r:  #make a request to the json interface of that comic
+                data = await r.json()    #json parse the requested data
+        embed = discord.Embed(color=random.randint(0, 0xffffff), title=data['title'], url=data['img'])  #create the embed
+        embed.set_image(url=data['img'])    #set the image to the comic
+        embed.set_footer(text=f'xkcd.com  |  Comic #{comic}  |  {data["day"]}•{data["month"]}•{data["year"]}', icon_url=self.bot.user.avatar_url)
+        await ctx.send(embed=embed) #send the embed
+
 def setup(bot):
-    bot.add_cog(Reddit(bot))
+    bot.add_cog(Memes(bot))

@@ -9,11 +9,15 @@ from cogs.errors import CustomChecks
 
 #if you are here for examples, scroll through this and you'll find commentaries on some of these commands
 
-class Moderation(commands.Cog):
+class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group()
+    alias = "Moderation"
+
+    @commands.group(help="blacklist users from using the bot in the server", usage="blacklist###1s/user###No", case_insensitive=True)
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def blacklist(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title='Blacklist', description='Blacklist or whitelist users from using the bot on this guild. *Note that only the server owner or the creator of the bot himself can use these commands.*\n\n')
@@ -44,7 +48,7 @@ class Moderation(commands.Cog):
                     id_list[str(ctx.guild.id)].append(user.id)
         with open('./guild data/blacklist.json', 'w') as f:
             json.dump(id_list, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot on this server.')
         await ctx.send(embed=embed)
 
     @blacklist.command()
@@ -80,9 +84,9 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     #a command group for server configuration commands
-    @commands.group(case_insensitive=True)
+    @commands.group(case_insensitive=True, help="configuration commands for the server", usage="config###1s/user###No")
     @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def config(self, ctx):
         if ctx.invoked_subcommand is None: #if a subcommand is not invoked, display a list with server configuration commands
             embed = discord.Embed(title=':tools: Server Configuration Commands', color=0xff0000, timestamp=datetime.datetime.utcnow())
@@ -175,7 +179,7 @@ class Moderation(commands.Cog):
                 raise
         with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
             json.dump(joinrole, f, indent=4)    #dump the modifications
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed muted role.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed muted role.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['joinrole-set'])
@@ -208,7 +212,7 @@ class Moderation(commands.Cog):
                 raise
         with open('./guild data/joinroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed member join role.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed member join role.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['botrole-set'])
@@ -241,7 +245,7 @@ class Moderation(commands.Cog):
                 raise
         with open('./guild data/botroles.json', 'w') as f:
             json.dump(joinrole, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed bot join role.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed bot join role.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-set'])
@@ -274,7 +278,7 @@ class Moderation(commands.Cog):
                 raise
         with open('./guild data/logsch.json', 'w') as f:
             json.dump(logsch, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed logs channel.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Succesfully removed logs channel.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-set'])
@@ -387,11 +391,11 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed starboard channel.')
         await ctx.send(embed=embed)
     """
-    #this command displays a list of the guild roles
-    @commands.command()
+
+    @commands.command(help="get a list of all the roles in the guild", usage="roles###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def roles(self, ctx):
         #create a string with mentioned roles in top to bottom order
         roles = '\n'.join(role.mention for role in ctx.guild.roles[::-1])
@@ -402,10 +406,12 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed) #send the embed
 
     #create a new role with optional color, hoist and mention parameters
-    @commands.command()
+    @commands.command(help="create a newrole",
+        usage="newrole <name> <color>`[optional->hex]` <hoist>`[optional->True/False]` <mentioable>`[optional->True/False]`###2s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def newrole(self, ctx, name: str=None, color: typing.Optional[discord.Color]=None, hoist: typing.Optional[bool]=False, mentionable: typing.Optional[bool]=False):
         if name is None:    #the role needs at least a name
             return await ctx.send("name the role first")
@@ -418,22 +424,20 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully created role {role.mention}.')
         await ctx.send(embed=embed)
 
-    #delete a role
-    @commands.command()
+    @commands.command(help="delete a role", usage="delrole @role###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def delrole(self, ctx, role: commands.Greedy[discord.Role]):
         for x in role:
             await x.delete()
         embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Roles deleted: {', '.join(list(map(lambda x: x.name, role)))}.")
         await ctx.send(embed=embed)
 
-    #add a role to a member
-    @commands.command()
+    @commands.command(help="add a role to a member", usage="addrole @role @user###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def addrole(self, ctx, role: discord.Role, member: commands.Greedy[discord.Member]):
         for x in member:
             if role in x.roles:
@@ -443,8 +447,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Successfully added role {role.mention} to {' '.join(list(map(lambda x: x.mention, member)))}.")
         await ctx.send(embed=embed)
 
-    #remove a role from a member
-    @commands.command()
+    @commands.command(help="remove a role from a member", usage="remrole @role @user###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -457,11 +460,10 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Successfully removed role {role.mention} from {' '.join(list(map(lambda x: x.mention, member)))}.")
         await ctx.send(embed=embed)
 
-    #lock a text channel
-    @commands.command()
+    @commands.command(help="lock a text channel", usage="lock #channel###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def lock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
             channel = ctx.channel
@@ -475,10 +477,10 @@ class Moderation(commands.Cog):
         await channel.send(embed=embed)
 
     #unlock a text channel
-    @commands.command()
+    @commands.command(help="unlock a text channel", usage="unlock #channel###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def unlock(self, ctx, channel: discord.TextChannel=None):
         if channel is None:
             channel =  ctx.channel
@@ -488,12 +490,11 @@ class Moderation(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Channel has been unlocked.')
         await channel.send(embed=embed)
 
-    #lock all text and voice channel except the ones that are invisible
     #same thing as above, but in a for loop and with overwrites for voice channels
-    @commands.command()
+    @commands.command(help="lock all text and voice channels except the ones that are invisible", usage="lockdown###15s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def lockdown(self, ctx):
         embed = discord.Embed(color=0xde2f43, description=':octagonal_sign: Server lockdown.')
         for channel in ctx.guild.text_channels:
@@ -513,12 +514,11 @@ class Moderation(commands.Cog):
             else:
                 pass
 
-    #end the server lockdown
-    @commands.command(aliases=['lockdown-end'])
+    @commands.command(aliases=['lockdown-end'], help="unlock the text/voice channels locked after the lockdown", usage="lockdownend###15s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def lockdown_end(self, ctx):
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def lockdownend(self, ctx):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Lockdown ended.')
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(ctx.guild.default_role)
@@ -531,19 +531,19 @@ class Moderation(commands.Cog):
             perms.connect = None
             await channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
-    #revoke a server invite
-    @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'])
+    @commands.command(aliases=['revokeinv', 'deleteinvite', 'delinvite', 'revokeinvite'],
+        help="revoke a server invite", usage="delinv <invite_link>###2s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def delinv(self, ctx, invite: discord.Invite):
         await self.bot.delete_invite(invite)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully revoked invite.')
         await ctx.send(embed=embed)
 
-    #a purge command
     #todo this will need further development too
-    @commands.command(aliases=['purge', 'clean'])
+    @commands.command(aliases=['purge', 'clean'], help="purge an amount of messages from a channel", usage="clear <amount>###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_messages=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -558,8 +558,7 @@ class Moderation(commands.Cog):
                 embed = discord.Embed(color=0xfccc51, description=':warning: The amount is too big.')
                 return await ctx.send(embed=embed)
 
-    #mute a user / mass mute users
-    @commands.command()
+    @commands.command(help="mute/mass mute users", usage="mute @user(s) <time>(ex: 1s/m/h/d) <reason>`[optional]`###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -635,8 +634,7 @@ class Moderation(commands.Cog):
             for victim in muted_members:
                 await victim.remove_roles(muted)    #remove the role from the members
 
-    #unmute a user / mass unmute users
-    @commands.command()
+    @commands.command(help="unmute/mass unmute users", usage="unmute @user(s)###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -665,8 +663,7 @@ class Moderation(commands.Cog):
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully unmuted** {_list}**.**')
             await ctx.send(embed=embed)
 
-    #kick a user / mass kick users
-    @commands.command()
+    @commands.command(help="kick/mass kick users", usage="kick @user(s) <reason>`[optional]`###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(kick_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -695,9 +692,7 @@ class Moderation(commands.Cog):
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully kicked** {_list}**.**')
             await ctx.send(embed=embed)
         
-    #ban a member / mass ban members
-    #same thing as above
-    @commands.command()
+    @commands.command(help="ban/mass ban users", usage="ban @user(s) <reason>`[optional]`###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -731,12 +726,11 @@ class Moderation(commands.Cog):
             embed = discord.Embed(color=0x75b254, description=f':white_check_mark: **Successfully banned** {_list}**.**')
             await ctx.send(embed=embed)
 
-    #unban a user / mass unban users
-    @commands.command()
+    @commands.command(help="unban/mass unban users", usage="unban <user>(id, username#discriminator)###3s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def unban(self, ctx, victims : commands.Greedy[discord.User]=None):
+    async def unban(self, ctx, victims: commands.Greedy[discord.User]=None):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
             return await ctx.send(embed=embed)
@@ -751,7 +745,7 @@ class Moderation(commands.Cog):
     
     #not so sure about this command
     #it will need some reworking in the future
-    @commands.command(aliases=['tempban'])
+    @commands.command(aliases=['tempban'], help="needs reworking", usage="-###-###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -783,10 +777,12 @@ class Moderation(commands.Cog):
             await ctx.guild.unban(user)
 
     #unban all the users that have been banned in the guild
-    @commands.command()
+    @commands.command(help="unban all banned users from this server (acces restricted for everyone besides the server owner)",
+        usage="unbanall###10s/user###No"
+    )
     @CustomChecks.blacklist_check()
     @CustomChecks.guild_owner_check()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def unbanall(self, ctx):
         banned_users = await ctx.guild.bans()   #get all the banned users
         for ban_entry in banned_users:  #unban them one by one
@@ -836,6 +832,6 @@ class Moderation(commands.Cog):
         menu.add_pages(embed_list)    
         await menu.open()
     """
-    
+
 def setup(bot):
-    bot.add_cog(Moderation(bot))
+    bot.add_cog(Mod(bot))
