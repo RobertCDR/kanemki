@@ -11,7 +11,7 @@ from contextlib import redirect_stdout
 import json
 import config
 from cogs.errors import CustomChecks
-import help_refactor
+import helpcmd
 
 intents = discord.Intents.all()
 mentions = discord.AllowedMentions(everyone=False)
@@ -37,7 +37,7 @@ class Bot(commands.Bot):
 bot = Bot (
     command_prefix=get_prefix,
     case_insensitive=True,
-    help_command=help_refactor.help_object,
+    help_command=helpcmd.help_object,
     allowed_mentions=mentions,
     intents=intents,
     activity=discord.Activity(type=discord.ActivityType.watching, name='Tomkyo Ghoul | >help'),
