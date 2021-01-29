@@ -16,12 +16,17 @@ class Help(commands.HelpCommand):
             color=0xff0000,
             timestamp=datetime.datetime.utcnow()
         )
-        emotes = [":sparkles: ", ":smile: ", ":video_game: ", ":camera: ", ":performing_arts: ", ":rosette: ", ":cop: ", ":mobile_phone: ", ":bulb: "]
-        categories = [f"`{self.clean_prefix}help actions`", f"`{self.clean_prefix}help fun`", f"`{self.clean_prefix}help games`",
-            f"`{self.clean_prefix}help images`", f"`{self.clean_prefix}help memes`", f"`{self.clean_prefix}help misc`",
-            f"`{self.clean_prefix}help mod`", f"`{self.clean_prefix}help social`", f"`{self.clean_prefix}help utils`"
-        ]
-        k = 0
+        emotes = {
+            "Actions": ":sparkles: ", "Fun": ":smile: ", "Games": ":video_game: ", "Images": ":camera: ", "Memes & Stuff": ":performing_arts: ",
+            "Misc": ":rosette: ", "Moderation": ":cop: ", "Social & Economy": ":mobile_phone: ", "Utilities": ":bulb: "
+        }
+        categories = {
+            "Actions": f"`{self.clean_prefix}help actions`", "Fun": f"`{self.clean_prefix}help fun`",
+            "Games": f"`{self.clean_prefix}help games`", "Images": f"`{self.clean_prefix}help images`",
+            "Memes & Stuff": f"`{self.clean_prefix}help memes`", "Misc": f"`{self.clean_prefix}help misc`",
+            "Moderation": f"`{self.clean_prefix}help mod`", "Social & Economy": f"`{self.clean_prefix}help social`",
+            "Utilities": f"`{self.clean_prefix}help utils`"
+        }
         embed.set_author(name='Kanemki Command List', icon_url='https://cdn.discordapp.com/avatars/723864146965168168/38c2c8f8d4d7f0b0b279a140686d8bd0.webp?size=1024')
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/726569752906170408/kanemki.png')
         embed.set_footer(icon_url='https://cdn.discordapp.com/avatars/465138950223167499/737c78651dbf2205aedc5ea3097ad4d5.webp?size=1024', text='Developed by RobertCDR#2573')
@@ -30,8 +35,7 @@ class Help(commands.HelpCommand):
             if command_signatures:
                 cog_name = getattr(cog, "alias", "No Category")
                 if str(cog_name) != 'No Category':
-                    embed.add_field(name=f"{emotes[k] + cog_name}", value=categories[k], inline=True)
-                    k += 1
+                    embed.add_field(name=f"{emotes[cog_name] + cog_name}", value=categories[cog_name], inline=True)
                 else:
                     pass
         channel = self.get_destination()
