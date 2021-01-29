@@ -71,7 +71,7 @@ class Help(commands.HelpCommand):
             "Actions": ":sparkles: ", "Fun": ":smile: ", "Games": "video_game: ", "Images": ":camera: ", "Memes": ":performing_arts: ",
             "Misc": ":rosette: ", "Mod": ":cop: ", "Social": ":mobile_phone: ", "Utils": ":bulb: "
         }
-        embed = discord.Embed(title=f"{emotes[cog.qualified_name]}{cog.qualified_name}", color=random.randint(0, 0xffffff))
+        embed = discord.Embed(title=f"{emotes[getattr(cog, 'qualified_name', 'No Category')]}{getattr(cog, 'alias', 'No Category')}", color=random.randint(0, 0xffffff))
         embed.set_footer(icon_url=self.context.author.avatar_url, text=f"Requested by {self.context.author}")
         embed.description = f"{', '.join(list(map(lambda x: f'`{x.qualified_name}`', filtered)))}"
         await channel.send(embed=embed)
