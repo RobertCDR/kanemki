@@ -22,17 +22,22 @@ class Actions(commands.Cog):
         url = f'http://api.giphy.com/v1/gifs/search?q={query}&api_key={giphy_api_key}&limit=10'
         session = aiohttp.ClientSession()   #create a session using aiohttp
         embed = discord.Embed(color=random.randint(0, 0xffffff))  #create the embed
-        response = await session.get(url=url)  #request the data
-        data = json.loads(await response.text()) #json parse the data and make it available for use
-        gif = random.randint(0, 9)
-        if data['data'][gif]['username']:
-            text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
-        else:
-            text = "Powered by GIPHY"
-        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
-        embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
+        try:    #when no results are found catch the errorwith try and except
+            response = await session.get(url=url)  #request the data
+            data = json.loads(await response.text()) #json parse the data and make it available for use
+            gif = random.randint(0, 9)
+            if data['data'][gif]['username']:
+                text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
+            else:
+                text = "Powered by GIPHY"
+            embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+            embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
+            await ctx.send(embed=embed) #send the embed
+        except Exception as error:
+            if isinstance(error, IndexError):
+                embed = discord.Embed(color=0xde2f43, description=f':x: No results found for **{query}**.')
+                await ctx.send(embed=embed)
         await session.close()   #close the session
-        await ctx.send(embed=embed) #send the embed
 
     @commands.command(help="get a facepalm gif", usage="facepalm###3s/user###No")
     @CustomChecks.blacklist_check()
