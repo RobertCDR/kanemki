@@ -79,7 +79,7 @@ class Social(commands.Cog):
                 'dnd': 'https://cdn.discordapp.com/attachments/725102631185547427/815876521549758514/dnd.png',
                 'idle': 'https://cdn.discordapp.com/attachments/725102631185547427/815876523269554196/idle.png'
             }
-            status_url = status_urls[str(member.status)] 
+            status_url = status_urls[str(member.status)]
             if member.public_flags.hypesquad_balance:
                 hypesquad_url = 'https://cdn.discordapp.com/attachments/725102631185547427/769659063759667280/balance.png'
                 hypesquad = '    Balance'

@@ -1,8 +1,6 @@
-from urllib.parse import uses_params
 import discord
 from discord.ext import commands
 import random
-from discord.ext.commands.core import cooldown
 import discord.utils
 import datetime
 import aiohttp
