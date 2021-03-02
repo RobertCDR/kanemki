@@ -18,8 +18,7 @@ class Actions(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def gif(self, ctx, *, query):
-        query = query.replace(' ', '+')   #replace the spaces with plus signs otherwise the request link will be broken
-        url = f'http://api.giphy.com/v1/gifs/search?q={query}&api_key={giphy_api_key}&limit=10'
+        url = f'http://api.giphy.com/v1/gifs/search?q={query.replace(" ", "+")}&api_key={giphy_api_key}&limit=10'
         session = aiohttp.ClientSession()   #create a session using aiohttp
         embed = discord.Embed(color=random.randint(0, 0xffffff))  #create the embed
         try:    #when no results are found catch the errorwith try and except

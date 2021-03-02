@@ -166,7 +166,7 @@ class Misc(commands.Cog):
     @commands.command(aliases=["calculate"], hidden=True)
     @CustomChecks.blacklist_check()
     @commands.is_owner()
-    async def math(self, ctx, *, query: str):
+    async def wf(self, ctx, *, query: str):
         data = wolfram.query(query)
         for pod in data.pods:
             await ctx.send(f"{pod}\n\n")
