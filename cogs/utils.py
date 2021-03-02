@@ -98,44 +98,6 @@ class Utils(commands.Cog):
             embed.add_field(name=f'**Roles** ({len(member.roles)-1})', value=allroles, inline=False)
         else:
             embed.add_field(name='**Roles** (0)', value='```css\n[None]\n```', inline=False)
-        #some further checks for different things
-        if member.premium_since:
-            premium = ':white_check_mark:'
-        else:
-            premium = ':x:'
-        if member.public_flags.staff:
-            staff = ':white_check_mark:'
-        else:
-            staff = ':x:'
-        if member.public_flags.partner:
-            partner = ':white_check_mark:'
-        else:
-            partner = ':x:'
-        if member.public_flags.bug_hunter or member.public_flags.bug_hunter_level_2:
-            bug_hunter = ':white_check_mark:'
-        else:
-            bug_hunter = ':x:'
-        if member.public_flags.early_supporter:
-            early_supporter = ':white_check_mark:'
-        else:
-            early_supporter = ':x:'
-        if member.public_flags.verified_bot_developer:
-            verified_bot_dev = ':white_check_mark:'
-        else:
-            verified_bot_dev = ':x:'
-        if member.bot:
-            bot = ':white_check_mark:'
-        else:
-            bot = ':x:'
-        if member.public_flags.verified_bot:
-            verified_bot = ':white_check_mark:'
-        else:
-            verified_bot = ':x:'
-        if member.public_flags.hypesquad:
-            hypesquad = ':white_check_mark:'
-        else:
-            hypesquad = ':x:'
-        embed.add_field(name='Others', value=f"**Nitro:**{premium}  **Early Supporter:**{early_supporter}  **Discord Partner:**{partner}\n**Discord Staff:**{staff}  **Bug Hunter:**{bug_hunter}  **HypeSquad Events:**{hypesquad}\n**Verified Bot Dev:**{verified_bot_dev}  **Bot:**{bot}  **Verified Bot:**{verified_bot}")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['sinfo', 'aboutsrv'], help="get info about the server", usage="serverinfo###2s/user###No")
@@ -286,7 +248,7 @@ class Utils(commands.Cog):
         menu.allow_multisession()   #this will let the user invoke another menu while the another one is still active
         await menu.open()   #open the menu
 
-    @commands.command(aliases=['covid19', 'sarscov2'], help="get daily statistics for covid19 in a country",
+    @commands.command(aliases=['covid19', 'sarscov2', 'covid'], help="get daily statistics for covid19 in a country",
         usage="coronavirus <country>###5s/user###No"
     )
     @CustomChecks.blacklist_check()
