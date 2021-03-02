@@ -158,6 +158,9 @@ class ErrorHandler(commands.Cog):
             elif error.param.name == 'rolename':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the name of the role.')
                 await ctx.send(embed=embed)
+            elif error.param.name == 'query':
+                embed = discord.Embed(color=0xfccc51, description=':warning: Tell me what to look for.')
+                await ctx.send(embed=embed)
             elif error.param.name == 'birthday':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify your birthday in format `dd`/`mm`/`yyyy`.')
                 await ctx.send(embed=embed)
