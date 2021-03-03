@@ -9,17 +9,59 @@ from discord import File
 import io
 import aiohttp
 
+async def reset(dictionary):
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            await reset(value)
+        else:
+            dictionary['points'] = 1
+
+async def image_request(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            image = await response.read()
+    return image
+
+async def return_rep(id):
+    try:
+        with open('./user data/reputation.json', 'r') as f:
+            reps = json.load(f)
+        return dict(reps[str(id)])['reputation']
+    except Exception as error:
+        if isinstance(error, KeyError):
+            with open('./user data/reputation.json', 'r') as f:
+                reps = json.load(f)
+            reps[str(id)] = {}
+            reps[str(id)]['points'] = 1
+            reps[str(id)]['reputation'] = 0
+            with open('./user data/reputation.json', 'w') as f:
+                json.dump(reps, f, indent=4)
+            return reps[str(id)]['reputation']
+
 class Social(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        #self.rep_points_reset.start()
+        self.rep_points_reset.start()
+
+    @tasks.loop(hours=24, reconnect=True)
+    async def rep_points_reset(self):
+        try:
+            with open('./user data/reputation.json', 'r') as f:
+                reputation = dict(json.load(f))
+            await reset(reputation)
+            with open('./user data/reputation.json', 'w') as f:
+                json.dump(reputation, f, indent=4)
+        except:
+            pass
 
     alias = "Social & Economy"
 
-    @commands.command(aliases=["rep"], help="`command under development`", usage="-###-###No")
+    @commands.command(aliases=["rep"], help="give a reputation point to someone", usage="reputation @user###24h/user###No")
     @CustomChecks.blacklist_check()
     @CustomChecks.rep_points_check()
     async def reputation(self, ctx, user: discord.User=None):
+        if user == ctx.message.author:
+            return await ctx.send("you can't rep yourself")
         with open('./user data/reputation.json', 'r') as f:
             reputation = json.load(f)
         try:
@@ -68,7 +110,9 @@ class Social(commands.Cog):
         embed = discord.Embed(description=f":military_medal: {ctx.author.mention} **gave** {user.mention} **a reputation point!**", color=0xff0000)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['pf'])
+    @commands.command(aliases=['pf'], help="see your profile card or someone else's", usage="profile @user`[optional]`###5s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def profile(self, ctx, member: discord.Member=None):
         async with ctx.channel.typing():
             member = member or ctx.message.author
@@ -127,12 +171,8 @@ class Social(commands.Cog):
                 verified_bot = 'Yes'
             else:
                 verified_bot = 'No'
-            async with aiohttp.ClientSession() as session:
-                async with session.get(background_url) as response:
-                    background = await response.read()
-            async with aiohttp.ClientSession() as session:
-                async with session.get(status_url) as response:
-                    status = await response.read()
+            background = await image_request(background_url)
+            status = await image_request(status_url)
             background = io.BytesIO(background)
             background = Image.open(background)
             avatar_buffer = io.BytesIO()
@@ -152,10 +192,11 @@ class Social(commands.Cog):
                 activity = ', '.join(list(map(lambda x: x.name, member.activities)))
             else:
                 activity = None
+            rep = await return_rep(member.id)
             text_list = [
                 f"The Watcher info on {member}", f"ID: {member.id}", f"Account created: {reg}", f"Joined server: {join}",
-                f"Nickname: {member.nick}", f"Status:     {str(member.status).capitalize()}", f"Activity: {activity}", f"HypeSquad: {hypesquad}",
-                f"Discord Nitro: {premium}", f"Early Supporter: {early_supporter}", f"Discord Partner: {partner}",
+                f"Nickname: {member.nick}", f"Reputation points: {rep}", f"Status:     {str(member.status).capitalize()}", f"Activity: {activity}",
+                f"HypeSquad: {hypesquad}", f"Discord Nitro: {premium}", f"Early Supporter: {early_supporter}", f"Discord Partner: {partner}",
                 f"HypeSquad Events: {events}", f"Discord Staff: {staff}", f"Bug Hunter: {bug_hunter}",
                 f"Verified Bot Dev: {verified_bot_dev}", f"Bot: {bot}", f"Verified Bot: {verified_bot}"
             ]
@@ -166,20 +207,20 @@ class Social(commands.Cog):
             }
             flag_colors = ["#fb68f8", "#fc964b", "#3e84e9", "#ffd56c", "#7289d9", "#fbb848", "#3e70dd", "#7289da", "#7289da"]
             coordinates = [
-                (1100, 10), (1100, 100), (1100, 150), (1100, 200), (1100, 250), (1100, 300), (1100, 350), (1100, 400),
-                (1100, 450), (1100, 500), (1100, 550), (1100, 600), (1100, 650), (1100, 700), (1100, 750), (1100, 800), (1100, 850)
+                (1100, 10), (1100, 100), (1100, 150), (1100, 200), (1100, 250), (1100, 300), (1100, 350), (1100, 400), (1100, 450),
+                (1100, 500), (1100, 550), (1100, 600), (1100, 650), (1100, 700), (1100, 750), (1100, 800), (1100, 850), (1100, 900)
             ]
             buffer = io.BytesIO()
             for x in range(0, len(text_list)):
                 draw = ImageDraw.Draw(background)
-                if x == 5:
+                if x == 6:
                     draw.text(coordinates[x], text_list[x], fill=colors[str(member.status)], font=font)
-                elif x == 6:
-                    draw.text(coordinates[x], text_list[x], fill=colors["activity"], font=font)
                 elif x == 7:
+                    draw.text(coordinates[x], text_list[x], fill=colors["activity"], font=font)
+                elif x == 8:
                     draw.text(coordinates[x], text_list[x], fill=colors[hypesquad], font=font)
-                elif x > 7:
-                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-8], font=font)
+                elif x > 8:
+                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-9], font=font)
                 else:
                     draw.text(coordinates[x], text_list[x], fill="#ff0000", font=font)
                 background.save(buffer, format='PNG')
@@ -187,26 +228,17 @@ class Social(commands.Cog):
             status = io.BytesIO(status)
             status_image = Image.open(status)
             status_image = status_image.resize((40, 40))
-            background.paste(status_image, (1223, 299))
+            background.paste(status_image, (1223, 349))
             if hypesquad is not None:
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(hypesquad_url) as response:
-                        hypesquad_resp = await response.read()
+                hypesquad_resp = await image_request(hypesquad_url)
                 hypesquad_resp = io.BytesIO(hypesquad_resp)
                 hypesquad_image = Image.open(hypesquad_resp)
                 hypesquad_image = hypesquad_image.resize((40, 40))
-                background.paste(hypesquad_image, (1319, 399))
+                background.paste(hypesquad_image, (1319, 449))
             buffer_output = io.BytesIO()
             background.save(buffer_output, format='PNG')
             buffer_output.seek(0)
             await ctx.send(file=File(buffer_output, 'thewatcherinfo.png'))
-
-    """@tasks.loop(seconds=10, reconnect=True)
-    async def rep_points_reset(self):
-        with open('./user data/reputation.json', 'r') as f:
-            reputation = json.load(f)
-        for user in reputation:
-            user['points'] = 1"""
 
 def setup(bot):
     bot.add_cog(Social(bot))
