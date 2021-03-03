@@ -182,8 +182,6 @@ class Social(commands.Cog):
             avatar_image = Image.open(avatar_buffer)
             avatar_image = avatar_image.resize((256, 256))
             background.paste(avatar_image, (2200, 30))
-            buffer_output = io.BytesIO()
-            background.save(buffer_output, format='PNG')
             font = ImageFont.truetype("./fonts/CrimsonRoman.ttf", 45)
             now = datetime.datetime.now()
             reg = f"{member.created_at.__format__('%d %b %Y %H:%M')} ({str(now-member.created_at).split(',', 1)[0]})"
@@ -194,25 +192,31 @@ class Social(commands.Cog):
                 activity = None
             rep = await return_rep(member.id)
             text_list = [
-                f"The Watcher info on {member}", f"ID: {member.id}", f"Account created: {reg}", f"Joined server: {join}",
-                f"Nickname: {member.nick}", f"Reputation points: {rep}", f"Status:     {str(member.status).capitalize()}", f"Activity: {activity}",
-                f"HypeSquad: {hypesquad}", f"Discord Nitro: {premium}", f"Early Supporter: {early_supporter}", f"Discord Partner: {partner}",
-                f"HypeSquad Events: {events}", f"Discord Staff: {staff}", f"Bug Hunter: {bug_hunter}",
-                f"Verified Bot Dev: {verified_bot_dev}", f"Bot: {bot}", f"Verified Bot: {verified_bot}"
+                str(member), str(member.id), reg, join, member.nick, str(rep), str(member.status).capitalize(), str(activity),
+                str(hypesquad), premium, early_supporter, partner, events, staff, bug_hunter, verified_bot_dev, bot, verified_bot
             ]
+            text_list2 = [
+                "The Watcher info on", "ID:", "Account created:", "Joined server:", "Nickname:", "Reputation points:", "Status:",
+                "Activity:", "HypeSquad:", "Discord Nitro:", "Early Supporter:", "Discord Partner:", "HypeSquad Events:",
+                "Discord Staff:", "Bug Hunter:", "Verified Bot Dev:", "Bot:", "Verified Bot:"
+            ]
+            flag_colors = ["#fb68f8", "#fc964b", "#3e84e9", "#ffd56c", "#7289d9", "#fbb848", "#3e70dd", "#7289da", "#7289da"]
             colors = {
                 "online": "#44b383", "idle": "#faa61a", "dnd": "#f04747", "offline": "#747f8d", "activity": "#1db954",
                 "    Balance": "#45ddc0", "    Bravery": "#9c84ef", "    Brilliance": "#f47b67",
                 None: "#747f8d"
             }
-            flag_colors = ["#fb68f8", "#fc964b", "#3e84e9", "#ffd56c", "#7289d9", "#fbb848", "#3e70dd", "#7289da", "#7289da"]
             coordinates = [
+                (1480, 10), (1165, 100), (1410, 150), (1350, 200), (1300, 250), (1435, 300), (1270, 350), (1260, 400), (1330, 450),
+                (1365, 500), (1400, 550), (1400, 600), (1450, 650), (1350, 700), (1325, 750), (1415, 800), (1180, 850), (1335, 900)
+            ]
+            coordinates2 = [
                 (1100, 10), (1100, 100), (1100, 150), (1100, 200), (1100, 250), (1100, 300), (1100, 350), (1100, 400), (1100, 450),
                 (1100, 500), (1100, 550), (1100, 600), (1100, 650), (1100, 700), (1100, 750), (1100, 800), (1100, 850), (1100, 900)
             ]
-            buffer = io.BytesIO()
             for x in range(0, len(text_list)):
                 draw = ImageDraw.Draw(background)
+                draw.text(coordinates2[x], text_list2[x], fill="#ff0000", font=font)
                 if x == 6:
                     draw.text(coordinates[x], text_list[x], fill=colors[str(member.status)], font=font)
                 elif x == 7:
@@ -223,8 +227,6 @@ class Social(commands.Cog):
                     draw.text(coordinates[x], text_list[x], fill=flag_colors[x-9], font=font)
                 else:
                     draw.text(coordinates[x], text_list[x], fill="#ff0000", font=font)
-                background.save(buffer, format='PNG')
-                buffer.seek(0)
             status = io.BytesIO(status)
             status_image = Image.open(status)
             status_image = status_image.resize((40, 40))
