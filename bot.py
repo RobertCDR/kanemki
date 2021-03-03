@@ -229,6 +229,5 @@ async def whats1000_7(ctx):
         await message.edit(embed=embed)
         await asyncio.sleep(5)
 
-
 #start the bot
 bot.run(TOKEN)
