@@ -136,7 +136,7 @@ class Misc(commands.Cog):
 
     #generate random passwords
     @commands.command(aliases=['passgen', 'password'], help="generate a random password for whatever use you want",
-        usage="passwordgen <length>`[optional]` <purpose>`[optional]`"
+        usage="passwordgen <length>`[optional]` <purpose>`[optional]`###1s/user###No"
     )
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
