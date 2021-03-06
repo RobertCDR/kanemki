@@ -1,7 +1,13 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import CheckFailure, CommandOnCooldown
-import json
+import config
+from pymongo import MongoClient
+
+cluster = MongoClient(config.db_client)
+database = cluster["KanemkiDB"]
+guild_collection = database["guilddata"]
+user_collection = database["userdata"]
 
 #a custom checks class meant to create some decorators for the bot's commands
 class CustomChecks():
@@ -9,16 +15,14 @@ class CustomChecks():
     #check if the user is or not in the bot blacklist of the guild
     def blacklist_check():
         def predicate(ctx):
-            with open('./guild data/blacklist.json', 'r') as f:
-                id_list = json.load(f)
             try:
-                if ctx.author.id in id_list[str(ctx.guild.id)]:
+                results = guild_collection.find_one({"_id": ctx.author.id})
+                if results is not None:
                     return False
                 else:
                     return True
             except Exception as error:
-                if isinstance(error, KeyError):
-                    return True
+                raise error
         return commands.check(predicate)
 
     #check if the user is the server owner or me (for blacklisting users)
@@ -34,15 +38,14 @@ class CustomChecks():
 
     def rep_points_check():
         def predicate(ctx):
-            with open('./user data/reputation.json') as f:
-                reputation = json.load(f)
             try:
-                points = reputation[str(ctx.author.id)]['points']
+                result = user_collection.find_one({"_id": ctx.author.id})
+                points = result["rep_points"]
             except Exception as error:
                 if isinstance(error, KeyError):
                     return True
                 else:
-                    raise
+                    raise error
             if points > 0:
                 return True
             else:

@@ -1,20 +1,19 @@
 import discord
 from discord.ext import commands, tasks
 from cogs.errors import CustomChecks
-import json
 import datetime
 import random
 from PIL import Image, ImageDraw, ImageFont
 from discord import File
 import io
 import aiohttp
+import config
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
-async def reset(dictionary):
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            await reset(value)
-        else:
-            dictionary['points'] = 1
+cluster = MongoClient(config.db_client)
+database = cluster["KanemkiDB"]
+user_collection = database["userdata"]
 
 async def image_request(url):
     async with aiohttp.ClientSession() as session:
@@ -22,21 +21,15 @@ async def image_request(url):
             image = await response.read()
     return image
 
-async def return_rep(id):
+async def return_rep(_id):
     try:
-        with open('./user data/reputation.json', 'r') as f:
-            reps = json.load(f)
-        return dict(reps[str(id)])['reputation']
+        result = user_collection.find_one({"_id": _id})
+        return result["reputation"]
     except Exception as error:
         if isinstance(error, KeyError):
-            with open('./user data/reputation.json', 'r') as f:
-                reps = json.load(f)
-            reps[str(id)] = {}
-            reps[str(id)]['points'] = 1
-            reps[str(id)]['reputation'] = 0
-            with open('./user data/reputation.json', 'w') as f:
-                json.dump(reps, f, indent=4)
-            return reps[str(id)]['reputation']
+            return 0
+        else:
+            raise error
 
 class Social(commands.Cog):
     def __init__(self, bot):
@@ -45,14 +38,7 @@ class Social(commands.Cog):
 
     @tasks.loop(hours=24, reconnect=True)
     async def rep_points_reset(self):
-        try:
-            with open('./user data/reputation.json', 'r') as f:
-                reputation = dict(json.load(f))
-            await reset(reputation)
-            with open('./user data/reputation.json', 'w') as f:
-                json.dump(reputation, f, indent=4)
-        except:
-            pass
+        user_collection.update_many({}, {"$set": {"rep_points": +1}})
 
     alias = "Social & Economy"
 
@@ -62,51 +48,22 @@ class Social(commands.Cog):
     async def reputation(self, ctx, user: discord.User=None):
         if user == ctx.message.author:
             return await ctx.send("you can't rep yourself")
-        with open('./user data/reputation.json', 'r') as f:
-            reputation = json.load(f)
+        elif user is None:
+            return await ctx.send("you need to mention someone to rep")
         try:
-            author_points = reputation[str(ctx.author.id)]['points']
+            points_to_give = user_collection.find_one({"_id": ctx.author.id})
+            points_to_give = points_to_give["rep_points"]
         except Exception as error:
             if isinstance(error, KeyError):
-                reputation[str(ctx.author.id)] = {}
-                reputation[str(ctx.author.id)]['points'] = 1
-                author_points = reputation[str(ctx.author.id)]['points']
+                user_collection.find_one_and_update({"_id": ctx.author.id}, {"$inc": {"rep_points": +1}})
             else:
-                raise
+                raise error
         try:
-            author_rep = reputation[str(ctx.author.id)]['reputation']
+            user_collection.insert_one({"_id": user.id,"reputation": 1, "rep_points":1})
         except Exception as error:
-            if isinstance(error, KeyError):
-                reputation[str(ctx.author.id)]['reputation'] = 0
-                author_rep = reputation[str(ctx.author.id)]['reputation']
-            else:
-                raise
-        try:
-            user_points = reputation[str(user.id)]['points']
-        except Exception as error:
-            if isinstance(error, KeyError):
-                reputation[str(user.id)] = {}
-                reputation[str(user.id)]['points'] = 1
-                user_points = reputation[str(user.id)]['points']
-            else:
-                raise
-        try:
-            user_rep = reputation[str(user.id)]['reputation']
-        except Exception as error:
-            if isinstance(error, KeyError):
-                reputation[str(user.id)]['reputation'] = 0
-                user_rep = reputation[str(user.id)]['reputation']
-            else:
-                raise
-        if author_points > 0:
-            author_points -= 1
-            user_rep += 1
-            reputation[str(ctx.author.id)]['points'] = author_points
-            reputation[str(user.id)]['reputation'] = user_rep
-        reputation[str(ctx.author.id)]['reputation'] = author_rep
-        reputation[str(user.id)]['points'] = user_points
-        with open('./user data/reputation.json', 'w') as f:
-            json.dump(reputation, f, indent=4)
+            if isinstance(error, DuplicateKeyError):
+                user_collection.update_one({"_id": user.id}, {"$inc": {"reputation": +1}})
+        user_collection.update_one({"_id": ctx.author.id}, {"$inc": {"rep_points": -1}})
         embed = discord.Embed(description=f":military_medal: {ctx.author.mention} **gave** {user.mention} **a reputation point!**", color=0xff0000)
         await ctx.send(embed=embed)
 
@@ -190,9 +147,13 @@ class Social(commands.Cog):
                 activity = ', '.join(list(map(lambda x: x.name, member.activities)))
             else:
                 activity = None
+            if member.nick:
+                nick = member.nick
+            else:
+                nick = "-"
             rep = await return_rep(member.id)
             text_list = [
-                str(member), str(member.id), reg, join, member.nick, str(rep), str(member.status).capitalize(), str(activity),
+                str(member), str(member.id), reg, join, nick, str(rep), str(member.status).capitalize(), str(activity),
                 str(hypesquad), premium, early_supporter, partner, events, staff, bug_hunter, verified_bot_dev, bot, verified_bot
             ]
             text_list2 = [

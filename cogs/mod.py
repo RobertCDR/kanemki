@@ -1,13 +1,16 @@
 import discord
 from discord.ext import commands
 import asyncio
-import json
 import datetime
 import typing
 from dpymenus import PaginatedMenu
 from cogs.errors import CustomChecks
+import config
+from pymongo import MongoClient
 
-#if you are here for examples, scroll through this and you'll find commentaries on some of these commands
+cluster = MongoClient(config.db_client)
+database = cluster["KanemkiDB"]
+guild_collection = database["guilddata"]
 
 class Mod(commands.Cog):
     def __init__(self, bot):
@@ -31,23 +34,27 @@ class Mod(commands.Cog):
     @CustomChecks.blacklist_perm_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def add(self, ctx, user: discord.User):
-        with open('./guild data/blacklist.json', 'r') as f:
-            id_list = json.load(f)
         if user.id == 465138950223167499:
             embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the creator of the bot from his own bot.')
             return await ctx.send(embed=embed)
         elif user.id == 723864146965168168:
-            embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the bot.')
+            embed = discord.Embed(color=0xde2f43, description=':x: You cannot blacklist the bot himself.')
             return await ctx.send(embed=embed)
         else:
             try:
-                id_list[str(ctx.guild.id)].append(user.id)
+                results = guild_collection.find_one({"_id": ctx.guild.id})
+                blacklist = results["blacklist"]
+                if user.id in blacklist:
+                    embed = discord.Embed(color=0xde2f43, description=':x: User already blacklisted on this server.')
+                    return await ctx.send(embed=embed)
+                else:
+                    blacklist.append(user.id)
+                    guild_collection.update_one({"_id": ctx.guild.id}, {"$addToSet": {"blacklist": user.id}})
             except Exception as error:
                 if isinstance(error, KeyError):
-                    id_list[str(ctx.guild.id)] = []
-                    id_list[str(ctx.guild.id)].append(user.id)
-        with open('./guild data/blacklist.json', 'w') as f:
-            json.dump(id_list, f, indent=4)
+                    guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"blacklist": [user.id]}})
+                else:
+                    raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot on this server.')
         await ctx.send(embed=embed)
 
@@ -56,30 +63,24 @@ class Mod(commands.Cog):
     @CustomChecks.blacklist_perm_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def remove(self, ctx, user: discord.User):
-        with open('./guild data/blacklist.json', 'r') as f:
-            id_list = json.load(f)
         try:
-            guild_id_list = id_list[str(ctx.guild.id)]
-        except Exception as error:
-            if isinstance(error, KeyError):
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            blacklist = result["blacklist"]
+            if blacklist == []:
                 embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
                 return await ctx.send(embed=embed)
-        if guild_id_list == []:
-            embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
-            return await ctx.send(embed=embed)
-        try:
-            if user.id in guild_id_list:
-                guild_id_list.remove(user.id)
+            if user.id in blacklist:
+                blacklist.remove(user.id)
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"blacklist": blacklist}})
             else:
                 embed = discord.Embed(color=0xde2f43, description=':x: User not on blacklist.')
                 return await ctx.send(embed=embed)
         except Exception as error:
             if isinstance(error, KeyError):
-                embed = discord.Embed(color=0xde2f43, description=':x: User not blacklisted.')
+                embed = discord.Embed(color=0xde2f43, description=':x: Blacklist empty.')
                 return await ctx.send(embed=embed)
-        id_list[str(ctx.guild.id)] = guild_id_list
-        with open('./guild data/blacklist.json', 'w') as f:
-            json.dump(id_list, f, indent=4)
+            else:
+                raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed {user.mention} from bot blacklist.')
         await ctx.send(embed=embed)
 
@@ -121,19 +122,16 @@ class Mod(commands.Cog):
         if not prefix:  #if a prefix is not specified return and notify the user
             embed = discord.Embed(color=0xfccc51, description=':warning: Specify a prefix.')
             return await ctx.send(embed=embed)
-        set_default = ['default', 'clear']
+        set_default = ['default', 'clear', 'standard']
         if len(prefix) > 5 and prefix.lower() not in set_default: #if the length of the prefix is too big
             embed = discord.Embed(color=0xfccc51, description=':warning: Prefix length can be max 5 characters.')
             return await ctx.send(embed=embed)
-        with open ('./guild data/prefixes.json', 'r') as f: #open the json file containig prefixes
-            prefixes = json.load(f) #load it
         if prefix.lower() == 'default' or prefix.lower() == 'clear':    #'default' and 'clear' will set the guild prefix to the default bot prefix
-            prefixes[str(ctx.guild.id)] = '>'
+            prefix = ">"
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"prefix": prefix}})
         else:   #if an actual custom prefix is given
-            prefixes[str(ctx.guild.id)] = prefix    #put into the json file as the value associated with the guild's id
-        with open('./guild data/prefixes.json', 'w') as f:  #open the json file in write mode
-            json.dump(prefixes, f, indent=4)    #dump the new prefix
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed guild prefix to **{prefixes[str(ctx.guild.id)]}**.')
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"prefix": prefix}})
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed guild prefix to **{prefix}**.')
         await ctx.send(embed=embed)
 
     #I'm only leaving comments on the next three things
@@ -144,11 +142,7 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_set(self, ctx, muted: discord.Role):
-        with open('./guild data/mutedroles.json', 'r') as f:    #open the json file contaning mute roles
-            mutedrole = json.load(f)    #load it
-        mutedrole[str(ctx.guild.id)] = muted.id  #put the id into the json file as the value associated with the guild's id
-        with open('./guild data/mutedroles.json', 'w') as f:
-            json.dump(mutedrole, f, indent=4)
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"mutedrole": muted.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed muted role to {muted.mention}.')
         #overwrite the channel permissions for the muted role
         for channel in ctx.guild.text_channels:
@@ -167,18 +161,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_remove(self, ctx):
-        with open ('./guild data/mutedroles.json', 'r') as f:   #open the json file containing mute role ids for guilds
-            joinrole = json.load(f) #load it
         try:
-            joinrole.pop(str(ctx.guild.id)) #pop the guild id and it's value, the role id
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            role_id = result["mutedrole"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"mutedrole": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No muted role was set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/mutedroles.json', 'w') as f:    #open the json file in write mode
-            json.dump(joinrole, f, indent=4)    #dump the modifications
+                raise error
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed muted role.')
         await ctx.send(embed=embed)
 
@@ -187,11 +179,7 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_set(self, ctx, role: discord.Role):
-        with open('./guild data/joinroles.json', 'r') as f:
-            joinrole = json.load(f)
-        joinrole[str(ctx.guild.id)] = role.id
-        with open('./guild data/joinroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"joinrole": role.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed member role to {role.mention}.')
         await ctx.send(embed=embed)
 
@@ -200,18 +188,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_remove(self, ctx):
-        with open ('./guild data/joinroles.json', 'r') as f:
-            joinrole = json.load(f)
         try:
-            joinrole.pop(str(ctx.guild.id))
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            role_id = result["joinrole"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"joinrole": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No join role was set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/joinroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed member join role.')
         await ctx.send(embed=embed)
 
@@ -220,11 +206,7 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_set(self, ctx, role: discord.Role):
-        with open('./guild data/botroles.json', 'r') as f:
-            joinrole = json.load(f)
-        joinrole[str(ctx.guild.id)] = role.id
-        with open('./guild data/botroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"botrole": role.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed bot join role to {role.mention}.')
         await ctx.send(embed=embed)
 
@@ -233,18 +215,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_remove(self, ctx):
-        with open ('./guild data/botroles.json', 'r') as f:
-            joinrole = json.load(f)
         try:
-            joinrole.pop(str(ctx.guild.id))
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            role_id = result["botrole"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"botrole": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No bot role was set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/botroles.json', 'w') as f:
-            json.dump(joinrole, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed bot join role.')
         await ctx.send(embed=embed)
 
@@ -253,11 +233,7 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
-        with open('./guild data/logsch.json', 'r') as f:
-            logsch = json.load(f)
-        logsch[str(ctx.guild.id)] = channel.id
-        with open('./guild data/logsch.json', 'w') as f:
-            json.dump(logsch, f, indent=4)
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"logsch": channel.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set logs channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
@@ -266,18 +242,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_remove(self, ctx):
-        with open('./guild data/logsch.json', 'r') as f:
-            logsch = json.load(f)
         try:
-            logsch.pop(str(ctx.guild.id))
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            channel_id = result["logsch"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"logsch": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No logs was channel set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/logsch.json', 'w') as f:
-            json.dump(logsch, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Succesfully removed logs channel.')
         await ctx.send(embed=embed)
 
@@ -286,16 +260,7 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
-        with open('./guild data/welcome.json', 'r') as f:
-            welcomech = json.load(f)
-        try:
-            welcomech[str(ctx.guild.id)][0] = channel.id
-        except Exception as error:
-            if isinstance(error, KeyError):
-                welcomech[str(ctx.guild.id)] = [None] * 2
-                welcomech[str(ctx.guild.id)][0] = channel.id
-        with open('./guild data/welcome.json', 'w') as f:
-            json.dump(welcomech, f, indent=4)
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomech": channel.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set welcome channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
@@ -304,18 +269,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_remove(self, ctx):
-        with open('./guild data/welcome.json', 'r') as f:
-            welcomech = json.load(f)
         try:
-            welcomech.pop(str(ctx.guild.id))
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            channel_id = result["welcomech"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcomech": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No welcome channel was set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/welcome.json', 'w') as f:
-            json.dump(welcomech, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome channel.')
         await ctx.send(embed=embed)
 
@@ -323,18 +286,16 @@ class Mod(commands.Cog):
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def welcomemsg_set(self, ctx, *, args):
-        with open('./guild data/welcome.json', 'r') as f:
-            welcomemsg = json.load(f)
-        try:    
-            welcomemsg[str(ctx.guild.id)][1] = args
+    async def welcomemsg_set(self, ctx, *, message):
+        try:
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            channel_id = result["welcomech"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomemsg": message}})
         except Exception as error:
             if isinstance(error, KeyError):
-                return await ctx.send("first set a welcome channel")
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomech": ctx.channel.id}})
             else:
-                raise
-        with open('./guild data/welcome.json', 'w') as f:
-            json.dump(welcomemsg, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome message.')
         await ctx.send(embed=embed)
 
@@ -343,18 +304,16 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_remove(self, ctx):
-        with open('./guild data/welcome.json', 'r') as f:
-            welcomemsg = json.load(f)
         try:
-            welcomemsg[str(ctx.guild.id)][1] = None
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            message = result["welcomemsg"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcomemsg": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No welcome message was set.')
                 return await ctx.send(embed=embed)
             else:
-                raise
-        with open('./guild data/welcome.json', 'w') as f:
-            json.dump(welcomemsg, f, indent=4)
+                raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
     """
@@ -586,18 +545,20 @@ class Mod(commands.Cog):
         if not convert_time_to_seconds(time):
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of time (ex: 10s, 10m, 10h, 10d, 10w).')
                 return await ctx.send(embed=embed)
-        with open('./guild data/mutedroles.json', 'r') as f:    #open the json file containing muted roles ids
-            mutedrole = json.load(f)    #load the file
-        if str(ctx.guild.id) in str(mutedrole): #if the guild has already a muted role set
-            muted = mutedrole[str(ctx.guild.id)]    #get the id of the role
-            muted = discord.utils.get(ctx.guild.roles, id=muted)  #get the role
-        else:   #if there is no muted role set for the guild create a default one
-            perms = discord.Permissions(read_messages=True, add_reactions=True, external_emojis=True, change_nickname=True)
-            muted = await ctx.guild.create_role(name='Muted', permissions=perms)
-            mutedrole[str(ctx.guild.id)] = muted.id
-            #after creating the default mute role dump it into the json file
-            with open('./guild data/mutedroles.json', 'w') as f:
-                json.dump(mutedrole, f, indent=4)
+        result = guild_collection.find_one({"_id": ctx.guild.id})
+        try:
+            muted = result["mutedrole"]
+            muted = discord.utils.get(ctx.guild.roles, id=muted)
+            if muted is None:
+                raise KeyError
+        #if there is no muted role set for the guild create a default one
+        except Exception as error:
+            if isinstance(error, KeyError):
+                perms = discord.Permissions(read_messages=True, add_reactions=True, external_emojis=True, change_nickname=True)
+                muted = await ctx.guild.create_role(name='Muted', permissions=perms)
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"mutedrole": muted.id}})
+            else:
+                raise error
             for channel in ctx.guild.text_channels:
                 perms = channel.overwrites_for(muted)
                 perms.send_messages = False
@@ -619,10 +580,13 @@ class Mod(commands.Cog):
                 if not victim.bot:
                     await victim.add_roles(muted)
                     muted_members.append(victim)
-                    dm = await victim.create_dm()   #create a conversation with the members
-                    message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}", timestamp=datetime.datetime.utcnow())
-                    message.set_thumbnail(url=ctx.guild.icon_url)
-                    await dm.send(embed=message)   #message that he/she was muted in that guild
+                    try:
+                        dm = await victim.create_dm()
+                        message = discord.Embed(color=0xff0000, title=f"You've been muted in **{ctx.guild.name}**.", description=f"**Reason**: {reason}", timestamp=datetime.datetime.utcnow())
+                        message.set_thumbnail(url=ctx.guild.icon_url)
+                        await dm.send(embed=message)
+                    except:
+                        pass
                 else:
                     await victim.add_roles(muted)   #add the role to the user
                     muted_members.append(victim)    #add the user to a list of muted users
@@ -642,10 +606,14 @@ class Mod(commands.Cog):
         if victims is None:
             embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
             return await ctx.send(embed=embed)
-        with open('./guild data/mutedroles.json', 'r') as f:    #open and load the json file
-            mutedrole = json.load(f)
-        muted = mutedrole[str(ctx.guild.id)]    #get the id of the role
-        muted = discord.utils.get(ctx.guild.roles, id=muted)  #get the role
+        try:
+            result = guild_collection.find_one({"_id": ctx.guild.id})
+            muted = result["mutedrole"]
+            if muted is None:
+                raise KeyError
+        except Exception as error:
+            embed = discord.Embed(color=0xde2f43, description=':x: No muted role found.')
+            return await ctx.send(embed=embed)
         unmuted_list = []
         for victim in victims:  #iterate through the mentioned users
             #if the member mentioned has mod permissions or is an admin
@@ -680,10 +648,13 @@ class Mod(commands.Cog):
                 if not victim.bot:
                     await victim.kick(reason=reason)
                     kicked_list.append(victim)
-                    dm = await victim.create_dm()
-                    message = discord.Embed(color=0xff0000, title=f"You've been kicked from **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
-                    message.set_thumbnail(url=ctx.guild.icon_url)
-                    await dm.send(embed=message)
+                    try:
+                        dm = await victim.create_dm()
+                        message = discord.Embed(color=0xff0000, title=f"You've been kicked from **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
+                        message.set_thumbnail(url=ctx.guild.icon_url)
+                        await dm.send(embed=message)
+                    except:
+                        pass
                 else:
                     await victim.kick(reason=reason)
                     kicked_list.append(victim)
@@ -714,10 +685,13 @@ class Mod(commands.Cog):
                 if not victim.bot:
                     await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
                     banned_list.append(victim)
-                    dm = await victim.create_dm()
-                    message = discord.Embed(color=0xff0000, title=f"You've been banned in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
-                    message.set_thumbnail(url=ctx.guild.icon_url)
-                    await dm.send(embed=message)
+                    try:
+                        dm = await victim.create_dm()
+                        message = discord.Embed(color=0xff0000, title=f"You've been banned in **{ctx.guild.name}**.", description=f"**Reason**: {reason}")
+                        message.set_thumbnail(url=ctx.guild.icon_url)
+                        await dm.send(embed=message)
+                    except:
+                        pass
                 else:
                     await ctx.guild.ban(victim, reason=reason, delete_message_days=1)
                     banned_list.append(victim)
@@ -745,7 +719,7 @@ class Mod(commands.Cog):
     
     #not so sure about this command
     #it will need some reworking in the future
-    @commands.command(aliases=['tempban'], help="needs reworking", usage="-###-###No")
+    """@commands.command(aliases=['tempban'], help="needs reworking", usage="-###-###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(ban_members=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -774,7 +748,7 @@ class Mod(commands.Cog):
         for ban_entry in banned_users:
             user = ban_entry.user
         if user.id == victim.id:
-            await ctx.guild.unban(user)
+            await ctx.guild.unban(user)"""
 
     #unban all the users that have been banned in the guild
     @commands.command(help="unban all banned users from this server (acces restricted for everyone besides the server owner)",
