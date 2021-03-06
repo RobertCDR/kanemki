@@ -139,7 +139,6 @@ class Games(commands.Cog):
                             embed.set_footer(text='Better luck escaping hanging next time.', icon_url=self.bot.user.avatar_url)
                         await ctx.send(embed=embed)
 
-
     #guess the number game
     #todo I should make a hint system
     @commands.command(help="guess a random number", usage="guess <limit>`[optional]`###3s/user###No")

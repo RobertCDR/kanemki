@@ -6,7 +6,7 @@ import praw
 from bot import reddit_client_id, reddit_client_secret
 from cogs.errors import CustomChecks
 
-reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.1.0 (by /u/RobertCDR)')
+reddit = praw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent='windows:Kanemki Discord Bot:v1.2.0 (by /u/RobertCDR)')
 
 class Images(commands.Cog):
     def __init__(self, bot):
