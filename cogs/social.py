@@ -73,7 +73,7 @@ class Social(commands.Cog):
     async def profile(self, ctx, member: discord.Member=None):
         async with ctx.channel.typing():
             member = member or ctx.message.author
-            background_url = 'https://cdn.discordapp.com/attachments/725102631185547427/815870901701967932/profile-background.png'
+            background_url = 'https://cdn.discordapp.com/attachments/725102631185547427/818107019659575316/profile-asset.png'
             status_urls = {
                 'online': 'https://cdn.discordapp.com/attachments/725102631185547427/815876526724874240/online.png',
                 'offline': 'https://cdn.discordapp.com/attachments/725102631185547427/815876525202604042/offline.png',
@@ -138,7 +138,7 @@ class Social(commands.Cog):
             avatar_buffer.seek(0)
             avatar_image = Image.open(avatar_buffer)
             avatar_image = avatar_image.resize((256, 256))
-            background.paste(avatar_image, (2200, 30))
+            background.paste(avatar_image, (1000, 10))
             font = ImageFont.truetype("./fonts/CrimsonRoman.ttf", 45)
             now = datetime.datetime.now()
             reg = f"{member.created_at.__format__('%d %b %Y %H:%M')} ({str(now-member.created_at).split(',', 1)[0]})"
@@ -168,12 +168,12 @@ class Social(commands.Cog):
                 None: "#747f8d"
             }
             coordinates = [
-                (1480, 10), (1165, 100), (1410, 150), (1350, 200), (1300, 250), (1435, 300), (1270, 350), (1260, 400), (1330, 450),
-                (1365, 500), (1400, 550), (1400, 600), (1450, 650), (1350, 700), (1325, 750), (1415, 800), (1180, 850), (1335, 900)
+                (410, 10), (95, 100), (340, 150), (280, 200), (230, 250), (365, 300), (200, 350), (200, 400), (260, 450), (295, 500),
+                (330, 550), (330, 600), (380, 650), (280, 700), (255, 750), (345, 800), (110, 850), (265, 900)
             ]
             coordinates2 = [
-                (1100, 10), (1100, 100), (1100, 150), (1100, 200), (1100, 250), (1100, 300), (1100, 350), (1100, 400), (1100, 450),
-                (1100, 500), (1100, 550), (1100, 600), (1100, 650), (1100, 700), (1100, 750), (1100, 800), (1100, 850), (1100, 900)
+                (30, 10), (30, 100), (30, 150), (30, 200), (30, 250), (30, 300), (30, 350), (30, 400), (30, 450), (30, 500),
+                (30, 550), (30, 600), (30, 650), (30, 700), (30, 750), (30, 800), (30, 850), (30, 900)
             ]
             for x in range(0, len(text_list)):
                 draw = ImageDraw.Draw(background)
@@ -191,13 +191,13 @@ class Social(commands.Cog):
             status = io.BytesIO(status)
             status_image = Image.open(status)
             status_image = status_image.resize((40, 40))
-            background.paste(status_image, (1223, 349))
+            background.paste(status_image, (153, 349))
             if hypesquad is not None:
                 hypesquad_resp = await image_request(hypesquad_url)
                 hypesquad_resp = io.BytesIO(hypesquad_resp)
                 hypesquad_image = Image.open(hypesquad_resp)
                 hypesquad_image = hypesquad_image.resize((40, 40))
-                background.paste(hypesquad_image, (1319, 449))
+                background.paste(hypesquad_image, (249, 449))
             buffer_output = io.BytesIO()
             background.save(buffer_output, format='PNG')
             buffer_output.seek(0)
