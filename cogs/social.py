@@ -28,6 +28,8 @@ async def return_rep(_id):
     except Exception as error:
         if isinstance(error, KeyError):
             return 0
+        elif isinstance(error, TypeError):
+            return 0
         else:
             raise error
 
