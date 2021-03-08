@@ -22,16 +22,16 @@ async def image_request(url):
             image = await response.read()
     return image
 
-async def return_rep(_id):
+async def return_social(_id):
     social = []
     try:
         result = user_collection.find_one({"_id": _id})
         social.append(result["reputation"])
     except Exception as error:
         if isinstance(error, KeyError):
-            social.append(result["reputation"])
+            social.append(0)
         elif isinstance(error, TypeError):
-            social.append(result["reputation"])
+            social.append(0)
         else:
             raise error
     try:
@@ -41,7 +41,7 @@ async def return_rep(_id):
         if isinstance(error, KeyError):
             social.append("-")
         elif isinstance(error, TypeError):
-            social.append(result["about"])
+            social.append("-")
         else:
             raise error
     return social
@@ -179,7 +179,7 @@ class Social(commands.Cog):
                 nick = member.nick
             else:
                 nick = "-"
-            rep = await return_rep(member.id)
+            rep = await return_social(member.id)
             about = textwrap.wrap(rep[1], width=30)
             about = '\n'.join(about)
             text_list = [
