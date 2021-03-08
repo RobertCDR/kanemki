@@ -55,7 +55,7 @@ class Mod(commands.Cog):
                     guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"blacklist": [user.id]}})
                 else:
                     raise error
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully blacklisted {user.mention} from using the bot on this server.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully blacklisted {user.mention} from using the bot on this server.')
         await ctx.send(embed=embed)
 
     @blacklist.command()
@@ -81,7 +81,7 @@ class Mod(commands.Cog):
                 return await ctx.send(embed=embed)
             else:
                 raise error
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed {user.mention} from bot blacklist.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed {user.mention} from bot blacklist.')
         await ctx.send(embed=embed)
 
     #a command group for server configuration commands
@@ -234,7 +234,7 @@ class Mod(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
         guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"logsch": channel.id}})
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set logs channel to {channel.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set logs channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['logsch-remove'])
@@ -252,7 +252,7 @@ class Mod(commands.Cog):
                 return await ctx.send(embed=embed)
             else:
                 raise error
-        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Succesfully removed logs channel.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed logs channel.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-set'])
@@ -261,7 +261,7 @@ class Mod(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
         guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomech": channel.id}})
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set welcome channel to {channel.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['welcomech-remove'])
@@ -327,7 +327,7 @@ class Mod(commands.Cog):
         starboards[str(ctx.guild.id)] = channel.id
         with open('./guild data/starboards.json', 'w') as f:
             json.dump(starboards, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully set starboard to {channel.mention}.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set starboard to {channel.mention}.')
         await ctx.send(embed=embed)
 
     @config.command(aliases=['starboard-remove'])
@@ -347,7 +347,7 @@ class Mod(commands.Cog):
                 raise
         with open('./guild data/starboards.json', 'w') as f:
             json.dump(starboards, f, indent=4)
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Succesfully removed starboard channel.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed starboard channel.')
         await ctx.send(embed=embed)
     """
 
