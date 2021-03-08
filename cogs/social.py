@@ -4,6 +4,7 @@ from cogs.errors import CustomChecks
 import datetime
 import random
 from PIL import Image, ImageDraw, ImageFont
+import textwrap
 from discord import File
 import io
 import aiohttp
@@ -22,16 +23,28 @@ async def image_request(url):
     return image
 
 async def return_rep(_id):
+    social = []
     try:
         result = user_collection.find_one({"_id": _id})
-        return result["reputation"]
+        social.append(result["reputation"])
     except Exception as error:
         if isinstance(error, KeyError):
-            return 0
+            social.append(result["reputation"])
         elif isinstance(error, TypeError):
-            return 0
+            social.append(result["reputation"])
         else:
             raise error
+    try:
+        result = user_collection.find_one({"_id": _id})
+        social.append(result["about"])
+    except Exception as error:
+        if isinstance(error, KeyError):
+            social.append("-")
+        elif isinstance(error, TypeError):
+            social.append(result["about"])
+        else:
+            raise error
+    return social
 
 class Social(commands.Cog):
     def __init__(self, bot):
@@ -67,6 +80,19 @@ class Social(commands.Cog):
                 user_collection.update_one({"_id": user.id}, {"$inc": {"reputation": +1}})
         user_collection.update_one({"_id": ctx.author.id}, {"$inc": {"rep_points": -1}})
         embed = discord.Embed(description=f":military_medal: {ctx.author.mention} **gave** {user.mention} **a reputation point!**", color=0xff0000)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["setdescription", "setdescr"], help="set a description to display on your profile (limit: 200 characters)", usage="setabout <description>###5s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def setabout(self, ctx, *, description: str=None):
+        if description is None:
+            return await ctx.send("you can set nothing as a description only literally")
+        elif len(description) > 200:
+            return await ctx.send("description too long")
+        user_collection.update_one({"_id": ctx.author.id}, {"$set": {"about": description}})
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully set profile description')
+        embed.set_author(icon_url=ctx.author.avatar_url, name=ctx.author)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['pf'], help="see your profile card or someone else's", usage="profile @user`[optional]`###5s/user###No")
@@ -154,14 +180,16 @@ class Social(commands.Cog):
             else:
                 nick = "-"
             rep = await return_rep(member.id)
+            about = textwrap.wrap(rep[1], width=30)
+            about = '\n'.join(about)
             text_list = [
-                str(member), str(member.id), reg, join, nick, str(rep), str(member.status).capitalize(), str(activity),
-                str(hypesquad), premium, early_supporter, partner, events, staff, bug_hunter, verified_bot_dev, bot, verified_bot
+                str(member), str(member.id), reg, join, nick, str(rep[0]), str(member.status).capitalize(), str(hypesquad),
+                premium, early_supporter, partner, events, staff, bug_hunter, verified_bot_dev, bot, verified_bot, str(activity), about
             ]
             text_list2 = [
                 "The Watcher info on", "ID:", "Account created:", "Joined server:", "Nickname:", "Reputation points:", "Status:",
-                "Activity:", "HypeSquad:", "Discord Nitro:", "Early Supporter:", "Discord Partner:", "HypeSquad Events:",
-                "Discord Staff:", "Bug Hunter:", "Verified Bot Dev:", "Bot:", "Verified Bot:"
+                "HypeSquad:", "Discord Nitro:", "Early Supporter:", "Discord Partner:", "HypeSquad Events:",
+                "Discord Staff:", "Bug Hunter:", "Verified Bot Dev:", "Bot:", "Verified Bot:", "Activity:", "About:"
             ]
             flag_colors = ["#fb68f8", "#fc964b", "#3e84e9", "#ffd56c", "#7289d9", "#fbb848", "#3e70dd", "#7289da", "#7289da"]
             colors = {
@@ -170,26 +198,26 @@ class Social(commands.Cog):
                 None: "#747f8d"
             }
             coordinates = [
-                (410, 10), (95, 100), (340, 150), (280, 200), (230, 250), (365, 300), (200, 350), (200, 400), (260, 450), (295, 500),
-                (330, 550), (330, 600), (380, 650), (280, 700), (255, 750), (345, 800), (110, 850), (265, 900)
+                (410, 10), (95, 100), (340, 150), (280, 200), (230, 250), (365, 300), (200, 350), (260, 400), (295, 450), (330, 500),
+                (330, 550), (380, 600), (280, 650), (255, 700), (345, 750), (110, 800), (265, 850), (190, 900), (900, 350)
             ]
             coordinates2 = [
                 (30, 10), (30, 100), (30, 150), (30, 200), (30, 250), (30, 300), (30, 350), (30, 400), (30, 450), (30, 500),
-                (30, 550), (30, 600), (30, 650), (30, 700), (30, 750), (30, 800), (30, 850), (30, 900)
+                (30, 550), (30, 600), (30, 650), (30, 700), (30, 750), (30, 800), (30, 850), (30, 900), (1064, 300)
             ]
             for x in range(0, len(text_list)):
                 draw = ImageDraw.Draw(background)
                 draw.text(coordinates2[x], text_list2[x], fill="#ff0000", font=font)
                 if x == 6:
                     draw.text(coordinates[x], text_list[x], fill=colors[str(member.status)], font=font)
-                elif x == 7:
+                elif x == 17:
                     draw.text(coordinates[x], text_list[x], fill=colors["activity"], font=font)
-                elif x == 8:
+                elif x == 7:
                     draw.text(coordinates[x], text_list[x], fill=colors[hypesquad], font=font)
-                elif x > 8:
-                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-9], font=font)
+                elif x >= 8 and x <= 16:
+                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-8], font=font)
                 else:
-                    draw.text(coordinates[x], text_list[x], fill="#ff0000", font=font)
+                    draw.text(coordinates[x], text_list[x], fill="#ffffff", font=font)
             status = io.BytesIO(status)
             status_image = Image.open(status)
             status_image = status_image.resize((40, 40))
@@ -199,7 +227,7 @@ class Social(commands.Cog):
                 hypesquad_resp = io.BytesIO(hypesquad_resp)
                 hypesquad_image = Image.open(hypesquad_resp)
                 hypesquad_image = hypesquad_image.resize((40, 40))
-                background.paste(hypesquad_image, (249, 449))
+                background.paste(hypesquad_image, (249, 399))
             buffer_output = io.BytesIO()
             background.save(buffer_output, format='PNG')
             buffer_output.seek(0)
