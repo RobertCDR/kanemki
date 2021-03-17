@@ -137,7 +137,7 @@ class ErrorHandler(commands.Cog):
             if error.param.name == 'victim':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Select your victim.')
                 await ctx.send(embed=embed)
-            elif error.param.name == 'delinv':
+            elif error.param.name == 'invite':
                 embed = discord.Embed(color=0xde2f43, description=':x: No invite given.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'role':
@@ -168,7 +168,8 @@ class ErrorHandler(commands.Cog):
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify your birthday in format `dd`/`mm`/`yyyy`.')
                 await ctx.send(embed=embed)
             elif error.param.name == 'member':
-                await ctx.send('mention someone')
+                embed = discord.Embed(color=0xfccc51, description=':warning: Mention someone.')
+                await ctx.send(embed=embed)
             elif error.param.name == 'text':
                 await ctx.send('gimme some text')
             elif error.param.name == 'awarded':

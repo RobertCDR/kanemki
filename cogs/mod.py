@@ -134,9 +134,6 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed guild prefix to **{prefix}**.')
         await ctx.send(embed=embed)
 
-    #I'm only leaving comments on the next three things
-    #the same principle is followed by the next subcommands
-    #a subcommand which sets a custom mute role for the mute command
     @config.command(aliases=['muted-set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
@@ -316,6 +313,7 @@ class Mod(commands.Cog):
                 raise error
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
+    
     """
     @config.command(aliases=['starboard-set'])
     @CustomChecks.blacklist_check()
@@ -383,7 +381,7 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully created role {role.mention}.')
         await ctx.send(embed=embed)
 
-    @commands.command(help="delete a role", usage="delrole @role###2s/user###No")
+    @commands.command(help="delete a role", usage="delrole @role(s)###2s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -393,7 +391,7 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Roles deleted: {', '.join(list(map(lambda x: x.name, role)))}.")
         await ctx.send(embed=embed)
 
-    @commands.command(help="add a role to a member", usage="addrole @role @user###1s/user###No")
+    @commands.command(help="add a role to a member", usage="addrole @role @user(s)###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 1, commands.BucketType.user)
@@ -406,7 +404,7 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f":white_check_mark: Successfully added role {role.mention} to {' '.join(list(map(lambda x: x.mention, member)))}.")
         await ctx.send(embed=embed)
 
-    @commands.command(help="remove a role from a member", usage="remrole @role @user###1s/user###No")
+    @commands.command(help="remove a role from a member", usage="remrole @role @user(s)###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -497,6 +495,9 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def delinv(self, ctx, invite: discord.Invite):
+        if invite.guild is not ctx.guild:
+            embed = discord.Embed(color=0xde2f43, description=':x: Invite must be from this guild.')
+            return await ctx.send(embed=embed)
         await self.bot.delete_invite(invite)
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully revoked invite.')
         await ctx.send(embed=embed)
@@ -543,15 +544,15 @@ class Mod(commands.Cog):
             else:
                 return False
         if not convert_time_to_seconds(time):
-                embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of time (ex: 10s, 10m, 10h, 10d, 10w).')
-                return await ctx.send(embed=embed)
+            embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of time (ex: 10s, 10m, 10h, 10d, 10w).')
+            return await ctx.send(embed=embed)
         result = guild_collection.find_one({"_id": ctx.guild.id})
         try:
             muted = result["mutedrole"]
             muted = discord.utils.get(ctx.guild.roles, id=muted)
             if muted is None:
                 raise KeyError
-        #if there is no muted role set for the guild create a default one
+        #if there is no muted role set for the guild create a default one and overwrite it's channel permissions
         except Exception as error:
             if isinstance(error, KeyError):
                 perms = discord.Permissions(read_messages=True, add_reactions=True, external_emojis=True, change_nickname=True)
@@ -612,8 +613,11 @@ class Mod(commands.Cog):
             if muted is None:
                 raise KeyError
         except Exception as error:
-            embed = discord.Embed(color=0xde2f43, description=':x: No muted role found.')
-            return await ctx.send(embed=embed)
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: No muted role found.')
+                return await ctx.send(embed=embed)
+            else:
+                raise
         unmuted_list = []
         for victim in victims:  #iterate through the mentioned users
             #if the member mentioned has mod permissions or is an admin

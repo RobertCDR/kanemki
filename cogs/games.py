@@ -11,7 +11,7 @@ class Games(commands.Cog):
     alias = "Games"
 
     #now this, ladies and gentlemen, is a mess of if statements
-    #but it works and, after 2 good hours of bug hunting and errors
+    #but it works :'D
     @commands.command(aliases=['hman', 'hang'], help="play a game of Hangman by yourself or with your friends", usage="hangman @users`[optional]`###30s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 30, commands.BucketType.user)

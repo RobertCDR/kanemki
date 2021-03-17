@@ -49,7 +49,8 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-#those below are developer only commands
+#those below are owner only commands
+
 #changes the bot's status and prints some things in my console to show that he's fully online
 @bot.event
 async def on_ready():
