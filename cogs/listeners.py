@@ -22,7 +22,7 @@ class Listeners(commands.Cog):
         prefix = {"_id": guild.id, "prefix": ">"}
         guild_collection.insert_one(prefix)
 
-    #when the bot is removed from the guild, remove the data stored about it except the user blacklist
+    #when the bot is removed from the guild, remove the data stored about it
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         guild_collection.find_one_and_delete({"_id": guild.id})
@@ -31,13 +31,13 @@ class Listeners(commands.Cog):
     async def on_member_join(self, member):
         result = guild_collection.find_one({"_id": member.guild.id})
         try:
-            if member.bot:  #if a bot joins the guild
+            if member.bot:
                 role = result["botrole"]
                 role = discord.utils.get(member.guild.roles, id=role)   #get the role
-            else:   #if a non-bot account joins the guild
+            else:
                 role = result["joinrole"]
                 role = discord.utils.get(member.guild.roles, id=role)   #get the role
-            await member.add_roles(role)    #add it to the user
+            await member.add_roles(role)
         except Exception as error:
             if isinstance(error, KeyError):
                 pass
@@ -97,7 +97,7 @@ class Listeners(commands.Cog):
         try:
             logs = result["logsch"]
             logs = self.bot.get_channel(logs)
-            if before.nick is not after.nick:
+            if str(before.nick) != str(after.nick):
                 embed = discord.Embed(
                     color=0x0019ff, title='Nickname Changed', timestamp=datetime.datetime.utcnow(),
                     description=f"{after.mention}\n**Before:** {before.nick}\n**After:** {after.nick}\n**ID:** {after.id}"
@@ -361,6 +361,51 @@ class Listeners(commands.Cog):
                 raise
 
     @commands.Cog.listener()
+    async def on_invite_create(self, invite):
+        result = guild_collection.find_one({"_id": invite.guild.id})
+        try:
+            logs = result["logsch"]
+            logs = self.bot.get_channel(logs)
+            if invite.max_age == 0:
+                max_age = "♾️"
+            else:
+                max_age = str(datetime.timedelta(seconds=invite.max_age)).split(".", 1)[0]
+            if invite.max_uses == 0:
+                max_uses = "♾️"
+            else:
+                max_uses = invite.max_uses
+            embed = discord.Embed(
+                color=0x5d6fb0, title="Invite Created", timestamp=datetime.datetime.utcnow(),
+                description=f"**Max Age:** {max_age}\n**Temporary:** {invite.temporary}\n**Max Uses:** {max_uses}\n**Inviter:** {invite.inviter.mention}\n**Inviter ID** {invite.inviter.id}\n"
+            )
+            embed.description += f"**URL:** {invite.url}"
+            embed.set_thumbnail(url=invite.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
+    async def on_invite_delete(self, invite):
+        result = guild_collection.find_one({"_id": invite.guild.id})
+        try:
+            logs = result["logsch"]
+            logs = self.bot.get_channel(logs)
+            embed = discord.Embed(
+                color=0xff0000, title="Invite Deleted", timestamp=datetime.datetime.utcnow(),
+                description=f"**URL:** {invite.url}"
+            )
+            embed.set_thumbnail(url=invite.guild.icon_url)
+            await logs.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                pass
+            else:
+                raise
+
+    @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         result = guild_collection.find_one({"_id": member.guild.id})
         try:
@@ -418,6 +463,22 @@ class Listeners(commands.Cog):
             elif before.mute is True and after.mute is False:
                 embed = discord.Embed(
                     color=0x4f00ff, title='Server Unmute', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.self_stream is False and after.self_stream is True:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Started Streaming', timestamp=datetime.datetime.utcnow(),
+                    description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
+                )
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                embed.set_thumbnail(url=member.guild.icon_url)
+                await logs.send(embed=embed)
+            elif before.self_stream is True and after.self_stream is False:
+                embed = discord.Embed(
+                    color=0x4f00ff, title='Stopped Streaming', timestamp=datetime.datetime.utcnow(),
                     description=f"{member.mention}\n**Channel: {after.channel.name}**\n**Category:** {after.channel.category}\n**Channel ID:** {after.channel.id}\n**Member ID:** {member.id}"
                 )
                 embed.set_author(name=member, icon_url=member.avatar_url)
