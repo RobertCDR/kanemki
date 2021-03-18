@@ -171,9 +171,12 @@ class Social(commands.Cog):
             now = datetime.datetime.now()
             reg = f"{member.created_at.__format__('%d %b %Y %H:%M')} ({str(now-member.created_at).split(',', 1)[0]})"
             join = f"{member.joined_at.__format__('%d %b %Y %H:%M')} ({str(now-member.joined_at).split(',', 1)[0]})"
-            if member.activity:
-                activity = ', '.join(list(map(lambda x: x.name, member.activities)))
-            else:
+            try:
+                if member.activity:
+                    activity = ', '.join(list(map(lambda x: x.name, member.activities)))
+                else:
+                    activity = None
+            except TypeError:
                 activity = None
             if member.nick:
                 nick = member.nick
