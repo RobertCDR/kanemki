@@ -612,6 +612,7 @@ class Mod(commands.Cog):
             muted = result["mutedrole"]
             if muted is None:
                 raise KeyError
+            muted = discord.utils.get(ctx.guild.roles, id=muted)
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No muted role found.')
