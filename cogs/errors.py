@@ -1,13 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import CheckFailure, CommandOnCooldown
-import config
-from pymongo import MongoClient
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-guild_collection = database["guilddata"]
-user_collection = database["userdata"]
+from config import guild_collection, user_collection
 
 #a custom checks class meant to create some decorators for the bot's commands
 class CustomChecks():

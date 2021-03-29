@@ -7,13 +7,8 @@ import aiohttp
 import json
 from dpymenus import PaginatedMenu
 from bot import rapid_api
+from config import user_collection
 from cogs.errors import CustomChecks
-import config
-from pymongo import MongoClient
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-user_collection = database["userdata"]
 
 class Utils(commands.Cog):
     def __init__(self, bot):

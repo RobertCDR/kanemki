@@ -83,7 +83,7 @@ class Help(commands.HelpCommand):
 
 attributes = {
     "cooldown": commands.Cooldown(1, 1, commands.BucketType.user),
-    "check": CustomChecks.blacklist_check(),
+    "check": CustomChecks.blacklist_check()
 }
 
 help_object = Help(command_attrs=attributes)

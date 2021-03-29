@@ -5,13 +5,7 @@ import datetime
 import typing
 from dpymenus import PaginatedMenu
 from cogs.errors import CustomChecks
-import config
-from pymongo import MongoClient
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-guild_collection = database["guilddata"]
-
+from config import guild_collection
 class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

@@ -1,12 +1,7 @@
 import discord
 from discord.ext import commands
 import datetime
-import config
-from pymongo import MongoClient
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-guild_collection = database["guilddata"]
+from config import guild_collection
 
 #! this is still kind of f-ed up because of previous bugs which I thought I had fixed
 #* I mean it does it's job, but some things are off

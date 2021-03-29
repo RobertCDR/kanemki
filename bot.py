@@ -8,11 +8,7 @@ import traceback
 from contextlib import redirect_stdout
 import config
 import helpcmd
-from pymongo import MongoClient
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-guild_collection = database["guilddata"]
+from config import guild_collection
 
 intents = discord.Intents.all()
 mentions = discord.AllowedMentions(everyone=False)

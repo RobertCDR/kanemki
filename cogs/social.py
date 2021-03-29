@@ -8,13 +8,8 @@ import textwrap
 from discord import File
 import io
 import aiohttp
-import config
-from pymongo import MongoClient
+from config import user_collection
 from pymongo.errors import DuplicateKeyError
-
-cluster = MongoClient(config.db_client)
-database = cluster["KanemkiDB"]
-user_collection = database["userdata"]
 
 async def image_request(url):
     async with aiohttp.ClientSession() as session:
