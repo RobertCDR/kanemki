@@ -259,7 +259,6 @@ class Social(commands.Cog):
         try:
             already_married = user_collection.find_one({"_id": ctx.author.id})
             already_married = already_married["marriedwith"]
-            print(already_married)
             if already_married is not None:
                 already_married = await self.bot.fetch_user(already_married)
                 embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'You are already married with {already_married.mention}.')
@@ -269,7 +268,8 @@ class Social(commands.Cog):
             if isinstance(error, KeyError):
                 def check(x):
                     return x.channel == ctx.message.channel and x.author == member
-                embed = discord.Embed(color=random.randint(0, 0xffffff), description=f"{member.mention} respond with yes/y/no/n.")
+                embed = discord.Embed(color=random.randint(0, 0xffffff), description="Respond with yes/y/no/n.")
+                embed.set_author(icon_url=member.avatar_url, name=member)
                 await ctx.send(embed=embed)
                 try:
                     response = await self.bot.wait_for('message', check=check, timeout=30)
@@ -289,6 +289,29 @@ class Social(commands.Cog):
                     return await ctx.send(embed=embed)
                 else:
                     return await ctx.send('Not a valid response')
+            else:
+                raise error
+
+    @commands.command(help="divorce the person you married", usage="divorce###10s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def divorce(self, ctx):
+        try:
+            already_married = user_collection.find_one({"_id": ctx.author.id})
+            if already_married is not None:
+                user_collection.update_one({"_id": ctx.author.id}, {"$unset": {"marriedwith": 1}})
+                user_collection.update_one({"_id": already_married["marriedwith"]}, {"$unset": {"marriedwith": 1}})
+                already_married = await self.bot.fetch_user(already_married["marriedwith"])
+                embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'{ctx.author.mention} divorced {already_married.mention}.')
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+                return await ctx.send(embed=embed)
+            else:
+                raise KeyError
+        except Exception as error:
+            if isinstance(error, KeyError):
+                embed = discord.Embed(color=0xde2f43, description=':x: You are not married.')
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+                return await ctx.send(embed=embed)
             else:
                 raise error
 
