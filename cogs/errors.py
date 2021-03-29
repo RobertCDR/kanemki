@@ -121,7 +121,7 @@ class ErrorHandler(commands.Cog):
             elif ctx.command.qualified_name == 'clear':
                 embed = discord.Embed(color=0xfccc51, description=':warning: Specify the amount of messages to clear.')
                 await ctx.send(embed=embed)
-            elif ctx.command.qualified_name == 'guess':
+            elif ctx.command.qualified_name == 'guess' or ctx.command.qualified_name == 'base2' or ctx.command.qualified_name == 'base10':
                 await ctx.send('Not a valid number.')
             elif ctx.command.qualified_name == 'todo remove':
                 await ctx.send('Not a valid item.')

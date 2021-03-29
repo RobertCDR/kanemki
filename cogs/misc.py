@@ -95,6 +95,27 @@ class Misc(commands.Cog):
                 message += x
         await ctx.send(message)
 
+    """@commands.command(aliases=["binary"], help="convert numbers from base 10 to base 2", usage="base2 <number>###1s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def base2(self, ctx, number: int = None):
+        if number is None:
+            return await ctx.send('gimme a number')
+        await ctx.send(f"**{number}** is **{str(bin(number))[2:]}** in binary.")
+
+    @commands.command(help="convert numbers from base 10 to base 2", usage="base2 <number>###1s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def base10(self, ctx, number: bin=None):
+        if number is None:
+            return await ctx.send('gimme a number')
+        suma, n, k, = 0, number, 0
+        while n != 0:
+            suma += n % 10 * pow(2, k)
+            n //= 10
+            k += 1
+        await ctx.send(f"**{number}** is **{suma}** in binary.")"""
+
     @commands.command(aliases=['age', 'howmanydays'], help="calculate your age in days", usage="agedays `dd`/`mm`/`yyyy`###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
