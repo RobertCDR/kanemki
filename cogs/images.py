@@ -61,6 +61,17 @@ class Images(commands.Cog):
                 embed.description = ':x: No Spotify activity detected.'
         return await ctx.send(embed=embed)  #send the embed
 
+    @commands.command(help="create a custom minecraft achievement", usage="achievement <text>###3s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def achievement(self, ctx, *, text: str):
+        if len(text) > 25:
+            return await ctx.send("you exceeded the 25 characters limit")
+        embed = discord.Embed(color=random.randint(0, 0xffffff))
+        embed.set_author(name='Achievement Unlocked', icon_url=self.bot.user.avatar_url)
+        embed.set_image(url=f"https://minecraftskinstealer.com/achievement/{random.randint(1, 40)}/Achievement/{text.replace(' ', '+')}")
+        await ctx.send(embed=embed)
+
     @commands.command(help="award someone for whatever reason it goes through your head", usage="award @user <reason>###1s/user###No")
     @CustomChecks.blacklist_check()
     @commands.cooldown(1, 1, commands.BucketType.user)
