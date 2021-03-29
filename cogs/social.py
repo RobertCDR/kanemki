@@ -258,6 +258,15 @@ class Social(commands.Cog):
             return await ctx.send("You should love yourself but... I mean... uh... not to this point tho...")
         try:
             already_married = user_collection.find_one({"_id": ctx.author.id})
+            if already_married is None:
+                raise KeyError
+        except Exception as error:
+            if isinstance(error, KeyError):
+                user_collection.insert_one({"_id": ctx.author.id})
+                already_married = user_collection.find_one({"_id": ctx.author.id})
+            else:
+                raise error
+        try:
             already_married = already_married["marriedwith"]
             if already_married is not None:
                 already_married = await self.bot.fetch_user(already_married)
@@ -265,7 +274,7 @@ class Social(commands.Cog):
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
                 return await ctx.send(embed=embed)
         except Exception as error:
-            if isinstance(error, KeyError):
+            if isinstance(error, KeyError or TypeError):
                 def check(x):
                     return x.channel == ctx.message.channel and x.author == member
                 embed = discord.Embed(color=random.randint(0, 0xffffff), description="Respond with yes/y/no/n.")
