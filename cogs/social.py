@@ -8,6 +8,7 @@ import textwrap
 from discord import File
 import io
 import aiohttp
+import asyncio
 from config import user_collection
 from pymongo.errors import DuplicateKeyError
 
@@ -32,6 +33,16 @@ async def return_social(_id):
     try:
         result = user_collection.find_one({"_id": _id})
         social.append(result["about"])
+    except Exception as error:
+        if isinstance(error, KeyError):
+            social.append("-")
+        elif isinstance(error, TypeError):
+            social.append("-")
+        else:
+            raise error
+    try:
+        result = user_collection.find_one({"_id": _id})
+        social.append(result["marriedwith"])
     except Exception as error:
         if isinstance(error, KeyError):
             social.append("-")
@@ -180,56 +191,106 @@ class Social(commands.Cog):
             rep = await return_social(member.id)
             about = textwrap.wrap(rep[1], width=30)
             about = '\n'.join(about)
+            if rep[2] == "-":
+                married = "-"
+            else:
+                married = str(await self.bot.fetch_user(rep[2]))
             text_list = [
-                str(member), str(member.id), reg, join, nick, str(rep[0]), str(member.status).capitalize(), str(hypesquad),
+                str(member), str(member.id), reg, join, nick, str(rep[0]), married, str(member.status).capitalize(), str(hypesquad),
                 premium, early_supporter, partner, events, staff, bug_hunter, verified_bot_dev, bot, verified_bot, str(activity), about
             ]
             text_list2 = [
-                "The Watcher info on", "ID:", "Account created:", "Joined server:", "Nickname:", "Reputation points:", "Status:",
+                "The Watcher info on", "ID:", "Account created:", "Joined server:", "Nickname:", "Reputation points:", "Married with:", "Status:",
                 "HypeSquad:", "Discord Nitro:", "Early Supporter:", "Discord Partner:", "HypeSquad Events:",
                 "Discord Staff:", "Bug Hunter:", "Verified Bot Dev:", "Bot:", "Verified Bot:", "Activity:", "About:"
             ]
             flag_colors = ["#fb68f8", "#fc964b", "#3e84e9", "#ffd56c", "#7289d9", "#fbb848", "#3e70dd", "#7289da", "#7289da"]
             colors = {
                 "online": "#44b383", "idle": "#faa61a", "dnd": "#f04747", "offline": "#747f8d", "activity": "#1db954",
-                "    Balance": "#45ddc0", "    Bravery": "#9c84ef", "    Brilliance": "#f47b67",
+                "    Balance": "#45ddc0", "    Bravery": "#9c84ef", "    Brilliance": "#f47b67", "married": "#f88b86",
                 None: "#747f8d"
             }
             coordinates = [
-                (410, 10), (95, 100), (340, 150), (280, 200), (230, 250), (365, 300), (200, 350), (260, 400), (295, 450), (330, 500),
-                (330, 550), (380, 600), (280, 650), (255, 700), (345, 750), (110, 800), (265, 850), (190, 900), (900, 350)
+                (410, 10), (95, 100), (340, 150), (280, 200), (230, 250), (365, 300), (290, 350), (200, 400), (260, 450), (295, 500), (330, 550),
+                (330, 600), (380, 650), (280, 700), (255, 750), (345, 800), (110, 850), (265, 900), (190, 950), (900, 350)
             ]
             coordinates2 = [
-                (30, 10), (30, 100), (30, 150), (30, 200), (30, 250), (30, 300), (30, 350), (30, 400), (30, 450), (30, 500),
-                (30, 550), (30, 600), (30, 650), (30, 700), (30, 750), (30, 800), (30, 850), (30, 900), (1064, 300)
+                (30, 10), (30, 100), (30, 150), (30, 200), (30, 250), (30, 300), (30, 350), (30, 400), (30, 450), (30, 500), (30, 550),
+                (30, 600), (30, 650), (30, 700), (30, 750), (30, 800), (30, 850), (30, 900), (30, 950), (1064, 300)
             ]
             for x in range(0, len(text_list)):
                 draw = ImageDraw.Draw(background)
                 draw.text(coordinates2[x], text_list2[x], fill="#ff0000", font=font)
                 if x == 6:
-                    draw.text(coordinates[x], text_list[x], fill=colors[str(member.status)], font=font)
-                elif x == 17:
-                    draw.text(coordinates[x], text_list[x], fill=colors["activity"], font=font)
+                    draw.text(coordinates[x], text_list[x], fill=colors["married"], font=font)
                 elif x == 7:
+                    draw.text(coordinates[x], text_list[x], fill=colors[str(member.status)], font=font)
+                elif x == 18:
+                    draw.text(coordinates[x], text_list[x], fill=colors["activity"], font=font)
+                elif x == 8:
                     draw.text(coordinates[x], text_list[x], fill=colors[hypesquad], font=font)
-                elif x >= 8 and x <= 16:
-                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-8], font=font)
+                elif x >= 9 and x <= 17:
+                    draw.text(coordinates[x], text_list[x], fill=flag_colors[x-9], font=font)
                 else:
                     draw.text(coordinates[x], text_list[x], fill="#ffffff", font=font)
             status = io.BytesIO(status)
             status_image = Image.open(status)
             status_image = status_image.resize((40, 40))
-            background.paste(status_image, (153, 349))
+            background.paste(status_image, (153, 399))
             if hypesquad is not None:
                 hypesquad_resp = await image_request(hypesquad_url)
                 hypesquad_resp = io.BytesIO(hypesquad_resp)
                 hypesquad_image = Image.open(hypesquad_resp)
                 hypesquad_image = hypesquad_image.resize((40, 40))
-                background.paste(hypesquad_image, (249, 399))
+                background.paste(hypesquad_image, (249, 449))
             buffer_output = io.BytesIO()
             background.save(buffer_output, format='PNG')
             buffer_output.seek(0)
             await ctx.send(file=File(buffer_output, 'thewatcherinfo.png'))
+
+    @commands.command(aliases=["propose"], help="ask someone to marry you (be romantic)\n(currently the ring is on the house)", usage="marry @user###10s/user###No")
+    @CustomChecks.blacklist_check()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def marry(self, ctx, member: discord.Member=None):
+        if member is None:
+            return await ctx.send("404 pair not found. Who are you proposing to?")
+        elif member is ctx.author:
+            return await ctx.send("You should love yourself but... I mean... uh... not to this point tho...")
+        try:
+            already_married = user_collection.find_one({"_id": ctx.author.id})
+            already_married = already_married["marriedwith"]
+            print(already_married)
+            if already_married is not None:
+                already_married = await self.bot.fetch_user(already_married)
+                embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'You are already married with {already_married.mention}.')
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+                return await ctx.send(embed=embed)
+        except Exception as error:
+            if isinstance(error, KeyError):
+                def check(x):
+                    return x.channel == ctx.message.channel and x.author == member
+                embed = discord.Embed(color=random.randint(0, 0xffffff), description=f"{member.mention} respond with yes/y/no/n.")
+                await ctx.send(embed=embed)
+                try:
+                    response = await self.bot.wait_for('message', check=check, timeout=30)
+                    _response = response.content.lower()
+                except asyncio.TimeoutError:
+                    embed = discord.Embed(color=random.randint(0, 0xffffff), description=f"It looks like {member.mention} needs some more time to think.")
+                    return await ctx.send(embed=embed)
+                if _response == 'yes' or _response == 'y':
+                    user_collection.update_one({"_id": ctx.author.id}, {"$set": {"marriedwith": member.id}})
+                    user_collection.update_one({"_id": member.id}, {"$set": {"marriedwith": ctx.author.id}})
+                    embed = discord.Embed(color=random.randint(0, 0xffffff), title=f'**{str(ctx.message.author)}** :ring: **{str(member)}**')
+                    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/825995294788419634/husband-wife.jpg')
+                    embed.description = f"***By the power invested in me by no valid or legal authority, I now pronounce {ctx.author.mention} & {member.mention} husband and wife*** :man_in_tuxedo::woman_with_veil:"
+                    return await ctx.send(embed=embed)
+                elif _response == 'no' or _response == 'n':
+                    embed = discord.Embed(color=random.randint(0, 0xffffff), description="Oh... well... maybe give it some time...")
+                    return await ctx.send(embed=embed)
+                else:
+                    return await ctx.send('Not a valid response')
+            else:
+                raise error
 
 def setup(bot):
     bot.add_cog(Social(bot))
