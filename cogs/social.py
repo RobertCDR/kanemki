@@ -256,16 +256,13 @@ class Social(commands.Cog):
             return await ctx.send("404 pair not found. Who are you proposing to?")
         elif member is ctx.author:
             return await ctx.send("You should love yourself but... I mean... uh... not to this point tho...")
-        try:
+        already_married = user_collection.find_one({"_id": ctx.author.id})
+        member_already_married = user_collection.find_one({"_id": member.id})
+        if already_married is None:
+            user_collection.insert_one({"_id": ctx.author.id})
             already_married = user_collection.find_one({"_id": ctx.author.id})
-            if already_married is None:
-                raise KeyError
-        except Exception as error:
-            if isinstance(error, KeyError):
-                user_collection.insert_one({"_id": ctx.author.id})
-                already_married = user_collection.find_one({"_id": ctx.author.id})
-            else:
-                raise error
+        if member_already_married is None:
+            user_collection.insert_one({"_id": ctx.author.id})
         try:
             already_married = already_married["marriedwith"]
             if already_married is not None:
