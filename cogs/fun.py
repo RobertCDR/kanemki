@@ -169,9 +169,9 @@ class Fun(commands.Cog):
             embed.add_field(name=':grimacing:', value=f"you're {nr}% hot")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['love', 'compatibility', 'lovemeter'], help="The ultimate and most revolutionary Love Machine", usage="ship @user1 @user2`[optional]`")
+    @commands.command(aliases=['love', 'compatibility', 'lovemeter'], help="The ultimate and most revolutionary Love Machine", usage="ship @user1 @user2`[optional]`###3s/user###No")
     @CustomChecks.blacklist_check()
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def ship(self, ctx, pair: discord.Member, pair2: typing.Optional[discord.Member]=None):
         if (pair is ctx.message.author and pair2 is None) or (pair is ctx.message.author and pair2 is ctx.message.author):
             result = '❣ Love and be yourself with all your goods and bads ❣'
