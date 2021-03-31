@@ -52,6 +52,25 @@ async def return_social(_id):
             raise error
     return social
 
+async def return_married(_id):
+    try:
+        married = user_collection.find_one({"_id": _id})
+    except Exception as error:
+        if isinstance(error, KeyError):
+            user_collection.insert_one({"_id": _id})
+            return None
+        else:
+            raise error
+    try:
+        married = user_collection.find_one({"_id": _id})
+        married = married["married_with"]
+        return married
+    except Exception as error:
+        if isinstance(error, KeyError):
+            return None
+        else:
+            raise error
+
 class Social(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -256,47 +275,41 @@ class Social(commands.Cog):
             return await ctx.send("404 pair not found. Who are you proposing to?")
         elif member is ctx.author:
             return await ctx.send("You should love yourself but... I mean... uh... not to this point tho...")
-        already_married = user_collection.find_one({"_id": ctx.author.id})
-        member_already_married = user_collection.find_one({"_id": member.id})
-        if already_married is None:
-            user_collection.insert_one({"_id": ctx.author.id})
-            already_married = user_collection.find_one({"_id": ctx.author.id})
-        if member_already_married is None:
-            user_collection.insert_one({"_id": ctx.author.id})
+        author_already_married = await return_married(ctx.author.id)
+        member_already_married = await return_married(member.id)
+        if author_already_married is not None:
+            author_already_married = await self.bot.fetch_user(author_already_married)
+            embed = discord.Embed(color=random.randint(0, 0xffffff), description='You are already married with someone else.')
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+            return await ctx.send(embed=embed)
+        if member_already_married is not None:
+            member_already_married = await self.bot.fetch_user(member_already_married)
+            embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'{member.mention} is already married with someone else.')
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+            return await ctx.send(embed=embed)
+        def check(x):
+            return x.channel == ctx.message.channel and x.author == member
+        embed = discord.Embed(color=random.randint(0, 0xffffff), description="Respond with yes/y/no/n.")
+        embed.set_author(icon_url=member.avatar_url, name=member)
+        await ctx.send(embed=embed)
         try:
-            already_married = already_married["married_with"]
-            if already_married is not None:
-                already_married = await self.bot.fetch_user(already_married)
-                embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'You are already married with {already_married.mention}.')
-                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-                return await ctx.send(embed=embed)
-        except Exception as error:
-            if isinstance(error, KeyError or TypeError):
-                def check(x):
-                    return x.channel == ctx.message.channel and x.author == member
-                embed = discord.Embed(color=random.randint(0, 0xffffff), description="Respond with yes/y/no/n.")
-                embed.set_author(icon_url=member.avatar_url, name=member)
-                await ctx.send(embed=embed)
-                try:
-                    response = await self.bot.wait_for('message', check=check, timeout=30)
-                    _response = response.content.lower()
-                except asyncio.TimeoutError:
-                    embed = discord.Embed(color=random.randint(0, 0xffffff), description=f"It looks like {member.mention} needs some more time to think.")
-                    return await ctx.send(embed=embed)
-                if _response == 'yes' or _response == 'y':
-                    user_collection.update_one({"_id": ctx.author.id}, {"$set": {"marriedwith": member.id}})
-                    user_collection.update_one({"_id": member.id}, {"$set": {"marriedwith": ctx.author.id}})
-                    embed = discord.Embed(color=random.randint(0, 0xffffff), title=f'**{str(ctx.message.author)}** :ring: **{str(member)}**')
-                    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/825995294788419634/husband-wife.jpg')
-                    embed.description = f"***By the power invested in me by no valid or legal authority, I now pronounce {ctx.author.mention} & {member.mention} husband and wife*** :man_in_tuxedo::woman_with_veil:"
-                    return await ctx.send(embed=embed)
-                elif _response == 'no' or _response == 'n':
-                    embed = discord.Embed(color=random.randint(0, 0xffffff), description="Oh... well... maybe give it some time...")
-                    return await ctx.send(embed=embed)
-                else:
-                    return await ctx.send('Not a valid response')
-            else:
-                raise error
+            response = await self.bot.wait_for('message', check=check, timeout=30)
+            _response = response.content.lower()
+        except asyncio.TimeoutError:
+            embed = discord.Embed(color=random.randint(0, 0xffffff), description=f"It looks like {member.mention} needs some more time to think.")
+            return await ctx.send(embed=embed)
+        if _response == 'yes' or _response == 'y':
+            user_collection.update_one({"_id": member.id}, {"$set": {"married_with": ctx.author.id}})
+            user_collection.update_one({"_id": ctx.author.id}, {"$set": {"married_with": member.id}})
+            embed = discord.Embed(color=random.randint(0, 0xffffff), title=f'**{str(ctx.message.author)}** :ring: **{str(member)}**')
+            embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/725102631185547427/825995294788419634/husband-wife.jpg')
+            embed.description = f"***By the power invested in me by no valid or legal authority, I now pronounce {ctx.author.mention} & {member.mention} husband and wife*** :man_in_tuxedo::woman_with_veil:"
+            return await ctx.send(embed=embed)
+        elif _response == 'no' or _response == 'n':
+            embed = discord.Embed(color=random.randint(0, 0xffffff), description="Oh... well... maybe give it some time...")
+            return await ctx.send(embed=embed)
+        else:
+            return await ctx.send('Not a valid response')
 
     @commands.command(help="divorce the person you married", usage="divorce###10s/user###No")
     @CustomChecks.blacklist_check()
@@ -307,7 +320,7 @@ class Social(commands.Cog):
             if already_married is not None:
                 user_collection.update_one({"_id": ctx.author.id}, {"$unset": {"married_with": 1}})
                 user_collection.update_one({"_id": already_married["married_with"]}, {"$unset": {"married_with": 1}})
-                already_married = await self.bot.fetch_user(already_married["marriedwith"])
+                already_married = await self.bot.fetch_user(already_married["married_with"])
                 embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'{ctx.author.mention} divorced {already_married.mention}.')
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
                 return await ctx.send(embed=embed)
