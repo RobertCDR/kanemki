@@ -128,12 +128,12 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed guild prefix to **{prefix}**.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['muted-set'])
+    @config.command(aliases=['muted-set', 'mutedrole-set', 'mutedrole set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_set(self, ctx, muted: discord.Role):
-        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"mutedrole": muted.id}})
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"muted_role": muted.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed muted role to {muted.mention}.')
         #overwrite the channel permissions for the muted role
         for channel in ctx.guild.text_channels:
@@ -147,15 +147,15 @@ class Mod(commands.Cog):
         await ctx.send(embed=embed)
 
     #this subcommand removes the custom muted role of a guild
-    @config.command(aliases=['muted-remove'])
+    @config.command(aliases=['muted-remove', 'mutedrole-remove', 'mutedrole remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def muted_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            role_id = result["mutedrole"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"mutedrole": ""}})
+            role_id = result["muted_role"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"muted_role": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No muted role was set.')
@@ -165,24 +165,24 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed muted role.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['joinrole-set'])
+    @config.command(aliases=['joinrole-set', 'joinrole set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_set(self, ctx, role: discord.Role):
-        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"joinrole": role.id}})
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"join_role": role.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed member role to {role.mention}.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['joinrole-remove'])
+    @config.command(aliases=['joinrole-remove', 'joinrole remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def joinrole_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            role_id = result["joinrole"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"joinrole": ""}})
+            role_id = result["join_role"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"join_role": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No join role was set.')
@@ -192,24 +192,24 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed member join role.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['botrole-set'])
+    @config.command(aliases=['botrole-set', 'botrole set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_set(self, ctx, role: discord.Role):
-        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"botrole": role.id}})
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"bot_role": role.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully changed bot join role to {role.mention}.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['botrole-remove'])
+    @config.command(aliases=['botrole-remove', 'botrole remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def botrole_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            role_id = result["botrole"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"botrole": ""}})
+            role_id = result["bot_role"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"bot_role": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No bot role was set.')
@@ -219,95 +219,98 @@ class Mod(commands.Cog):
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed bot join role.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['logsch-set'])
+    @config.command(aliases=['logsch-set', 'logschannel-set', 'logschannel set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_set(self, ctx, channel: discord.channel.TextChannel):
-        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"logsch": channel.id}})
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"logs_channel": channel.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set logs channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['logsch-remove'])
+    @config.command(aliases=['logsch-remove', 'logschannel-remove', 'logschannel remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def logsch_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            channel_id = result["logsch"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"logsch": ""}})
+            channel_id = result["logs_channel"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"logs_channel": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
-                embed = discord.Embed(color=0xde2f43, description=':x: No logs was channel set.')
+                embed = discord.Embed(color=0xde2f43, description=':x: No logs channel was set.')
                 return await ctx.send(embed=embed)
             else:
                 raise error
         embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed logs channel.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['welcomech-set'])
+    @config.command(aliases=['welcomech-set', "welcomechannel-set", 'welcomechannel set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_set(self, ctx, channel: discord.channel.TextChannel):
-        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomech": channel.id}})
+        guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcome_channel": channel.id}})
         embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome channel to {channel.mention}.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['welcomech-remove'])
+    @config.command(aliases=['welcomech-remove', 'welcomechannel-remove', 'welcomechannel remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomech_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            channel_id = result["welcomech"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcomech": ""}})
+            channel_id = result["welcome_channel"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcome_channel": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No welcome channel was set.')
                 return await ctx.send(embed=embed)
             else:
                 raise error
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome channel.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed welcome channel.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['welcomemsg-set'])
+    @config.command(aliases=['welcomemsg-set', 'welcomemessage-set', 'welcomemessage set', 'welcomemsg set'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_set(self, ctx, *, message):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            channel_id = result["welcomech"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomemsg": message}})
+            channel_id = result["welcome_channel"]
+            channel = self.bot.get_channel(channel_id)
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcome_message": message}})
         except Exception as error:
             if isinstance(error, KeyError):
-                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcomech": ctx.channel.id}})
+                channel = ctx.channel
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcome_channel": channel.id}})
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"welcome_message": message}})
             else:
                 raise error
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome message.')
+        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully set welcome message on **#{channel.name}**.')
         await ctx.send(embed=embed)
 
-    @config.command(aliases=['welcomemsg-remove'])
+    @config.command(aliases=['welcomemsg-remove', 'welcomemsg remove', 'welcomemessage-remove', 'welcomemessage remove'])
     @CustomChecks.blacklist_check()
     @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def welcomemsg_remove(self, ctx):
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            message = result["welcomemsg"]
-            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcomemsg": ""}})
+            message = result["welcome_message"]
+            guild_collection.update_one({"_id": ctx.guild.id}, {"$unset": {"welcome_message": ""}})
         except Exception as error:
             if isinstance(error, KeyError):
                 embed = discord.Embed(color=0xde2f43, description=':x: No welcome message was set.')
                 return await ctx.send(embed=embed)
             else:
                 raise error
-        embed = discord.Embed(color=0x75b254, description=f':white_check_mark: Successfully removed welcome message.')
+        embed = discord.Embed(color=0x75b254, description=':white_check_mark: Successfully removed welcome message.')
         await ctx.send(embed=embed)
-    
+
     """
     @config.command(aliases=['starboard-set'])
     @CustomChecks.blacklist_check()
@@ -542,7 +545,7 @@ class Mod(commands.Cog):
             return await ctx.send(embed=embed)
         result = guild_collection.find_one({"_id": ctx.guild.id})
         try:
-            muted = result["mutedrole"]
+            muted = result["muted_role"]
             muted = discord.utils.get(ctx.guild.roles, id=muted)
             if muted is None:
                 raise KeyError
@@ -551,7 +554,7 @@ class Mod(commands.Cog):
             if isinstance(error, KeyError):
                 perms = discord.Permissions(read_messages=True, add_reactions=True, external_emojis=True, change_nickname=True)
                 muted = await ctx.guild.create_role(name='Muted', permissions=perms)
-                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"mutedrole": muted.id}})
+                guild_collection.update_one({"_id": ctx.guild.id}, {"$set": {"muted_role": muted.id}})
             else:
                 raise error
             for channel in ctx.guild.text_channels:
@@ -603,7 +606,7 @@ class Mod(commands.Cog):
             return await ctx.send(embed=embed)
         try:
             result = guild_collection.find_one({"_id": ctx.guild.id})
-            muted = result["mutedrole"]
+            muted = result["muted_role"]
             if muted is None:
                 raise KeyError
             muted = discord.utils.get(ctx.guild.roles, id=muted)

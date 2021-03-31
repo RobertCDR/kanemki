@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import json
 import aiohttp
 import random
 from bot import giphy_api_key
@@ -19,11 +18,12 @@ class Actions(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def gif(self, ctx, *, query):
         url = f'http://api.giphy.com/v1/gifs/search?q={query.replace(" ", "+")}&api_key={giphy_api_key}&limit=10'
-        session = aiohttp.ClientSession()   #create a session using aiohttp
-        embed = discord.Embed(color=random.randint(0, 0xffffff))  #create the embed
-        try:    #when no results are found catch the errorwith try and except
-            response = await session.get(url=url)  #request the data
-            data = json.loads(await response.text()) #json parse the data and make it available for use
+        #use an aiohttp session to request data and then json parse the response
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
+        try:    #when no results are found catch the error with try and except
+            embed = discord.Embed(color=random.randint(0, 0xffffff))  #create the embed
             gif = random.randint(0, 9)
             if data['data'][gif]['username']:
                 text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
@@ -44,17 +44,17 @@ class Actions(commands.Cog):
     async def facepalm(self, ctx):
         search = 'facepalm'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
             text = f"Powered by GIPHY • GIF by {data['data'][gif]['username']}"
         else:
             text = "Powered by GIPHY"
-        embed.set_image(url=data['data'][gif]['images']['original']['url']) #the embed's image will bet set to a random gif
+        embed.set_image(url=data['data'][gif]['images']['original']['url'])
         embed.set_footer(icon_url='https://cdn.discordapp.com/attachments/725102631185547427/735969171984351292/giphy.png', text=text)
         await session.close()
         await ctx.send(embed=embed)
@@ -65,10 +65,10 @@ class Actions(commands.Cog):
     async def shrug(self, ctx):
         search = 'shrug'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -86,10 +86,10 @@ class Actions(commands.Cog):
     async def cry(self, ctx):
         search = 'cry'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -107,10 +107,10 @@ class Actions(commands.Cog):
     async def pout(self, ctx):
         search = 'pout'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -128,10 +128,10 @@ class Actions(commands.Cog):
     async def run(self, ctx):
         search = 'run'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -150,10 +150,10 @@ class Actions(commands.Cog):
         search = 'tongue out'
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -171,10 +171,10 @@ class Actions(commands.Cog):
     async def hug(self, ctx, user: discord.User):
         search = 'hug'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} hugged you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -192,10 +192,10 @@ class Actions(commands.Cog):
     async def kiss(self, ctx, user: discord.User):
         search = 'kiss'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} kissed you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -213,10 +213,10 @@ class Actions(commands.Cog):
     async def slap(self, ctx, user: discord.User):
         search = 'slap'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} slapped you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -234,10 +234,10 @@ class Actions(commands.Cog):
     async def wink(self, ctx, user: discord.User):
         search = 'wink'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} winked at you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -255,10 +255,10 @@ class Actions(commands.Cog):
     async def stare(self, ctx, user: discord.User):
         search = 'stare'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} is staring at you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -276,10 +276,10 @@ class Actions(commands.Cog):
     async def lick(self, ctx, user: discord.User):
         search = 'lick'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} licked you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -297,10 +297,10 @@ class Actions(commands.Cog):
     async def bite(self, ctx, user: discord.User):
         search = 'bite'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} bit you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -318,10 +318,10 @@ class Actions(commands.Cog):
     async def cuddle(self, ctx, user: discord.User):
         search = 'cuddle'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} is cuddling with you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -339,10 +339,10 @@ class Actions(commands.Cog):
     async def pat(self, ctx, user: discord.User):
         search = 'pat'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} patted you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -360,10 +360,10 @@ class Actions(commands.Cog):
     async def smile(self, ctx, user: discord.User):
         search = 'smile'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} is smiling at you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -382,10 +382,10 @@ class Actions(commands.Cog):
         search = 'finger poke'
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} poked you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -403,10 +403,10 @@ class Actions(commands.Cog):
     async def tickle(self, ctx, user: discord.User):
         search = 'tickle'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} is tickling you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -425,10 +425,10 @@ class Actions(commands.Cog):
         search = 'finger point'
         search.replace(' ', '+')
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} is pointing (at) you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:
@@ -446,10 +446,10 @@ class Actions(commands.Cog):
     async def punch(self, ctx, user: discord.User):
         search = 'punch'
         url = f'http://api.giphy.com/v1/gifs/search?q={search}&api_key={giphy_api_key}&limit=20'
-        session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url) as response:
+                data = await response.json()
         embed = discord.Embed(description=f'{user.mention}, {ctx.message.author.mention} punched you', color=random.randint(0, 0xffffff))
-        response = await session.get(url=url)
-        data = json.loads(await response.text())
         gif = random.randint(0, 19)
         embed.set_image(url=data['data'][gif]['images']['original']['url'])
         if data['data'][gif]['username']:

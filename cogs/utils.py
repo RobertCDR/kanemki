@@ -21,7 +21,11 @@ class Utils(commands.Cog):
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def invite(self, ctx):
         #create the embed containing the link with the bot scope and administrator (integer 8) permissions
-        embed = discord.Embed(color=random.randint(0, 0xffffff), title='Bot invite link', url=f'https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot', timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(
+            color=random.randint(0, 0xffffff), title='Bot invite link',
+            url=f'https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands',
+            timestamp=datetime.datetime.utcnow()
+        )
         embed.set_author(icon_url=self.bot.user.avatar_url, name='Thanks for thinking about inviting me <3')
         embed.set_footer(icon_url=ctx.message.author.avatar_url, text=f'Requested by {str(ctx.message.author)}')
         await ctx.send(embed=embed) #send the embed

@@ -27,10 +27,10 @@ class Listeners(commands.Cog):
         result = guild_collection.find_one({"_id": member.guild.id})
         try:
             if member.bot:
-                role = result["botrole"]
+                role = result["bot_role"]
                 role = discord.utils.get(member.guild.roles, id=role)   #get the role
             else:
-                role = result["joinrole"]
+                role = result["join_role"]
                 role = discord.utils.get(member.guild.roles, id=role)   #get the role
             await member.add_roles(role)
         except Exception as error:
@@ -39,9 +39,9 @@ class Listeners(commands.Cog):
             else:
                 raise error
         try:
-            channel = result["welcomech"]
+            channel = result["welcome_channel"]
             channel = self.bot.get_channel(channel)
-            message = result["welcomemsg"]
+            message = result["welcome_message"]
             await channel.send(f"{message} {member.mention}")
         except Exception as error:
             if isinstance(error, KeyError):
@@ -49,7 +49,7 @@ class Listeners(commands.Cog):
             else:
                 raise error
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0x2cff00, title='Member Joined', timestamp=datetime.datetime.utcnow(),
@@ -68,7 +68,7 @@ class Listeners(commands.Cog):
     async def on_member_remove(self, member):
         result = guild_collection.find_one({"_id": member.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             roles = list(map(lambda x: x.mention, member.roles[::-1]))
             roles = roles[:-1]
@@ -90,7 +90,7 @@ class Listeners(commands.Cog):
     async def on_member_update(self, before, after):
         result = guild_collection.find_one({"_id": before.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if str(before.nick) != str(after.nick):
                 embed = discord.Embed(
@@ -130,7 +130,7 @@ class Listeners(commands.Cog):
     async def on_member_ban(self, guild, user):
         result = guild_collection.find_one({"_id": guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if user in guild.members:
                 roles = list(map(lambda x: x.mention, user.roles[::-1]))
@@ -159,7 +159,7 @@ class Listeners(commands.Cog):
     async def on_member_unban(self, guild, user):
         result = guild_collection.find_one({"_id": guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                     color=0x2cff00, title='User Unbanned', timestamp=datetime.datetime.utcnow(),
@@ -181,7 +181,7 @@ class Listeners(commands.Cog):
                 pass
             else:
                 result = guild_collection.find_one({"_id": message.guild.id})
-                logs = result["logsch"]
+                logs = result["logs_channel"]
                 logs = self.bot.get_channel(logs)
                 embed = discord.Embed(
                     color=0xff0000, title='Message Deleted', timestamp=datetime.datetime.utcnow(),
@@ -199,7 +199,7 @@ class Listeners(commands.Cog):
     async def on_raw_bulk_message_delete(self, payload):
         result = guild_collection.find_one({"_id": payload.guild_id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             guild = self.bot.get_guild(payload.guild_id)
             channel = self.bot.get_channel(payload.channel_id)
@@ -219,7 +219,7 @@ class Listeners(commands.Cog):
     async def on_message_edit(self, before, after):
         result = guild_collection.find_one({"_id": before.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0x0019ff, title='Message Edited', timestamp=datetime.datetime.utcnow(),
@@ -241,7 +241,7 @@ class Listeners(commands.Cog):
     async def on_guild_channel_create(self, channel):
         result = guild_collection.find_one({"_id": channel.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0x2cff00, title='Channel Created', timestamp=datetime.datetime.utcnow(),
@@ -259,7 +259,7 @@ class Listeners(commands.Cog):
     async def on_guild_channel_delete(self, channel):
         result = guild_collection.find_one({"_id": channel.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0xff0000, title='Channel Deleted', timestamp=datetime.datetime.utcnow(),
@@ -277,7 +277,7 @@ class Listeners(commands.Cog):
     async def on_guild_channel_update(self, before, after):
         result = guild_collection.find_one({"_id": before.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if (before.name is after.name) and (before.category is after.category) and (before.position is after.position):
                 changes = 'No'
@@ -300,7 +300,7 @@ class Listeners(commands.Cog):
     async def on_guild_role_create(self, role):
         result = guild_collection.find_one({"_id": role.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0x2cff00, title='Role Created', timestamp=datetime.datetime.utcnow(),
@@ -318,7 +318,7 @@ class Listeners(commands.Cog):
     async def on_guild_role_delete(self, role):
         result = guild_collection.find_one({"_id": role.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0xff0000, title='Role Deleted', timestamp=datetime.datetime.utcnow(),
@@ -336,7 +336,7 @@ class Listeners(commands.Cog):
     async def on_guild_role_update(self, before, after):
         result = guild_collection.find_one({"_id": before.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if before.permissions.value != after.permissions.value:
                 changes = 'Yes'
@@ -359,7 +359,7 @@ class Listeners(commands.Cog):
     async def on_invite_create(self, invite):
         result = guild_collection.find_one({"_id": invite.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if invite.max_age == 0:
                 max_age = "♾️"
@@ -386,7 +386,7 @@ class Listeners(commands.Cog):
     async def on_invite_delete(self, invite):
         result = guild_collection.find_one({"_id": invite.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             embed = discord.Embed(
                 color=0xff0000, title="Invite Deleted", timestamp=datetime.datetime.utcnow(),
@@ -404,7 +404,7 @@ class Listeners(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         result = guild_collection.find_one({"_id": member.guild.id})
         try:
-            logs = result["logsch"]
+            logs = result["logs_channel"]
             logs = self.bot.get_channel(logs)
             if before.channel is None and after.channel is not None:
                 embed = discord.Embed(

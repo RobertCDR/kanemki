@@ -42,7 +42,7 @@ async def return_social(_id):
             raise error
     try:
         result = user_collection.find_one({"_id": _id})
-        social.append(result["marriedwith"])
+        social.append(result["married_with"])
     except Exception as error:
         if isinstance(error, KeyError):
             social.append("-")
@@ -264,7 +264,7 @@ class Social(commands.Cog):
         if member_already_married is None:
             user_collection.insert_one({"_id": ctx.author.id})
         try:
-            already_married = already_married["marriedwith"]
+            already_married = already_married["married_with"]
             if already_married is not None:
                 already_married = await self.bot.fetch_user(already_married)
                 embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'You are already married with {already_married.mention}.')
@@ -305,8 +305,8 @@ class Social(commands.Cog):
         try:
             already_married = user_collection.find_one({"_id": ctx.author.id})
             if already_married is not None:
-                user_collection.update_one({"_id": ctx.author.id}, {"$unset": {"marriedwith": 1}})
-                user_collection.update_one({"_id": already_married["marriedwith"]}, {"$unset": {"marriedwith": 1}})
+                user_collection.update_one({"_id": ctx.author.id}, {"$unset": {"married_with": 1}})
+                user_collection.update_one({"_id": already_married["married_with"]}, {"$unset": {"married_with": 1}})
                 already_married = await self.bot.fetch_user(already_married["marriedwith"])
                 embed = discord.Embed(color=random.randint(0, 0xffffff), description=f'{ctx.author.mention} divorced {already_married.mention}.')
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
